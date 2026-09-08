@@ -1,0 +1,22 @@
+{
+  "short_name": "Javelo360",
+  "name": "Javelo360 ERP - Enterprise Management System",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "display": "standalone",
+  "orientation": "any",
+  "description": "Enterprise-Grade PWA Employee & Resource Management System with WFH/WFO scheduling, GPS geofencing, AFK status tracking, and 2D virtual office."
+}

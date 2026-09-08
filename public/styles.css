@@ -1,0 +1,308 @@
+/* Custom Tailwind & Javelo360 ERP CSS Engine (v18) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Modal Backdrops & Glassmorphism */
+.modal-backdrop {
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Tag Autocomplete Overlays (@, #, /DIV) */
+.tag-autocomplete-overlay {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  margin-bottom: 6px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  padding: 6px;
+  z-index: 50;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.tag-autocomplete-item {
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  transition: all 0.15s ease;
+}
+
+.tag-autocomplete-item:hover {
+  background-color: #eff6ff;
+}
+
+/* Dark Mode Overrides */
+body.dark-mode {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+body.dark-mode aside {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.dark-mode header {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.dark-mode .bg-white {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-mode .bg-slate-50 {
+  background-color: #0f172a !important;
+}
+
+body.dark-mode .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+body.dark-mode .text-slate-700,
+body.dark-mode .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+/* Notification Popover */
+.notification-popover {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  width: 340px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  z-index: 50;
+  overflow: hidden;
+}
+
+/* TO-DO LIST STYLES */
+.todo-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 12px 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+  transition: all 0.2s ease;
+}
+
+.todo-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+}
+
+.todo-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 900;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.todo-checkbox:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.todo-checkbox.checked {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+/* 2D VIRTUAL OFFICE MAP STYLES */
+.sky-office-map-pixel {
+  border-radius: 24px;
+  min-h: 520px;
+  position: relative;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.pixel-wood-desk {
+  background: #fef3c7;
+  border: 1.5px solid #fde68a;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+}
+
+.pixel-laptop {
+  background: #1e293b;
+  border: 1px solid #38bdf8;
+  border-radius: 4px;
+  width: 24px;
+  height: 15px;
+}
+
+.pixel-meeting-room {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.pixel-conference-table {
+  background: #f3e8ff;
+  border: 2px solid #e9d5ff;
+  border-radius: 24px;
+}
+
+.pixel-coffee-lounge {
+  background: #fffbeb;
+  border: 2px solid #fef3c7;
+  border-radius: 20px;
+}
+
+.pixel-avatar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.pixel-avatar-nametag {
+  background: rgba(15, 23, 42, 0.95);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+  margin-bottom: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.pixel-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+}
+
+.pixel-avatar:hover {
+  transform: scale(1.3) translateY(-6px);
+  z-index: 50;
+}
+
+.pixel-avatar .head {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fde047;
+  border: 2px solid #1e293b;
+  position: relative;
+}
+
+.pixel-avatar .hair {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 12px;
+  border-radius: 10px 10px 0 0;
+}
+
+.pixel-avatar .body-top {
+  width: 34px;
+  height: 18px;
+  border-radius: 6px 6px 0 0;
+  border: 2px solid #1e293b;
+  position: absolute;
+  bottom: -4px;
+}
+
+.chat-speech-bubble {
+  position: absolute;
+  top: -28px;
+  background: #3b82f6;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+  animation: pulse-float 2s infinite ease-in-out;
+}
+
+.chat-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px 4px 0;
+  border-style: solid;
+  border-color: #3b82f6 transparent;
+  display: block;
+  width: 0;
+}
+
+@keyframes pulse-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.pixel-hover-card {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: #0f172a;
+  color: white;
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 1px solid #334155;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+  z-index: 60;
+  width: 260px;
+}

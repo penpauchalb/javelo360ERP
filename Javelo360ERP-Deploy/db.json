@@ -1,0 +1,68 @@
+{
+  "companyInfo": {
+    "name": "PT Javelo Terra Lestari",
+    "factoryGeo": {
+      "lat": -7.4218,
+      "lng": 109.1352,
+      "name": "PT Javelo Terra Lestari Factory (Banyumas)",
+      "radiusMeters": 500
+    }
+  },
+  "users": [
+    {
+      "id": "u-admin",
+      "name": "Hendra Setiawan",
+      "email": "hendra@javelo360.com",
+      "password": "••••••••",
+      "role": "admin",
+      "mode": "Full WFH",
+      "department": "C-Level Executive",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      "status": "Offline",
+      "optimalHours": "08:00 - 16:00",
+      "checkedIn": false
+    },
+    {
+      "id": "3104be72-7cc0-4a09-9426-e2980ea88807",
+      "name": "Acay",
+      "email": "tester@javelo.com",
+      "role": "employee",
+      "mode": "Full WFH",
+      "department": "Engineering",
+      "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+      "status": "Offline",
+      "checkedIn": false,
+      "checkInTime": null,
+      "password": "123456"
+    },
+    {
+      "id": "cb090fc7-a0e8-4edc-a8ce-83b5c2788b45",
+      "name": "Bambang",
+      "email": "bambang@gmail.com",
+      "role": "employee",
+      "mode": "Full WFH",
+      "department": "Engineering",
+      "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+      "status": "Offline",
+      "checkedIn": false,
+      "checkInTime": null,
+      "password": "123456"
+    },
+    {
+      "id": "9cd30d3c-829c-419a-a677-ca61b9aee1c8",
+      "name": "tester2",
+      "email": "tester2@javelo.com",
+      "role": "employee",
+      "mode": "Full WFH",
+      "department": "Engineering",
+      "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+      "status": "Offline",
+      "checkedIn": false,
+      "checkInTime": null,
+      "password": "123456"
+    }
+  ],
+  "tickets": [],
+  "schedules": [],
+  "customTasks": []
+}
