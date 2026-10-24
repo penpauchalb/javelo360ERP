@@ -37,7 +37,17 @@ function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
           Math.cos(φ1) * Math.cos(φ2) *
           Math.sin(Δλ/2) * Math.sin(Δλ/2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
+}
+
+// Helper: Generate RFC 4122 version 4 compliant UUID
+function generateUUID() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
 }
 
 // --- VECTOR SVG ICONS ---
@@ -151,89 +161,49 @@ function IconCrown(props) {
 }
 
 // --- DEMO MOCK PERSONAS ---
-const DEMO_PERSONAS = [
-  {
-    id: "u-admin",
-    name: "Hendra Setiawan",
-    email: "hendra@javelo360.com",
-    role: "admin",
-    mode: "Full WFH",
-    department: "C-Level Executive",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
-    status: "Online",
-    optimalHours: "08:00 - 16:00",
-    checkedIn: true,
-    avatarColor: "bg-blue-600",
-    hairColor: "bg-amber-800"
-  },
-  {
-    id: "u-1",
-    name: "Adrian Goia",
-    email: "adrian@javelo360.com",
-    role: "employee",
-    mode: "Full WFH",
-    department: "Engineering",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
-    status: "Online",
-    optimalHours: "09:00 - 17:00",
-    checkedIn: true,
-    avatarColor: "bg-emerald-600",
-    hairColor: "bg-slate-900"
-  },
-  {
-    id: "u-2",
-    name: "Jennifer Muller",
-    email: "jennifer@javelo360.com",
-    role: "manager",
-    mode: "Hybrid",
-    department: "Product",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
-    status: "Online",
-    optimalHours: "09:00 - 17:00",
-    checkedIn: true,
-    avatarColor: "bg-purple-600",
-    hairColor: "bg-amber-600"
-  },
-  {
-    id: "u-3",
-    name: "Dwayne Stevens",
-    email: "dwayne@javelo360.com",
-    role: "employee",
-    mode: "Full WFO",
-    department: "Operations",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
-    status: "Online",
-    optimalHours: "Factory Floor Entrance (Geofence)",
-    checkedIn: true,
-    avatarColor: "bg-orange-600",
-    hairColor: "bg-slate-700"
-  }
-];
+const DEMO_PERSONAS = [];
 
 // --- MAIN REACT APP COMPONENT ---
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showSetupWizard, setShowSetupWizard] = useState(true);
+  const [showSetupWizard, setShowSetupWizard] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [apiUrl, setApiUrl] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const h = window.location.hostname;
+      if (h === 'localhost' || h === '127.0.0.1' || h === '' || window.location.protocol === 'file:') {
+        return window.location.origin || 'http://localhost:3000';
+      }
+      return localStorage.getItem('javelo_api_url') || 'https://venue-gulf-wildlife.ngrok-free.dev';
+    }
+    return 'http://localhost:3000';
+  });
+  const [isSupabaseReady, setIsSupabaseReady] = useState(false);
 
-  const [companyInfo, setCompanyInfo] = useState({
-    name: "PT Javelo Terra Lestari",
-    factoryGeo: DEFAULT_FACTORY_GEO
+  const [companyInfo, setCompanyInfo] = useState(() => {
+    try {
+      const saved = localStorage.getItem('javelo_company');
+      return saved ? JSON.parse(saved) : { name: "PT Javelo Terra Lestari", factoryGeo: DEFAULT_FACTORY_GEO };
+    } catch(e) {
+      return { name: "PT Javelo Terra Lestari", factoryGeo: DEFAULT_FACTORY_GEO };
+    }
   });
 
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState(() => {
+    try {
+      const saved = localStorage.getItem('javelo_users');
+      return saved ? JSON.parse(saved) : [];
+    } catch(e) {
+      return [];
+    }
+  });
+
   const [currentUser, setCurrentUser] = useState(null);
   const [schedules, setSchedules] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [anomalies, setAnomalies] = useState([]);
   const [notifications, setNotifications] = useState([]);
-
-  // Shared Multi-User To-Do Tasks State
-  const [customTasks, setCustomTasks] = useState([
-    { id: "todo-1", userId: "u-jennifer", title: "Audit Q3 Factory Inventory Records", category: "My Day", done: false, important: true, date: "2026-08-26" },
-    { id: "todo-2", userId: "u-jennifer", title: "Review Operations Workflow Diagram", category: "Important", done: true, important: true, date: "2026-08-26" },
-    { id: "todo-3", userId: "u-admin", title: "Review Executive Quarterly Growth Strategy", category: "My Day", done: false, important: true, date: "2026-08-26" }
-  ]);
+  const [customTasks, setCustomTasks] = useState([]);
 
   const [activeTab, setActiveTab] = useState("todo");
 
@@ -259,6 +229,222 @@ function App() {
   const [userLocation, setUserLocation] = useState({ lat: -7.4218, lng: 109.1352, simulatedOutside: false });
   const [geofenceMessage, setGeofenceMessage] = useState(null);
 
+  // REAL-TIME MULTI-DEVICE CLOUD DATABASE ENGINE (SUPABASE INTEGRATION + LOCAL FALLBACK)
+  const syncCloudDB = async (payload) => {
+    // 1. Write to local storage
+    try {
+      if (payload.companyInfo) localStorage.setItem('javelo_company', JSON.stringify(payload.companyInfo));
+      if (payload.users) localStorage.setItem('javelo_users', JSON.stringify(payload.users));
+      if (payload.tickets) localStorage.setItem('javelo_tickets', JSON.stringify(payload.tickets));
+      if (payload.customTasks) localStorage.setItem('javelo_tasks', JSON.stringify(payload.customTasks));
+    } catch(e) {}
+
+    // 2. Write to local server database API
+    try {
+      const cleanUrl = apiUrl.replace(/\/$/, "");
+      await fetch(`${cleanUrl}/api/db`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
+        body: JSON.stringify(payload)
+      });
+    } catch(e) {}
+
+    // 3. Write to Supabase PostgreSQL Tables (if initialized)
+    if (supabaseClient) {
+      try {
+        if (payload.users && payload.users.length > 0) {
+          for (const u of payload.users) {
+            const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(u.id);
+            if (!isValidUUID) continue;
+            await supabaseClient.from('profiles').upsert({
+              id: u.id,
+              email: u.email,
+              full_name: u.name,
+              avatar_url: u.avatar,
+              role: u.role || 'employee',
+              work_mode: u.mode || 'Full WFH',
+              department: u.department || 'Engineering',
+              password_plain: u.password || null
+            });
+          }
+        }
+        if (payload.tickets && payload.tickets.length > 0) {
+          for (const t of payload.tickets) {
+            const validTicketId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(t.id) ? t.id : generateUUID();
+            const validAssignedTo = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(t.assignedTo) ? t.assignedTo : null;
+            const validAssignedBy = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(t.assignedBy) ? t.assignedBy : null;
+            const validStatus = t.status === 'Pending Review' ? 'Review' : (['Todo', 'In Progress', 'Review', 'Done', 'Delayed', 'Issue'].includes(t.status) ? t.status : 'Todo');
+            await supabaseClient.from('tickets').upsert({
+              id: validTicketId,
+              subject: t.subject,
+              details: t.details || "",
+              notes: t.notes || "",
+              deadline: t.deadline || new Date().toISOString().split('T')[0],
+              status: validStatus,
+              priority: ['Low', 'Medium', 'High', 'Urgent'].includes(t.priority) ? t.priority : 'Medium',
+              assigned_to: validAssignedTo,
+              assigned_by: validAssignedBy,
+              mentioned_users: Array.isArray(t.mentionedUsers) ? t.mentionedUsers : []
+            });
+          }
+        }
+      } catch (err) {
+        console.warn("Supabase database sync warning (Run schema.sql in Supabase SQL editor to enable):", err);
+      }
+    }
+  };
+
+  // Poll database every 3 seconds for real-time multi-device sync
+  useEffect(() => {
+    const fetchCloudData = async () => {
+      let supabaseSuccess = false;
+
+      // 1. Fetch from Supabase PostgreSQL (if initialized)
+      if (supabaseClient) {
+        try {
+          const { data: dbProfiles, error: profErr } = await supabaseClient.from('profiles').select('*');
+          const { data: dbTickets, error: tktErr } = await supabaseClient.from('tickets').select('*');
+
+          if (!profErr && dbProfiles) {
+            setIsSupabaseReady(true);
+            supabaseSuccess = true;
+
+            const mappedUsers = dbProfiles.map(p => ({
+              id: p.id,
+              name: p.full_name,
+              email: p.email,
+              role: p.role || 'employee',
+              mode: p.work_mode || 'Full WFH',
+              department: p.department || 'Engineering',
+              avatar: p.avatar_url || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+              status: p.status || 'Offline',
+              checkedIn: p.checked_in || false,
+              checkInTime: p.check_in_time || null,
+              password: p.password_plain || "123456"
+            }));
+
+            // Only set state if data changed to prevent flickering
+            setUsers(prev => {
+              if (JSON.stringify(prev) !== JSON.stringify(mappedUsers)) {
+                return mappedUsers;
+              }
+              return prev;
+            });
+
+            if (currentUser) {
+              const updatedCurrent = mappedUsers.find(u => u.id === currentUser.id);
+              if (updatedCurrent && JSON.stringify(currentUser) !== JSON.stringify(updatedCurrent)) {
+                setCurrentUser(updatedCurrent);
+              }
+            }
+
+            if (!tktErr && dbTickets) {
+              const mappedTickets = dbTickets.map(t => ({
+                id: String(t.id || ''),
+                code: t.code || `JTL-2026-${String(t.id || '').slice(0,4)}`,
+                subject: t.subject,
+                details: t.details || "",
+                notes: t.notes || "",
+                deadline: t.deadline,
+                status: t.status === 'Review' ? 'Pending Review' : (t.status || 'Todo'),
+                priority: t.priority || 'Medium',
+                assignedTo: t.assigned_to,
+                assignedBy: t.assigned_by,
+                mentionedUsers: t.mentioned_users || []
+              }));
+
+              setTickets(prev => {
+                if (JSON.stringify(prev) !== JSON.stringify(mappedTickets)) {
+                  return mappedTickets;
+                }
+                return prev;
+              });
+            }
+          } else {
+            setIsSupabaseReady(false);
+          }
+        } catch (err) {
+          console.warn("Supabase database fetch warning:", err);
+          setIsSupabaseReady(false);
+        }
+      }
+
+      // 2. Fallback to local server database API ONLY if Supabase is offline/not ready
+      if (!supabaseSuccess) {
+        try {
+          const cleanUrl = apiUrl.replace(/\/$/, "");
+          const res = await fetch(`${cleanUrl}/api/db`, {
+            headers: { 'ngrok-skip-browser-warning': 'true' }
+          });
+          if (res.ok) {
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+              const data = await res.json();
+              if (data) {
+                if (data.companyInfo) {
+                  setCompanyInfo(prev => JSON.stringify(prev) !== JSON.stringify(data.companyInfo) ? data.companyInfo : prev);
+                }
+                if (Array.isArray(data.users) && data.users.length > 0) {
+                  setUsers(prev => JSON.stringify(prev) !== JSON.stringify(data.users) ? data.users : prev);
+                  if (currentUser) {
+                    const updatedCurrent = data.users.find(u => u.id === currentUser.id);
+                    if (updatedCurrent && JSON.stringify(currentUser) !== JSON.stringify(updatedCurrent)) {
+                      setCurrentUser(updatedCurrent);
+                    }
+                  }
+                }
+                if (Array.isArray(data.tickets)) {
+                  setTickets(prev => JSON.stringify(prev) !== JSON.stringify(data.tickets) ? data.tickets : prev);
+                }
+                if (Array.isArray(data.schedules)) {
+                  setSchedules(prev => JSON.stringify(prev) !== JSON.stringify(data.schedules) ? data.schedules : prev);
+                }
+                if (Array.isArray(data.customTasks)) {
+                  setCustomTasks(prev => JSON.stringify(prev) !== JSON.stringify(data.customTasks) ? data.customTasks : prev);
+                }
+              }
+            }
+          }
+        } catch(e) {}
+      }
+    };
+
+    fetchCloudData();
+
+    // 3. Configure Supabase WebSockets Realtime Broadcast Channels (if active)
+    let chatChannel = null;
+    let profilesChannel = null;
+    if (supabaseClient) {
+      try {
+        chatChannel = supabaseClient.channel('chat_messages')
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => {
+            fetchCloudData();
+          })
+          .subscribe();
+
+        profilesChannel = supabaseClient.channel('profiles')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, payload => {
+            fetchCloudData();
+          })
+          .subscribe();
+      } catch (err) {
+        console.warn("Supabase Realtime subscription error:", err);
+      }
+    }
+
+    const interval = setInterval(fetchCloudData, 3000);
+    return () => {
+      clearInterval(interval);
+      if (supabaseClient) {
+        if (chatChannel) supabaseClient.removeChannel(chatChannel);
+        if (profilesChannel) supabaseClient.removeChannel(profilesChannel);
+      }
+    };
+  }, [currentUser?.id, apiUrl]);
+
   // Apply Dark Mode Class to Body
   useEffect(() => {
     if (isDarkMode) {
@@ -267,27 +453,6 @@ function App() {
       document.body.classList.remove('dark-mode');
     }
   }, [isDarkMode]);
-
-  const handleLoadDemoPersonas = () => {
-    setUsers(DEMO_PERSONAS);
-    setCurrentUser(DEMO_PERSONAS[0]);
-    setIsLoggedIn(true);
-    setShowSetupWizard(false);
-    setIsTimerRunning(true);
-    setGeofenceMessage({ type: "success", text: "🧪 Loaded 4 Test Personas (C-Level, WFH, Hybrid, WFO) for evaluation!" });
-  };
-
-  const handleSwitchPersona = (selectedUser) => {
-    if (!selectedUser) return;
-    setCurrentUser(selectedUser);
-    if (selectedUser.role !== 'admin' && activeTab === 'clevel') {
-      setActiveTab('todo');
-    }
-    setGeofenceMessage({
-      type: "success",
-      text: `⚡ Switched Persona to ${selectedUser.name} (${selectedUser.role === 'admin' ? 'C-Level Admin' : selectedUser.mode})`
-    });
-  };
 
   useEffect(() => {
     let interval = null;
@@ -305,12 +470,48 @@ function App() {
   }, [secondsLogged]);
 
   const handleLogin = (userToLogin) => {
-    if (userToLogin) setCurrentUser(userToLogin);
-    setIsLoggedIn(true);
+    if (userToLogin) {
+      const loggedUser = { ...userToLogin, checkedIn: false, status: "Offline" };
+      setCurrentUser(loggedUser);
+      setIsLoggedIn(true);
+
+      const updatedUsers = (users || []).map(u => u.id === loggedUser.id ? loggedUser : u);
+      setUsers(updatedUsers);
+      syncCloudDB({ companyInfo, users: updatedUsers, tickets, schedules, customTasks });
+
+      setGeofenceMessage({ type: "success", text: `⚡ Logged in as ${loggedUser.name} (${loggedUser.role === 'admin' ? 'C-Level Executive' : loggedUser.department})` });
+    }
   };
 
   const handleLogout = () => {
+    if (currentUser) {
+      const updatedUsers = users.map(u => u.id === currentUser.id ? { ...u, status: "Offline", checkedIn: false } : u);
+      setUsers(updatedUsers);
+      syncCloudDB({ companyInfo, users: updatedUsers, tickets, schedules, customTasks });
+    }
     setIsLoggedIn(false);
+    setCurrentUser(null);
+  };
+
+  const handleDeleteUser = async (userId) => {
+    if (currentUser && userId === currentUser.id) {
+      setGeofenceMessage({ type: "error", text: "❌ Anda tidak dapat menghapus akun Anda sendiri!" });
+      return;
+    }
+    const updatedUsers = users.filter(u => u.id !== userId);
+    setUsers(updatedUsers);
+
+    syncCloudDB({ companyInfo, users: updatedUsers, tickets, schedules, customTasks });
+
+    if (supabaseClient) {
+      try {
+        await supabaseClient.from('profiles').delete().eq('id', userId);
+      } catch (err) {
+        console.warn("Supabase user deletion warning:", err);
+      }
+    }
+
+    setGeofenceMessage({ type: "success", text: "🗑️ Akun karyawan berhasil dihapus secara permanen!" });
   };
 
   const handleSendReminderAlert = (targetUser, ticketOrContext) => {
@@ -325,7 +526,6 @@ function App() {
       targetTicketId: ticketOrContext?.id
     };
     setNotifications(prev => [newNotif, ...prev]);
-
     setGeofenceMessage({
       type: "success",
       text: `📧 Corporate Email Blast & In-App Reminder sent to ${targetUser?.name || 'Staff'}!`
@@ -333,45 +533,44 @@ function App() {
   };
 
   const handleDeleteTicket = (ticketId) => {
-    setTickets(prev => prev.filter(t => t.id !== ticketId));
+    const updatedTickets = tickets.filter(t => t.id !== ticketId);
+    setTickets(updatedTickets);
     setEditingTicket(null);
     setCommentingTicket(null);
     setHistoryTicket(null);
+    syncCloudDB({ companyInfo, users, tickets: updatedTickets, schedules, customTasks });
     setGeofenceMessage({ type: "error", text: "🗑 Ticket permanently removed by C-Level Admin." });
   };
 
   const handleFinishWizard = (newCompany, founderUser) => {
     if (newCompany) setCompanyInfo(newCompany);
+    let initialUsers = users || [];
     if (founderUser) {
-      setUsers([founderUser]);
+      initialUsers = [founderUser, ...initialUsers.filter(u => u.id !== founderUser.id)];
+      setUsers(initialUsers);
       setCurrentUser(founderUser);
     }
     setShowSetupWizard(false);
     setIsLoggedIn(true);
-    setIsTimerRunning(true);
+    setIsTimerRunning(false);
+    syncCloudDB({ companyInfo: newCompany, users: initialUsers, tickets: [], schedules: [], customTasks: [] });
   };
 
   const handleSaveLockedSchedule = (newSchedulesArray) => {
-    setSchedules(prev => [...prev, ...newSchedulesArray]);
+    const updatedSchedules = [...schedules];
+    newSchedulesArray.forEach(newS => {
+      const idx = updatedSchedules.findIndex(s => s.userId === newS.userId && s.date === newS.date);
+      if (idx !== -1) {
+        updatedSchedules[idx] = newS;
+      } else {
+        updatedSchedules.push(newS);
+      }
+    });
+    setSchedules(updatedSchedules);
     setShowShiftPlannerModal(false);
 
-    // Dispatch Notification to C-Level
-    const cLevels = users.filter(u => u.role === 'admin');
-    cLevels.forEach(cUser => {
-      newSchedulesArray.forEach(s => {
-        setNotifications(prevNotifs => [{
-          id: "n-" + Date.now() + Math.random(),
-          userId: cUser.id,
-          title: `📅 Schedule Locked by ${currentUser?.name}`,
-          text: `${currentUser?.name} locked optimal shift hours for ${s.date || s.day}: ${s.time}`,
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          read: false,
-          targetTab: 'schedules'
-        }, ...prevNotifs]);
-      });
-    });
-
-    setGeofenceMessage({ type: "success", text: "🔒 Optimal Working Schedule Locked & Notification Dispatched to C-Level Executives!" });
+    syncCloudDB({ companyInfo, users, tickets, schedules: updatedSchedules, customTasks });
+    setGeofenceMessage({ type: "success", text: "🔒 Optimal Working Schedule Locked Successfully!" });
   };
 
   const handleNotificationClick = (notif) => {
@@ -394,7 +593,7 @@ function App() {
       
       if (distMeters > targetGeo.radiusMeters) {
         const newAnomaly = {
-          id: "anom-" + Date.now(),
+          id: generateUUID(),
           userId: currentUser?.id,
           userName: currentUser?.name,
           type: "Geofence Breach",
@@ -409,41 +608,59 @@ function App() {
         });
         setShowCheckInGateModal(false);
         return;
-      } else {
-        setGeofenceMessage({
-          type: "success",
-          text: `✅ Geofence Verified! Within ${Math.round(distMeters)}m radius of ${targetGeo.name}.`
-        });
       }
     }
 
+    const checkInTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const updatedUsers = users.map(u => u.id === currentUser?.id ? { ...u, checkedIn: true, status: "Online", checkInTime: checkInTimeStr } : u);
+    const updatedCurrentUser = { ...currentUser, checkedIn: true, status: "Online", checkInTime: checkInTimeStr };
+
+    setUsers(updatedUsers);
+    setCurrentUser(updatedCurrentUser);
     setIsTimerRunning(true);
-    setUsers(prev => prev.map(u => u.id === currentUser?.id ? { ...u, checkedIn: true, status: "Online", checkInTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) } : u));
     setShowCheckInGateModal(false);
+
+    syncCloudDB({ companyInfo, users: updatedUsers, tickets, schedules, customTasks });
+
+    setGeofenceMessage({
+      type: "success",
+      text: `🟢 Check-In Verified! Status is now ONLINE (${checkInTimeStr}). Work timer started.`
+    });
   };
 
   const handleFinalizeCheckout = (updatedTicketStatuses) => {
-    setTickets(prev => prev.map(t => {
+    const updatedTickets = tickets.map(t => {
       if (updatedTicketStatuses && updatedTicketStatuses[t.id]) {
         return { ...t, status: updatedTicketStatuses[t.id].status, notes: updatedTicketStatuses[t.id].notes || t.notes };
       }
       return t;
-    }));
+    });
 
+    const updatedUsers = users.map(u => u.id === currentUser?.id ? { ...u, checkedIn: false, status: "Offline" } : u);
+    const updatedCurrentUser = { ...currentUser, checkedIn: false, status: "Offline" };
+
+    setTickets(updatedTickets);
+    setUsers(updatedUsers);
+    setCurrentUser(updatedCurrentUser);
     setIsTimerRunning(false);
-    setUsers(prev => prev.map(u => u.id === currentUser?.id ? { ...u, checkedIn: false, status: "Offline" } : u));
     setShowCheckoutModal(false);
+
+    syncCloudDB({ companyInfo, users: updatedUsers, tickets: updatedTickets, schedules, customTasks });
 
     if (window.confetti) {
       window.confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
     }
+
+    setGeofenceMessage({
+      type: "success",
+      text: "⚪ Check-Out Finalized! Work recap saved and status set to Offline."
+    });
   };
 
   if (showSetupWizard) {
     return e(OrganizationSetupWizard, {
       companyInfo,
       onCancel: users.length > 0 ? () => setShowSetupWizard(false) : null,
-      onLoadDemo: handleLoadDemoPersonas,
       onFinish: handleFinishWizard
     });
   }
@@ -453,52 +670,11 @@ function App() {
       users,
       companyInfo,
       onLogin: handleLogin,
-      onLoadDemo: handleLoadDemoPersonas,
       onStartWizard: () => setShowSetupWizard(true)
     });
   }
 
   return e('div', { className: `min-h-screen flex flex-col ${isDarkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-50 text-slate-900'}` },
-    // TOP PERSONA SWITCHER BAR
-    e('div', { className: 'bg-slate-900 text-slate-200 px-4 py-2 text-xs flex flex-wrap items-center justify-between border-b border-slate-800 gap-2' },
-      e('div', { className: 'flex items-center gap-3' },
-        e('span', { className: 'font-semibold text-blue-400 flex items-center gap-1.5' }, '⚡ Persona Switcher:'),
-        e('div', { className: 'flex items-center gap-1.5 flex-wrap' },
-          users.length === 0 ? e('span', { className: 'text-slate-400 italic' }, 'Only C-Level Founder active') :
-          users.map(u => e('button', {
-            key: u.id,
-            onClick: () => handleSwitchPersona(u),
-            className: `px-2.5 py-1 rounded-md transition-all text-xs flex items-center gap-1 cursor-pointer ${currentUser?.id === u.id ? 'bg-blue-600 text-white font-medium shadow' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`
-          }, u.name, e('span', { className: 'opacity-75 text-[10px] uppercase font-mono' }, ` (${u.role === 'admin' ? 'C-Level' : u.mode})`)))
-        )
-      ),
-      e('div', { className: 'flex items-center gap-3' },
-        users.length < 4 && e('button', {
-          onClick: handleLoadDemoPersonas,
-          className: 'px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold text-xs flex items-center gap-1 shadow cursor-pointer'
-        }, '🧪 Load 4 Test Personas'),
-        e('button', {
-          onClick: () => setShowSetupWizard(true),
-          className: 'px-2.5 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded font-bold text-xs flex items-center gap-1 shadow cursor-pointer'
-        }, e(IconSparkles, { className: 'w-3.5 h-3.5' }), 'Re-run Setup Wizard'),
-        e('div', { className: 'flex items-center gap-2 border-l border-slate-700 pl-3' },
-          e('span', { className: 'text-slate-400' }, 'GPS Simulator:'),
-          e('button', {
-            onClick: () => {
-              if (userLocation.simulatedOutside) {
-                setUserLocation({ lat: -7.4218, lng: 109.1352, simulatedOutside: false });
-                setGeofenceMessage({ type: 'success', text: `📍 Location set to ${companyInfo?.factoryGeo?.name || DEFAULT_FACTORY_GEO.name}` });
-              } else {
-                setUserLocation({ lat: -6.2088, lng: 106.8456, simulatedOutside: true });
-                setGeofenceMessage({ type: 'error', text: '📍 Location set to Jakarta (300km away)' });
-              }
-            },
-            className: `px-2.5 py-1 rounded font-medium text-xs transition-colors cursor-pointer ${userLocation.simulatedOutside ? 'bg-rose-600 hover:bg-rose-500 text-white' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}`
-          }, userLocation.simulatedOutside ? '🚨 Outside Factory (Jakarta)' : '🏢 Inside Factory (Banyumas)')
-        )
-      )
-    ),
-
     geofenceMessage && e('div', { className: `px-4 py-2 text-xs font-medium flex items-center justify-between ${geofenceMessage.type === 'error' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}` },
       e('span', null, geofenceMessage.text),
       e('button', { onClick: () => setGeofenceMessage(null), className: 'hover:opacity-75 font-bold cursor-pointer' }, '✕')
@@ -506,11 +682,12 @@ function App() {
 
     e(WorkModeInspectorBanner, { currentUser, companyInfo, userLocation }),
 
-    e('div', { className: 'flex-1 flex overflow-hidden' },
+    e('div', { className: 'flex-1 flex flex-col md:flex-row overflow-hidden' },
       e(Sidebar, {
         activeTab,
         setActiveTab,
         currentUser,
+        users,
         companyInfo,
         anomalyCount: (anomalies || []).filter(a => !a.resolved).length,
         onLogout: handleLogout,
@@ -533,9 +710,9 @@ function App() {
           activeTab === 'schedules' && e(ScheduleGrid, { users: users || [], schedules: schedules || [], currentUser, onOpenPlanner: () => setShowShiftPlannerModal(true), onInspectUserCalendar: (u) => setCLevelInspectedUser(u) }),
           activeTab === 'tickets' && e(TicketBoard, { tickets: tickets || [], users: users || [], currentUser, companyInfo, onOpenCreateTicket: () => setShowCreateTicketModal(true), onEditTicket: setEditingTicket, onOpenComments: setCommentingTicket, onOpenHistory: setHistoryTicket, onDeleteTicket: handleDeleteTicket, onSendReminder: handleSendReminderAlert }),
           activeTab === 'virtual-office' && e(SkyOffice2DPixelMap, { users: users || [], tickets: tickets || [] }),
-          activeTab === 'clevel' && (currentUser?.role === 'admin' ? e(CLevelDashboard, { users: users || [], tickets: tickets || [], anomalies: anomalies || [], schedules: schedules || [], onResolveAnomaly: id => setAnomalies(prev => prev.map(a => a.id === id ? { ...a, resolved: true } : a)), onOpenCreateUser: () => setShowCreateUserModal(true), onOpenAnnouncement: () => setShowAnnouncementModal(true), onOpenCreateTicket: () => setShowCreateTicketModal(true), onOpenActiveStaff: () => setShowActiveStaffModal(true), onInspectEmployee: (u) => setCLevelInspectedUser(u) }) : e('div', { className: 'p-8 text-center bg-rose-50 border border-rose-200 text-rose-800 font-bold rounded-2xl text-xs' }, '🔒 Access Restricted: C-Level Executive Master Dashboard is restricted to C-Level Admin accounts.')),
+          activeTab === 'clevel' && (currentUser?.role === 'admin' ? e(CLevelDashboard, { users: users || [], tickets: tickets || [], anomalies: anomalies || [], schedules: schedules || [], onResolveAnomaly: id => setAnomalies(prev => prev.map(a => a.id === id ? { ...a, resolved: true } : a)), onOpenCreateUser: () => setShowCreateUserModal(true), onOpenAnnouncement: () => setShowAnnouncementModal(true), onOpenCreateTicket: () => setShowCreateTicketModal(true), onOpenActiveStaff: () => setShowActiveStaffModal(true), onInspectEmployee: (u) => setCLevelInspectedUser(u), onDeleteUser: handleDeleteUser, isSupabaseReady, serverUrl: apiUrl }) : e('div', { className: 'p-8 text-center bg-rose-50 border border-rose-200 text-rose-800 font-bold rounded-2xl text-xs' }, '🔒 Access Restricted: C-Level Executive Master Dashboard is restricted to C-Level Admin accounts.')),
           activeTab === 'chat' && e(ChatEcosystem, { users: users || [], currentUser, tickets: tickets || [], onSendReminder: handleSendReminderAlert }),
-          activeTab === 'settings' && e(SettingsPanel, { currentUser, setCurrentUser, companyInfo, isDarkMode, setIsDarkMode, onOpenPhotoCrop: () => setShowPhotoCropModal(true), onStartWizard: () => setShowSetupWizard(true) })
+          activeTab === 'settings' && e(SettingsPanel, { currentUser, setCurrentUser, companyInfo, isDarkMode, setIsDarkMode, apiUrl, setApiUrl, onOpenPhotoCrop: () => setShowPhotoCropModal(true), onStartWizard: () => setShowSetupWizard(true) })
         )
       )
     ),
@@ -562,6 +739,7 @@ function App() {
 
     showShiftPlannerModal && e(InteractiveDateScheduleModal, {
       currentUser,
+      schedules,
       onClose: () => setShowShiftPlannerModal(false),
       onSaveSchedule: handleSaveLockedSchedule
     }),
@@ -573,7 +751,11 @@ function App() {
       companyInfo,
       onClose: () => setShowCreateTicketModal(false),
       onCreateTicket: (newTicket) => {
-        setTickets(prev => [newTicket, ...prev]);
+        setTickets(prev => {
+          const updated = [newTicket, ...prev];
+          syncCloudDB({ companyInfo, users, tickets: updated, schedules, customTasks });
+          return updated;
+        });
         setShowCreateTicketModal(false);
 
         // Notify all mentioned users and assignee
@@ -604,7 +786,11 @@ function App() {
       onClose: () => setEditingTicket(null),
       onDeleteTicket: handleDeleteTicket,
       onSaveTicket: (updatedT) => {
-        setTickets(prev => prev.map(t => t.id === updatedT.id ? updatedT : t));
+        setTickets(prev => {
+          const updated = prev.map(t => t.id === updatedT.id ? updatedT : t);
+          syncCloudDB({ companyInfo, users, tickets: updated, schedules, customTasks });
+          return updated;
+        });
         setEditingTicket(null);
       }
     }),
@@ -615,13 +801,17 @@ function App() {
       users: users || [],
       onClose: () => setCommentingTicket(null),
       onPostComment: (ticketId, commentObj) => {
-        setTickets(prev => prev.map(t => {
-          if (t.id === ticketId) {
-            const updatedC = [...(t.comments || []), commentObj];
-            return { ...t, comments: updatedC };
-          }
-          return t;
-        }));
+        setTickets(prev => {
+          const updated = prev.map(t => {
+            if (t.id === ticketId) {
+              const updatedC = [...(t.comments || []), commentObj];
+              return { ...t, comments: updatedC };
+            }
+            return t;
+          });
+          syncCloudDB({ companyInfo, users, tickets: updated, schedules, customTasks });
+          return updated;
+        });
         setCommentingTicket(prev => prev ? { ...prev, comments: [...(prev.comments || []), commentObj] } : null);
       }
     }),
@@ -642,10 +832,17 @@ function App() {
     }),
 
     showCreateUserModal && e(CreateUserModal, {
+      apiUrl,
       onClose: () => setShowCreateUserModal(false),
-      onCreateUser: (newUser) => {
-        setUsers(prev => [...prev, newUser]);
+      onCreateSuccess: (newUser) => {
+        const updatedUsers = [...users, newUser];
+        setUsers(updatedUsers);
         setShowCreateUserModal(false);
+        syncCloudDB({ companyInfo, users: updatedUsers, tickets, schedules, customTasks });
+        setGeofenceMessage({
+          type: "success",
+          text: `✅ Akun karyawan untuk ${newUser.name} (${newUser.email}) berhasil dibuat! Password: ${newUser.password}. Karyawan dapat langsung login di device mereka.`
+        });
       }
     }),
 
@@ -673,10 +870,63 @@ function App() {
 }
 
 // --- INTERACTIVE DATE-BASED CALENDAR SCHEDULE MODAL ---
-function InteractiveDateScheduleModal({ currentUser, onClose, onSaveSchedule }) {
-  const [selectedDate, setSelectedDate] = useState("2026-08-28");
+function InteractiveDateScheduleModal({ currentUser, schedules, onClose, onSaveSchedule }) {
+  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [selectedHours, setSelectedHours] = useState([9, 10, 11, 13, 14, 15, 16, 17]);
   const hours = Array.from({ length: 17 }, (_, i) => i + 7);
+
+  // Month navigation state
+  const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth()); // 0-11
+  
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  
+  const handlePrevMonth = () => {
+    setCurrentMonth(prev => {
+      if (prev === 0) {
+        setCurrentYear(y => y - 1);
+        return 11;
+      }
+      return prev - 1;
+    });
+  };
+  
+  const handleNextMonth = () => {
+    setCurrentMonth(prev => {
+      if (prev === 11) {
+        setCurrentYear(y => y + 1);
+        return 0;
+      }
+      return prev + 1;
+    });
+  };
+
+  const daysInMonth = useMemo(() => new Date(currentYear, currentMonth + 1, 0).getDate(), [currentYear, currentMonth]);
+  const firstDayIndex = useMemo(() => new Date(currentYear, currentMonth, 1).getDay(), [currentYear, currentMonth]); // 0: Sun
+
+  const calendarCells = useMemo(() => {
+    const cells = [];
+    for (let i = 0; i < firstDayIndex; i++) {
+      cells.push({ day: null, dateStr: null });
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      cells.push({ day: d, dateStr });
+    }
+    return cells;
+  }, [currentYear, currentMonth, daysInMonth, firstDayIndex]);
+
+  const existingScheduleForDate = useMemo(() => {
+    return (schedules || []).find(s => s.userId === currentUser?.id && s.date === selectedDate);
+  }, [schedules, currentUser, selectedDate]);
+
+  useEffect(() => {
+    if (existingScheduleForDate && Array.isArray(existingScheduleForDate.hours)) {
+      setSelectedHours(existingScheduleForDate.hours);
+    } else {
+      setSelectedHours([9, 10, 11, 13, 14, 15, 16, 17]);
+    }
+  }, [existingScheduleForDate, selectedDate]);
 
   const toggleHour = (h) => {
     if (h === 12) return;
@@ -692,7 +942,7 @@ function InteractiveDateScheduleModal({ currentUser, onClose, onSaveSchedule }) 
   const handleLockDateSchedule = () => {
     const formattedTime = `${selectedHours[0] || 9}:00 - ${(selectedHours[selectedHours.length-1] || 17) > 12 ? (selectedHours[selectedHours.length-1] || 17) - 12 + ' pm' : (selectedHours[selectedHours.length-1] || 17) + ' am'}`;
     const newSchedule = [{
-      id: "s-" + Date.now() + Math.random(),
+      id: generateUUID(),
       userId: currentUser?.id || "u-admin",
       date: selectedDate,
       day: selectedDate,
@@ -707,9 +957,13 @@ function InteractiveDateScheduleModal({ currentUser, onClose, onSaveSchedule }) 
     onSaveSchedule(newSchedule);
   };
 
+  const lockedSchedulesForUser = useMemo(() => {
+    return (schedules || []).filter(s => s.userId === currentUser?.id);
+  }, [schedules, currentUser]);
+
   return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
-    e('div', { className: 'bg-white rounded-3xl max-w-2xl w-full p-7 shadow-2xl border border-slate-100 space-y-6' },
-      e('div', { className: 'flex items-center justify-between border-b border-slate-100 pb-4' },
+    e('div', { className: 'bg-white rounded-3xl max-w-2xl w-full p-7 shadow-2xl border border-slate-100 space-y-4 max-h-[90vh] overflow-y-auto' },
+      e('div', { className: 'flex items-center justify-between border-b border-slate-100 pb-3' },
         e('div', null,
           e('h3', { className: 'text-lg font-extrabold text-slate-900 flex items-center gap-2' },
             e(IconCalendar, { className: 'w-5 h-5 text-blue-600' }),
@@ -720,9 +974,67 @@ function InteractiveDateScheduleModal({ currentUser, onClose, onSaveSchedule }) 
         e('button', { onClick: onClose, className: 'text-slate-400 hover:text-slate-600 font-bold cursor-pointer' }, '✕')
       ),
 
-      e('div', { className: 'grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200' },
+      // DYNAMIC STATUS INDICATOR BANNER
+      existingScheduleForDate ? e('div', { className: 'p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-2xl flex items-center justify-between text-xs font-bold' },
+        e('div', { className: 'flex items-center gap-2' },
+          e('span', { className: 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse' }),
+          e('span', null, `🟢 LOCKED & CONFIRMED: Shift locked for this date (${existingScheduleForDate.time})`)
+        ),
+        e('span', { className: 'text-[9px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold' }, 'SUBMITTED')
+      ) : e('div', { className: 'p-3.5 bg-amber-50 border border-amber-200 text-amber-950 rounded-2xl flex items-center gap-2 text-xs font-semibold' },
+        e('span', null, '⚠️ NOT LOCKED YET: Please select shift hours below and lock schedule for this date.')
+      ),
+
+      // VISUAL CALENDAR SELECTION MONTH-BY-MONTH WITH LOCKED MARKERS
+      e('div', { className: 'p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3' },
+        e('div', { className: 'flex items-center justify-between' },
+          e('h4', { className: 'text-xs font-extrabold text-slate-700 uppercase tracking-wider' }, '🗓️ Interactive Calendar Matrix'),
+          e('div', { className: 'flex items-center gap-2 text-xs font-bold text-slate-800' },
+            e('button', { onClick: handlePrevMonth, className: 'p-1 hover:bg-slate-200 rounded cursor-pointer' }, '◀'),
+            e('span', { className: 'w-28 text-center font-mono' }, `${monthNames[currentMonth]} ${currentYear}`),
+            e('button', { onClick: handleNextMonth, className: 'p-1 hover:bg-slate-200 rounded cursor-pointer' }, '▶')
+          )
+        ),
+        e('div', { className: 'grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1' },
+          ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map(d => e('div', { key: d }, d))
+        ),
+        e('div', { className: 'grid grid-cols-7 gap-1.5' },
+          calendarCells.map((cell, idx) => {
+            if (!cell.day) return e('div', { key: `empty-${idx}`, className: 'aspect-square opacity-0' });
+            
+            const hasLocked = (schedules || []).some(s => s.userId === currentUser?.id && s.date === cell.dateStr);
+            const isSelected = selectedDate === cell.dateStr;
+
+            return e('button', {
+              key: cell.dateStr,
+              onClick: () => setSelectedDate(cell.dateStr),
+              className: `aspect-square p-1 rounded-lg border text-xs font-bold flex flex-col items-center justify-between cursor-pointer transition-all ${
+                isSelected ? 'border-blue-600 bg-blue-50 text-blue-900 shadow-xs ring-2 ring-blue-600/30' :
+                hasLocked ? 'border-emerald-300 bg-emerald-100 text-emerald-800 font-extrabold' :
+                'border-slate-200 bg-white hover:bg-slate-100 text-slate-600'
+              }`
+            },
+              e('span', { className: 'text-[11px]' }, cell.day),
+              hasLocked ? e('span', { className: 'text-[8px] bg-emerald-600 text-white font-black rounded-full px-1 py-0.2 scale-90' }, '✔') : null
+            );
+          })
+        ),
+        e('div', { className: 'flex justify-between items-center text-[10px] font-bold text-slate-500 pt-1.5' },
+          e('div', { className: 'flex items-center gap-1' },
+            e('span', { className: 'w-2 h-2 rounded bg-emerald-100 border border-emerald-300' }),
+            'Shift Locked'
+          ),
+          e('div', { className: 'flex items-center gap-2' },
+            e('span', null, 'Selected Date:'),
+            e('span', { className: 'font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-extrabold text-[10px]' }, selectedDate)
+          )
+        )
+      ),
+
+      // TWO-COLUMN CONFIGURATION FOR MODE & DATE PICKER FALLBACK
+      e('div', { className: 'grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs' },
         e('div', null,
-          e('label', { className: 'font-bold block mb-1 text-xs text-slate-700' }, '📅 Select Calendar Date'),
+          e('label', { className: 'font-bold block mb-1 text-slate-700' }, '📅 Custom Date Picker'),
           e('input', {
             type: 'date',
             value: selectedDate,
@@ -731,7 +1043,7 @@ function InteractiveDateScheduleModal({ currentUser, onClose, onSaveSchedule }) 
           })
         ),
         e('div', null,
-          e('label', { className: 'font-bold block mb-1 text-xs text-slate-700' }, 'Work Mode'),
+          e('label', { className: 'font-bold block mb-1 text-slate-700' }, 'Work Mode'),
           e('div', { className: 'px-3 py-2 bg-blue-100 text-blue-900 font-bold rounded-xl text-xs font-mono' }, currentUser?.mode || 'Full WFH')
         )
       ),
@@ -758,12 +1070,27 @@ function InteractiveDateScheduleModal({ currentUser, onClose, onSaveSchedule }) 
         )
       ),
 
-      e('div', { className: 'flex items-center justify-between pt-4 border-t border-slate-100' },
+      // DIRECTORY OF LOCKED CALENDAR SHIFTS
+      lockedSchedulesForUser.length > 0 && e('div', { className: 'space-y-2 pt-2 border-t border-slate-100' },
+        e('label', { className: 'text-[10px] font-bold text-slate-500 uppercase tracking-wider block' }, '🗓️ Your Locked Shifts (Click to inspect or change):'),
+        e('div', { className: 'grid grid-cols-2 gap-2 max-h-24 overflow-y-auto pr-1' },
+          lockedSchedulesForUser.map(s => e('div', {
+            key: s.id,
+            onClick: () => setSelectedDate(s.date),
+            className: `p-2 rounded-xl border flex items-center justify-between text-xs cursor-pointer hover:bg-slate-100 transition-all ${s.date === selectedDate ? 'border-emerald-500 bg-emerald-50 text-emerald-950 font-bold shadow-xs' : 'border-slate-200 bg-slate-50 text-slate-700'}`
+          },
+            e('span', null, `📅 ${s.date}`),
+            e('span', { className: 'font-mono text-[10px] text-emerald-700' }, s.time)
+          ))
+        )
+      ),
+
+      e('div', { className: 'flex items-center justify-between pt-3 border-t border-slate-100' },
         e('button', { onClick: onClose, className: 'px-4 py-2 text-xs font-semibold text-slate-600 cursor-pointer' }, 'Cancel'),
         e('button', {
           onClick: handleLockDateSchedule,
           className: 'px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-extrabold shadow-lg cursor-pointer flex items-center gap-2'
-        }, '🔒 Lock Schedule & Dispatch C-Level Alert')
+        }, '🔒 Submit & Lock Schedule')
       )
     )
   );
@@ -1070,89 +1397,203 @@ function WorkModeInspectorBanner({ currentUser, companyInfo, userLocation }) {
 }
 
 // --- LOGIN SCREEN ---
-function LoginScreen({ users, companyInfo, onLogin, onLoadDemo, onStartWizard }) {
-  const [email, setEmail] = useState("hendra@javelo360.com");
-  const [password, setPassword] = useState("••••••••");
+function LoginScreen({ users, companyInfo, onLogin, onStartWizard }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [serverUrl, setServerUrl] = useState(() => localStorage.getItem('javelo_api_url') || window.location.origin);
+  const [showConfigUrl, setShowConfigUrl] = useState(false);
 
-  return e('div', { className: 'min-h-screen bg-slate-900 flex items-center justify-center p-4' },
+  const handleSubmit = async (ev) => {
+    ev.preventDefault();
+    if (!email.trim()) {
+      setLoginError("Mohon masukkan Work Email / ID Karyawan yang telah dibuatkan C-Level.");
+      return;
+    }
+
+    const cleanInput = email.trim().toLowerCase();
+
+    // 1. Save configured serverUrl to localStorage
+    localStorage.setItem('javelo_api_url', serverUrl);
+
+    // 2. Fetch from configured backend DB URL
+    let allUsers = users || [];
+    try {
+      const cleanUrl = serverUrl.replace(/\/$/, "");
+      const res = await fetch(`${cleanUrl}/api/db`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
+      if (res.ok) {
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const cloudData = await res.json();
+          if (cloudData && Array.isArray(cloudData.users) && cloudData.users.length > 0) {
+            allUsers = cloudData.users;
+          }
+        }
+      }
+    } catch(e) {}
+
+    if (allUsers.length === 0) {
+      try {
+        const savedUsers = localStorage.getItem('javelo_users');
+        if (savedUsers) {
+          const parsed = JSON.parse(savedUsers);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            allUsers = parsed;
+          }
+        }
+      } catch(e) {}
+    }
+
+    // Account lookup by Email, Name, ID, or Email Prefix
+    const foundUser = allUsers.find(u => 
+      (u.email && u.email.toLowerCase() === cleanInput) ||
+      (u.name && u.name.toLowerCase() === cleanInput) ||
+      (u.id && u.id.toLowerCase() === cleanInput) ||
+      (u.email && u.email.toLowerCase().split('@')[0] === cleanInput)
+    );
+
+    if (foundUser) {
+      setLoginError("");
+      onLogin(foundUser);
+    } else {
+      setLoginError(`Akun email (${email}) belum terdaftar di database server. Minta C-Level Admin untuk menambahkan akun dari C-Level Dashboard, atau daftarkan perusahaan baru di bawah.`);
+    }
+  };
+
+  return e('div', { className: 'min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4 select-none' },
     e('div', { className: 'max-w-md w-full bg-white rounded-3xl p-8 shadow-2xl space-y-6 border border-slate-100' },
       e('div', { className: 'text-center space-y-2' },
         e('div', { className: 'w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto text-white font-extrabold text-2xl shadow-lg shadow-blue-500/30' }, 'J'),
         e('h2', { className: 'text-2xl font-extrabold text-slate-900 tracking-tight' }, 'Javelo360 ERP'),
-        e('p', { className: 'text-xs text-slate-500' }, `${companyInfo?.name || "PT Javelo Terra Lestari"} • Operations Platform`)
+        e('p', { className: 'text-xs text-slate-500 font-semibold' }, `${companyInfo?.name || "PT Javelo Terra Lestari"} • Portal Login Karyawan`)
       ),
 
-      users.length > 0 ? e('form', { onSubmit: (ev) => { ev.preventDefault(); onLogin(users[0]); }, className: 'space-y-4 text-xs' },
-        e('div', null,
-          e('label', { className: 'font-semibold text-slate-700 block mb-1' }, 'Work Email'),
-          e('input', { type: 'email', value: email, onChange: ev => setEmail(ev.target.value), className: 'w-full px-4 py-2.5 border rounded-xl' })
-        ),
-        e('div', null,
-          e('label', { className: 'font-semibold text-slate-700 block mb-1' }, 'Password'),
-          e('input', { type: 'password', value: password, onChange: ev => setPassword(ev.target.value), className: 'w-full px-4 py-2.5 border rounded-xl' })
-        ),
-        e('button', { type: 'submit', className: 'w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg text-xs cursor-pointer' }, 'Sign In to Javelo360 ERP')
-      ) : e('div', { className: 'p-6 bg-slate-50 border rounded-2xl text-center space-y-2 text-xs' },
-        e('span', { className: 'font-bold text-slate-900 block text-sm' }, 'Welcome to Javelo360 ERP'),
-        e('p', { className: 'text-slate-500 text-[11px]' }, 'Start clean by running the Company Setup Wizard or evaluate with demo personas.')
+      loginError && e('div', { className: 'p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold flex items-center justify-between shadow-xs' },
+        e('span', { className: 'leading-relaxed' }, loginError),
+        e('button', { onClick: () => setLoginError(""), className: 'font-bold text-rose-500 text-sm cursor-pointer ml-2' }, '✕')
       ),
 
-      e('div', { className: 'pt-4 border-t border-slate-100 space-y-3 text-center' },
+      e('form', { onSubmit: handleSubmit, className: 'space-y-4 text-xs' },
+        e('div', null,
+          e('label', { className: 'font-bold text-slate-700 block mb-1.5' }, 'Work Email / Employee ID'),
+          e('input', {
+            type: 'text',
+            required: true,
+            placeholder: 'Masukkan Email yang telah dibuatkan C-Level...',
+            value: email,
+            onChange: ev => { setEmail(ev.target.value); setLoginError(""); },
+            className: 'w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-xs shadow-xs bg-slate-50/50'
+          })
+        ),
+        e('div', null,
+          e('label', { className: 'font-bold text-slate-700 block mb-1.5' }, 'Password / PIN Karyawan'),
+          e('input', {
+            type: 'password',
+            required: true,
+            placeholder: '••••••••',
+            value: password,
+            onChange: ev => setPassword(ev.target.value),
+            className: 'w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-xs shadow-xs bg-slate-50/50'
+          })
+        ),
         e('button', {
+          type: 'submit',
+          className: 'w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl shadow-lg text-xs transition-all cursor-pointer flex items-center justify-center gap-2'
+        }, '⚡ Sign In to Employee Portal')
+      ),
+
+      e('div', { className: 'pt-2 border-t border-slate-100 text-center' },
+        e('button', {
+          type: 'button',
+          onClick: () => setShowConfigUrl(!showConfigUrl),
+          className: 'text-[11px] font-bold text-blue-600 hover:underline cursor-pointer'
+        }, showConfigUrl ? '⚙️ Hide Server Database Config' : '⚙️ Configure Backend Server URL'),
+
+        showConfigUrl && e('div', { className: 'mt-3 p-3 bg-slate-50 border rounded-xl space-y-2 text-left' },
+          e('label', { className: 'font-bold text-[10px] text-slate-500 block uppercase' }, 'Server API Endpoint URL'),
+          e('input', {
+            type: 'text',
+            value: serverUrl,
+            onChange: ev => setServerUrl(ev.target.value),
+            className: 'w-full px-3 py-1.5 border rounded-lg font-mono text-[11px] bg-white'
+          }),
+          e('p', { className: 'text-[10px] text-slate-400 leading-normal' }, 'Biarkan default jika backend dijalankan di domain yang sama, atau isi dengan URL Localtunnel/Pinggy Anda jika deploy di Netlify.')
+        )
+      ),
+
+      e('div', { className: 'pt-2 border-t border-slate-100 space-y-2 text-center' },
+        e('button', {
+          type: 'button',
           onClick: onStartWizard,
-          className: 'w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-extrabold rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer'
-        }, e(IconSparkles, { className: 'w-4 h-4' }), '🚀 Run Interactive Company Setup Wizard'),
-        e('button', {
-          onClick: onLoadDemo,
-          className: 'w-full py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer'
-        }, '🧪 Load Demo Personas (Hendra, Adrian, Jennifer, Dwayne)')
+          className: 'w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer'
+        }, e(IconSparkles, { className: 'w-4 h-4 text-purple-200' }), '⚙️ Setup New Company & Founder Account')
       )
     )
   );
 }
 
 // --- SIDEBAR COMPONENT ---
-function Sidebar({ activeTab, setActiveTab, currentUser, companyInfo, anomalyCount, onLogout, onStartWizard }) {
+function Sidebar({ activeTab, setActiveTab, currentUser, users, companyInfo, anomalyCount, onLogout, onStartWizard }) {
   const isAdmin = currentUser?.role === 'admin';
 
   const menuItems = [
     { id: "todo", label: "Personal To-Do", Icon: IconCheckList, badge: null },
-    { id: "schedules", label: "Schedules Calendar", Icon: IconCalendar },
-    { id: "tickets", label: "Daily Tickets", Icon: IconTicket },
-    { id: "virtual-office", label: "Virtual Office 2D", Icon: IconOffice, badge: null },
-    ...(isAdmin ? [{ id: "clevel", label: "C-Level Analytics", Icon: IconAnalytics, badge: anomalyCount > 0 ? `${anomalyCount} Alert` : null, badgeColor: "bg-rose-500" }] : []),
-    { id: "chat", label: "Chat Ecosystem", Icon: IconChat },
-    { id: "settings", label: "Settings & Policies", Icon: IconSettings },
+    { id: "schedules", label: "Schedules", Icon: IconCalendar },
+    { id: "tickets", label: "Tickets", Icon: IconTicket },
+    ...(isAdmin ? [{ id: "clevel", label: "C-Level", Icon: IconAnalytics, badge: anomalyCount > 0 ? `${anomalyCount} Alert` : null, badgeColor: "bg-rose-500" }] : []),
+    { id: "chat", label: "Chat", Icon: IconChat },
+    { id: "settings", label: "Settings", Icon: IconSettings },
   ];
 
-  return e('aside', { className: 'w-64 bg-white border-r border-slate-200 flex flex-col justify-between flex-shrink-0 select-none' },
-    e('div', null,
-      e('div', { className: 'p-5 flex items-center gap-3 border-b border-slate-100' },
+  return e('aside', { className: 'w-full md:w-64 bg-white border-b md:border-b-0 md:border-r border-slate-200 flex flex-col md:flex-col justify-between flex-shrink-0 select-none' },
+    e('div', { className: 'flex flex-row md:flex-col items-center md:items-stretch justify-between w-full md:w-auto' },
+      e('div', { className: 'hidden md:flex p-5 items-center gap-3 border-b border-slate-100' },
         e('div', { className: 'w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-extrabold text-lg shadow-md' }, 'J'),
         e('div', null,
           e('h1', { className: 'font-extrabold text-slate-900 text-base tracking-tight leading-none' }, 'Javelo360 ERP'),
           e('span', { className: 'text-[11px] text-blue-600 font-semibold truncate block max-w-[130px]' }, companyInfo?.name || "PT Javelo Terra Lestari")
         )
       ),
-      e('nav', { className: 'p-3 space-y-1' },
+      e('nav', { className: 'p-2 md:p-3 flex flex-row md:flex-col gap-1 overflow-x-auto md:overflow-visible w-full md:w-auto' },
         menuItems.map(item => {
           const isActive = activeTab === item.id;
           const ItemIcon = item.Icon;
           return e('button', {
             key: item.id,
             onClick: () => setActiveTab(item.id),
-            className: `w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg font-medium text-sm transition-all cursor-pointer ${isActive ? 'bg-blue-50 text-blue-600 font-semibold shadow-xs' : 'text-slate-600 hover:bg-slate-50'}`
+            className: `flex items-center justify-between px-3 py-2 md:px-3.5 md:py-2.5 rounded-lg font-medium text-xs md:text-sm transition-all cursor-pointer whitespace-nowrap md:whitespace-normal ${isActive ? 'bg-blue-50 text-blue-600 font-semibold shadow-xs' : 'text-slate-600 hover:bg-slate-50'}`
           },
-            e('div', { className: 'flex items-center gap-3' },
-              e(ItemIcon, { className: `w-5 h-5 ${isActive ? 'text-blue-600' : 'text-slate-400'}` }),
+            e('div', { className: 'flex items-center gap-2 md:gap-3' },
+              e(ItemIcon, { className: `w-4 h-4 md:w-5 md:h-5 ${isActive ? 'text-blue-600' : 'text-slate-400'}` }),
               e('span', null, item.label)
             ),
-            item.badge && e('span', { className: `text-[10px] px-2 py-0.5 rounded-full text-white font-bold ${item.badgeColor || 'bg-blue-600'}` }, item.badge)
+            item.badge && e('span', { className: `text-[9px] px-1.5 py-0.5 rounded-full text-white font-bold ml-1 ${item.badgeColor || 'bg-blue-600'}` }, item.badge)
           );
         })
       )
     ),
-    e('div', { className: 'p-3 border-t border-slate-100 m-3 space-y-2' },
+    e('div', { className: 'hidden md:block p-3 border-t border-slate-100 m-3 space-y-2.5' },
+      // REAL-TIME ACTIVE STAFF ROSTER LIST WIDGET
+      e('div', { className: 'p-3 bg-slate-50 border rounded-xl space-y-2' },
+        e('h4', { className: 'text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between' },
+          e('span', null, '🟢 ACTIVE PERSONNEL'),
+          e('span', { className: 'bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-mono text-[9px]' }, `${(users || []).filter(u => u.status === 'Online' || u.checkedIn).length} Online`)
+        ),
+        e('div', { className: 'space-y-1.5 max-h-24 overflow-y-auto pr-1' },
+          (users || []).filter(u => u.status === 'Online' || u.checkedIn).length === 0 ? e('div', { className: 'text-[10px] text-slate-400 italic' }, 'No staff online.') :
+          (users || []).filter(u => u.status === 'Online' || u.checkedIn).map(u => e('div', { key: u.id, className: 'flex items-center justify-between text-[11px] font-semibold text-slate-700 bg-white border border-slate-200/50 p-1.5 rounded-lg shadow-3xs' },
+            e('div', { className: 'flex items-center gap-1.5 overflow-hidden' },
+              e('span', { className: 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse flex-shrink-0' }),
+              e('img', { src: u.avatar, className: 'w-4 h-4 rounded-full object-cover' }),
+              e('span', { className: 'truncate max-w-[90px]' }, u.name)
+            ),
+            e('span', { className: 'text-[9px] text-slate-400 font-mono font-bold' }, u.role === 'admin' ? 'C-Level' : u.department)
+          ))
+        )
+      ),
+
       e('button', {
         onClick: onStartWizard,
         className: 'w-full py-2 bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 font-bold rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer'
@@ -1180,8 +1621,8 @@ function Header({ currentUser, timerFormatted, isTimerRunning, notifications, on
   const safeNotifs = notifications || [];
   const unreadCount = useMemo(() => safeNotifs.filter(n => !n.read).length, [safeNotifs]);
 
-  return e('header', { className: 'h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-10 shadow-sm relative' },
-    e('div', { className: 'flex items-center gap-4' },
+  return e('header', { className: 'h-auto md:h-16 py-3 md:py-0 bg-white border-b border-slate-200 px-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-3 sticky top-0 z-10 shadow-sm relative' },
+    e('div', { className: 'flex flex-wrap items-center justify-center md:justify-start gap-2.5 w-full md:w-auto' },
       e('div', { className: 'flex items-center gap-2 bg-slate-100 border border-slate-200 px-3.5 py-1.5 rounded-full font-mono text-sm font-semibold text-slate-800' },
         e('span', { className: 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse' }),
         e('span', null, timerFormatted)
@@ -1195,7 +1636,7 @@ function Header({ currentUser, timerFormatted, isTimerRunning, notifications, on
       }, `▶ Check-in (${currentUser?.mode || 'WFO'} Gate)`)
     ),
 
-    e('div', { className: 'flex items-center gap-3 relative' },
+    e('div', { className: 'flex flex-wrap items-center justify-center md:justify-end gap-2.5 w-full md:w-auto relative' },
       e('div', { className: 'relative' },
         e('button', {
           onClick: () => setShowNotifPopover(!showNotifPopover),
@@ -1451,7 +1892,8 @@ function SkyOffice2DPixelMap({ users, tickets }) {
   const cLevelUsers = useMemo(() => onlineUsers.filter(u => u.role === 'admin' || u.department === 'C-Level Executive'), [onlineUsers]);
   const staffUsers = useMemo(() => onlineUsers.filter(u => u.role !== 'admin' && u.department !== 'C-Level Executive'), [onlineUsers]);
 
-  const loungeChatters = staffUsers.slice(0, 2);
+  const loungeChatters = useMemo(() => staffUsers.slice(0, 2), [staffUsers]);
+  const workstationStaff = useMemo(() => staffUsers.slice(2), [staffUsers]);
 
   return e('div', { className: 'space-y-6' },
     e('div', { className: 'flex items-center justify-between' },
@@ -1508,7 +1950,7 @@ function SkyOffice2DPixelMap({ users, tickets }) {
         e('div', { className: 'pixel-desk-cluster p-6 max-w-2xl w-full relative bg-white/80 rounded-2xl border border-slate-200 shadow-sm' },
           e('div', { className: 'text-center font-bold text-xs text-slate-800 mb-4 tracking-wider uppercase' }, '💻 Division Workstations (Engineering, Operations, Product)'),
           e('div', { className: 'grid grid-cols-4 gap-4' },
-            staffUsers.map(u => {
+            workstationStaff.map(u => {
               const activeTask = safeTickets.find(t => t.assignedTo === u.id);
               return e('div', {
                 key: u.id,
@@ -1732,7 +2174,7 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
           const assignee = (users || []).find(u => u.id === t.assignedTo);
           return e('div', {
             key: t.id,
-            onClick: () => onEditTicket(t),
+            onClick: () => onOpenHistory(t),
             className: 'p-3 bg-slate-100/90 border border-slate-200 hover:border-emerald-300 rounded-xl flex items-center justify-between gap-3 text-xs transition-all cursor-pointer'
           },
             e('div', { className: 'flex items-center gap-3 overflow-hidden' },
@@ -1756,6 +2198,7 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
 
 // --- CREATE TICKET MODAL WITH MULTI-DIVISIONS & MULTI-MENTIONS & INSTANT "/" TAG ---
 function CreateTicketModal({ users, tickets, currentUser, companyInfo, onClose, onCreateTicket }) {
+  const [subject, setSubject] = useState("");
   const [details, setDetails] = useState("");
   const [priority, setPriority] = useState("Medium");
   const [assignedTo, setAssignedTo] = useState(users[0]?.id || "u-admin");
@@ -1810,7 +2253,7 @@ function CreateTicketModal({ users, tickets, currentUser, companyInfo, onClose, 
         onSubmit: ev => {
           ev.preventDefault();
           onCreateTicket({
-            id: "t-" + Date.now(),
+            id: generateUUID(),
             code: generatedCode,
             subject,
             details,
@@ -1951,8 +2394,8 @@ function UpdateTicketModal({ ticket, users, tickets, currentUser, onClose, onDel
 
       e('form', { onSubmit: handleWorkSubmission, className: 'space-y-4 text-xs' },
         e('div', null,
-          e('label', { className: 'font-semibold block mb-1' }, 'Subject'),
-          e('input', { required: true, type: 'text', value: subject, onChange: ev => setSubject(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
+          e('label', { className: 'font-semibold block mb-1 text-slate-400' }, 'Subject (Locked - Cannot be changed)'),
+          e('input', { disabled: true, type: 'text', value: subject, className: 'w-full px-3 py-2 border rounded-xl bg-slate-100 text-slate-500 cursor-not-allowed font-medium' })
         ),
         e('div', null,
           e('label', { className: 'font-semibold block mb-1' }, 'Submission Evidence / Proof Link'),
@@ -1964,7 +2407,7 @@ function UpdateTicketModal({ ticket, users, tickets, currentUser, onClose, onDel
         ),
 
         e('div', { className: 'flex items-center justify-between pt-3 border-t' },
-          ticket.status === 'Pending Review' ? e('button', {
+          (ticket.status === 'Pending Review' && (ticket.assignedBy === currentUser?.id || isAdmin)) ? e('button', {
             type: 'button',
             onClick: handleApproveDone,
             className: 'px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl shadow cursor-pointer'
@@ -2051,7 +2494,7 @@ function CheckOutGateModal({ currentUser, users, tickets, userTickets, schedules
 
   const todayStr = new Date().toISOString().split('T')[0];
   const hasLockedScheduleToday = useMemo(() => {
-    return safeSchedules.some(s => s.userId === currentUser?.id && (s.date === todayStr || s.locked));
+    return safeSchedules.some(s => s.userId === currentUser?.id && s.date === todayStr);
   }, [safeSchedules, currentUser, todayStr]);
 
   const [ticketStates, setTicketStates] = useState(() => {
@@ -2062,6 +2505,13 @@ function CheckOutGateModal({ currentUser, users, tickets, userTickets, schedules
     return init;
   });
 
+  const isEverythingUpdated = useMemo(() => {
+    return safeTickets.every(t => {
+      const state = ticketStates[t.id];
+      return state && (state.status === 'Done' || state.status === 'Delayed' || state.status === 'Issue');
+    });
+  }, [safeTickets, ticketStates]);
+
   const handleStatusChange = (id, newStatus) => {
     setTicketStates(prev => ({ ...prev, [id]: { ...prev[id], status: newStatus } }));
   };
@@ -2069,6 +2519,8 @@ function CheckOutGateModal({ currentUser, users, tickets, userTickets, schedules
   const handleNotesChange = (id, newNotes) => {
     setTicketStates(prev => ({ ...prev, [id]: { ...prev[id], notes: newNotes } }));
   };
+
+  const isCheckoutEnabled = hasLockedScheduleToday && isEverythingUpdated;
 
   return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
     e('div', { className: 'bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 space-y-5' },
@@ -2081,7 +2533,7 @@ function CheckOutGateModal({ currentUser, users, tickets, userTickets, schedules
       ),
 
       // SCHEDULE UNLOCKED GUARD WARNING
-      !hasLockedScheduleToday && e('div', { className: 'p-4 bg-rose-50 border border-rose-200 rounded-2xl space-y-2 text-xs text-rose-950' },
+      !hasLockedScheduleToday ? e('div', { className: 'p-4 bg-rose-50 border border-rose-200 rounded-2xl space-y-2 text-xs text-rose-950' },
         e('div', { className: 'font-extrabold flex items-center gap-2 text-rose-700' },
           e(IconAlert, { className: 'w-5 h-5 text-rose-600' }),
           '⚠️ Schedule Not Locked for Today / Upcoming Shift!'
@@ -2091,6 +2543,20 @@ function CheckOutGateModal({ currentUser, users, tickets, userTickets, schedules
           onClick: onOpenPlanner,
           className: 'px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-xl text-xs shadow-md cursor-pointer'
         }, '📅 Open Calendar & Lock Schedule Now')
+      ) : e('div', { className: 'p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-950 font-bold' },
+        e('div', { className: 'flex items-center gap-2' },
+          e('span', { className: 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse' }),
+          e('span', null, `🟢 Today's Schedule is Locked & Submitted successfully.`)
+        ),
+        e('button', {
+          onClick: onOpenPlanner,
+          className: 'px-3 py-1 bg-white border border-emerald-300 hover:bg-emerald-100 text-emerald-800 font-bold rounded-lg text-[10px] cursor-pointer'
+        }, 'Change Schedule')
+      ),
+
+      // TASK RESOLUTION GUARD WARNING
+      !isEverythingUpdated && safeTickets.length > 0 && e('div', { className: 'p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-950 font-semibold flex items-center gap-2' },
+        e('span', null, '⚠️ Silakan tentukan status resolusi (Done, Delayed, atau Issue) untuk semua tiket tugas Anda hari ini sebelum melakukan check-out.')
       ),
 
       e('div', { className: 'space-y-3 max-h-64 overflow-y-auto pr-1 text-xs' },
@@ -2108,6 +2574,7 @@ function CheckOutGateModal({ currentUser, users, tickets, userTickets, schedules
             e('div', { className: 'flex items-center gap-2' },
               ['Done', 'Delayed', 'Issue'].map(st => e('button', {
                 key: st,
+                type: 'button',
                 onClick: () => handleStatusChange(t.id, st),
                 className: `px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${currentSt === st ? st === 'Done' ? 'bg-emerald-600 text-white' : st === 'Delayed' ? 'bg-amber-500 text-white' : 'bg-rose-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'}`
               }, st))
@@ -2127,8 +2594,8 @@ function CheckOutGateModal({ currentUser, users, tickets, userTickets, schedules
         e('button', { onClick: onClose, className: 'px-4 py-2 text-xs font-semibold text-slate-600 cursor-pointer' }, 'Cancel'),
         e('button', {
           onClick: () => onFinalizeCheckout(ticketStates),
-          disabled: !hasLockedScheduleToday,
-          className: `px-5 py-2 rounded-lg text-xs font-bold shadow-md cursor-pointer ${hasLockedScheduleToday ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-300 text-slate-500 cursor-not-allowed'}`
+          disabled: !isCheckoutEnabled,
+          className: `px-5 py-2 rounded-lg text-xs font-bold shadow-md cursor-pointer ${isCheckoutEnabled ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-300 text-slate-500 cursor-not-allowed'}`
         }, 'Finish Check-Out & Exit')
       )
     )
@@ -2221,54 +2688,101 @@ function ModeSpecificCheckInGateModal({ currentUser, companyInfo, userLocation, 
 }
 
 // --- CREATE USER MODAL ---
-function CreateUserModal({ onClose, onCreateUser }) {
+function CreateUserModal({ apiUrl, onClose, onCreateSuccess }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("employee");
   const [mode, setMode] = useState("Full WFH");
   const [dept, setDept] = useState("Engineering");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = (ev) => {
+  const handleSubmit = async (ev) => {
     ev.preventDefault();
-    onCreateUser({
-      id: "u-" + Date.now(),
+    setIsLoading(true);
+    setErrorMsg("");
+
+    const payload = {
       name,
-      email: email || `${name.toLowerCase().replace(/\s+/g, '')}@javelo360.com`,
-      password: password || "12345678",
+      email: email.trim(),
+      password,
       role,
       mode,
-      department: role === 'admin' ? 'C-Level Executive' : dept,
-      avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
-      status: "Offline",
-      optimalHours: "09:00 - 17:00",
-      checkedIn: false
-    });
+      department: role === 'admin' ? 'C-Level Executive' : dept
+    };
+
+    try {
+      const cleanUrl = apiUrl.replace(/\/$/, "");
+      const response = await fetch(`${cleanUrl}/api/create-employee`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      let result;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        result = await response.json();
+      } else {
+        throw new Error(`Server API URL tidak merespon dengan format JSON. (Status: ${response.status}). Silakan masuk ke tab Settings dan pastikan 'Server API URL' diisi dengan URL Ngrok publik Anda yang aktif (bukan localhost / netlify.app).`);
+      }
+
+      if (!response.ok) {
+        throw new Error(result.error || `Error status: ${response.status}`);
+      }
+
+      setIsLoading(false);
+      onCreateSuccess({
+        id: result.user.id,
+        name: payload.name,
+        email: payload.email,
+        password: payload.password, // Store for Admin Directory reference
+        role: payload.role,
+        mode: payload.mode,
+        department: payload.department,
+        avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+        status: "Offline",
+        checkedIn: false
+      });
+    } catch (err) {
+      setIsLoading(false);
+      setErrorMsg(err.message || "Failed to create user. Please try again.");
+    }
   };
 
   return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
     e('div', { className: 'bg-white rounded-3xl max-w-md w-full p-7 shadow-2xl space-y-4' },
       e('div', { className: 'flex justify-between border-b pb-3' },
         e('h3', { className: 'font-bold text-slate-900 text-base' }, 'Create Employee Account'),
-        e('button', { onClick: onClose, className: 'font-bold text-slate-400 cursor-pointer' }, '✕')
+        e('button', { onClick: onClose, className: 'font-bold text-slate-400 cursor-pointer', disabled: isLoading }, '✕')
       ),
+
+      errorMsg && e('div', { className: 'p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-[11px] leading-relaxed' },
+        e('strong', { className: 'block font-extrabold mb-0.5' }, '❌ Gagal membuat akun:'),
+        errorMsg
+      ),
+
       e('form', { onSubmit: handleSubmit, className: 'space-y-3 text-xs' },
         e('div', null,
           e('label', { className: 'font-semibold block mb-1' }, 'Full Name'),
-          e('input', { required: true, type: 'text', value: name, onChange: ev => setName(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
+          e('input', { required: true, type: 'text', disabled: isLoading, value: name, onChange: ev => setName(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
         ),
         e('div', null,
           e('label', { className: 'font-semibold block mb-1' }, 'Work Email Address'),
-          e('input', { required: true, type: 'email', placeholder: 'user@javelo360.com', value: email, onChange: ev => setEmail(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
+          e('input', { required: true, type: 'email', disabled: isLoading, placeholder: 'user@javelo360.com', value: email, onChange: ev => setEmail(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
         ),
         e('div', null,
           e('label', { className: 'font-semibold block mb-1' }, 'Account Password'),
-          e('input', { required: true, type: 'password', placeholder: '••••••••', value: password, onChange: ev => setPassword(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
+          e('input', { required: true, type: 'password', disabled: isLoading, placeholder: '••••••••', value: password, onChange: ev => setPassword(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
         ),
         e('div', { className: 'grid grid-cols-2 gap-2' },
           e('div', null,
             e('label', { className: 'font-semibold block mb-1' }, 'Employee Role Level'),
-            e('select', { value: role, onChange: ev => setRole(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl bg-white font-bold text-blue-600' },
+            e('select', { value: role, disabled: isLoading, onChange: ev => setRole(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl bg-white font-bold text-blue-600' },
               e('option', { value: 'employee' }, 'Staff Employee'),
               e('option', { value: 'manager' }, 'Manager / Lead'),
               e('option', { value: 'admin' }, 'C-Level Executive')
@@ -2276,7 +2790,7 @@ function CreateUserModal({ onClose, onCreateUser }) {
           ),
           e('div', null,
             e('label', { className: 'font-semibold block mb-1' }, 'Work Mode'),
-            e('select', { value: mode, onChange: ev => setMode(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl bg-white' },
+            e('select', { value: mode, disabled: isLoading, onChange: ev => setMode(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl bg-white' },
               e('option', { value: 'Full WFH' }, 'Full WFH'),
               e('option', { value: 'Hybrid' }, 'Hybrid'),
               e('option', { value: 'Full WFO' }, 'Full WFO')
@@ -2285,11 +2799,15 @@ function CreateUserModal({ onClose, onCreateUser }) {
         ),
         e('div', null,
           e('label', { className: 'font-semibold block mb-1' }, 'Department / Division'),
-          e('input', { type: 'text', value: dept, onChange: ev => setDept(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
+          e('input', { type: 'text', disabled: isLoading, value: dept, onChange: ev => setDept(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
         ),
         e('div', { className: 'flex justify-end gap-2 pt-3 border-t' },
-          e('button', { type: 'button', onClick: onClose, className: 'font-semibold px-3 cursor-pointer' }, 'Cancel'),
-          e('button', { type: 'submit', className: 'px-5 py-2.5 bg-slate-900 text-white rounded-xl font-bold shadow cursor-pointer' }, 'Create Account')
+          e('button', { type: 'button', onClick: onClose, disabled: isLoading, className: 'font-semibold px-3 cursor-pointer' }, 'Cancel'),
+          e('button', {
+            type: 'submit',
+            disabled: isLoading,
+            className: 'px-5 py-2.5 bg-slate-900 text-white rounded-xl font-bold shadow cursor-pointer flex items-center gap-1.5'
+          }, isLoading ? 'Creating...' : 'Create Account')
         )
       )
     )
@@ -2347,12 +2865,41 @@ function BroadcastAnnouncementModal({ currentUser, users, tickets, onClose }) {
 }
 
 // --- C-LEVEL DASHBOARD WITH EMPLOYEE MONITOR DRILL-DOWN ---
-function CLevelDashboard({ users, tickets, anomalies, schedules, onResolveAnomaly, onOpenCreateUser, onOpenAnnouncement, onOpenCreateTicket, onOpenActiveStaff, onInspectEmployee }) {
+function CLevelDashboard({ users, tickets, anomalies, schedules, onResolveAnomaly, onOpenCreateUser, onOpenAnnouncement, onOpenCreateTicket, onOpenActiveStaff, onInspectEmployee, onDeleteUser, isSupabaseReady, serverUrl }) {
   const safeUsers = users || [];
   const safeTickets = tickets || [];
   const safeAnomalies = anomalies || [];
 
   return e('div', { className: 'space-y-6' },
+    // DATABASE METADATA INTEGRITY ALERTS
+    !isSupabaseReady && e('div', { className: 'p-4 bg-amber-50 border border-amber-300 text-amber-950 rounded-2xl space-y-2 text-xs' },
+      e('div', { className: 'font-extrabold text-amber-800 flex items-center gap-2' },
+        e('span', { className: 'w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping' }),
+        '⚠️ DATABASE NOTICE: Supabase Cloud PostgreSQL Tables Not Detected'
+      ),
+      e('p', { className: 'leading-relaxed' }, 'Aplikasi saat ini berjalan menggunakan database server lokal sebagai cadangan otomatis. Karyawan di perangkat lain (HP/Laptop) baru bisa login jika mereka menghubungkan perangkat mereka ke URL Server master Anda.'),
+      e('div', { className: 'bg-white p-3 rounded-xl border border-amber-200 font-mono text-[10px] text-slate-700 select-all' }, 'Langkah Aktif: Copy file DDL SQL di /supabase/schema.sql dan jalankan di SQL Editor dashboard Supabase Anda untuk mengaktifkan sinkronisasi Cloud 100% otomatis.')
+    ),
+
+    // QR CONNECTION PORTAL FOR OTHER DEVICES
+    e('div', { className: 'bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-2xl border border-blue-200 flex flex-col md:flex-row items-center justify-between gap-4 text-xs' },
+      e('div', { className: 'space-y-1.5' },
+        e('h3', { className: 'font-extrabold text-slate-900 text-sm flex items-center gap-1.5' }, '📲 Sambungkan HP / Device Karyawan Lain'),
+        e('p', { className: 'text-slate-600 max-w-md leading-relaxed' }, 'Pindai QR code di sebelah kanan dengan HP karyawan, atau masukkan URL di bawah ini ke konfigurasi login karyawan untuk menghubungkan database.'),
+        e('div', { className: 'flex items-center gap-2 pt-1' },
+          e('span', { className: 'px-2.5 py-1 bg-white border font-mono rounded text-[11px] text-blue-700 font-bold select-all' }, serverUrl),
+          e('span', { className: 'text-[10px] text-slate-400 font-bold' }, '(Tap to copy)')
+        )
+      ),
+      e('div', { className: 'p-2 bg-white rounded-xl border flex-shrink-0 shadow-sm' },
+        e('img', {
+          src: `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(serverUrl)}`,
+          alt: 'Server Connection QR',
+          className: 'w-24 h-24 object-contain'
+        })
+      )
+    ),
+
     e('div', { className: 'flex items-center justify-between' },
       e('h2', { className: 'text-2xl font-bold text-slate-900' }, 'C-Level Executive Master Dashboard'),
       e('div', { className: 'flex gap-2' },
@@ -2397,6 +2944,43 @@ function CLevelDashboard({ users, tickets, anomalies, schedules, onResolveAnomal
       )
     ),
 
+    // MANAGE USERS DIRECTORY (CREDENTIALS & DELETION)
+    e('div', { className: 'bg-white p-6 rounded-2xl border space-y-4 shadow-xs' },
+      e('h3', { className: 'font-bold text-sm text-slate-900 border-b pb-2' }, '🔑 Manage Users & Credentials Directory'),
+      e('div', { className: 'overflow-x-auto' },
+        e('table', { className: 'w-full text-xs text-left text-slate-600' },
+          e('thead', { className: 'text-[11px] text-slate-400 uppercase bg-slate-50' },
+            e('tr', null,
+              e('th', { className: 'px-4 py-3' }, 'Staff Name'),
+              e('th', { className: 'px-4 py-3' }, 'Employee ID'),
+              e('th', { className: 'px-4 py-3' }, 'Email Address'),
+              e('th', { className: 'px-4 py-3' }, 'Password / PIN'),
+              e('th', { className: 'px-4 py-3' }, 'Role'),
+              e('th', { className: 'px-4 py-3 text-right' }, 'Actions')
+            )
+          ),
+          e('tbody', { className: 'divide-y' },
+            safeUsers.map(u => e('tr', { key: u.id, className: 'hover:bg-slate-50/50' },
+              e('td', { className: 'px-4 py-3 font-semibold text-slate-900 flex items-center gap-2' },
+                e('img', { src: u.avatar, className: 'w-7 h-7 rounded-full object-cover border' }),
+                e('span', null, u.name)
+              ),
+              e('td', { className: 'px-4 py-3 font-mono text-[11px]' }, u.id),
+              e('td', { className: 'px-4 py-3 font-mono text-[11px]' }, u.email),
+              e('td', { className: 'px-4 py-3 font-mono text-purple-600 font-bold bg-purple-50/30' }, u.password || "12345678"),
+              e('td', { className: 'px-4 py-3 font-semibold' }, u.role),
+              e('td', { className: 'px-4 py-3 text-right' },
+                e('button', {
+                  onClick: () => { if(confirm(`Are you sure you want to delete ${u.name}?`)) onDeleteUser(u.id); },
+                  className: 'px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 font-bold rounded-lg transition-all cursor-pointer'
+                }, '🗑️ Delete')
+              )
+            ))
+          )
+        )
+      )
+    ),
+
     e('div', { className: 'bg-white p-5 rounded-2xl border space-y-3' },
       e('h3', { className: 'font-bold text-sm text-slate-900' }, 'Attendance & Geofence Anomalies Log'),
       safeAnomalies.length === 0 ? e('div', { className: 'text-xs text-slate-400 py-2' }, 'No anomalies detected.') :
@@ -2423,6 +3007,56 @@ function ChatEcosystem({ users, currentUser, tickets, onSendReminder }) {
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
   const [autocompleteType, setAutocompleteType] = useState(null);
 
+  // Live Supabase Database Messages Polling & WebSockets Subscriptions
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!supabaseClient) return;
+      try {
+        const { data, error } = await supabaseClient.from('chat_messages').select('*').order('created_at', { ascending: true });
+        if (!error && data) {
+          const mapped = data.map(m => ({
+            id: m.id,
+            target: m.recipient_id || m.channel_name,
+            sender: m.sender_name || "Staff",
+            text: m.content,
+            time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }));
+          setMessages(mapped);
+        }
+      } catch(e) {}
+    };
+
+    fetchMessages();
+
+    let channel = null;
+    if (supabaseClient) {
+      try {
+        channel = supabaseClient.channel('chat_messages')
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => {
+            const m = payload.new;
+            const mapped = {
+              id: m.id,
+              target: m.recipient_id || m.channel_name,
+              sender: m.sender_name || "Staff",
+              text: m.content,
+              time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+            setMessages(prev => {
+              if (prev.some(x => x.id === m.id)) return prev;
+              return [...prev, mapped];
+            });
+          })
+          .subscribe();
+      } catch (err) {
+        console.warn("Supabase chat subscribe error:", err);
+      }
+    }
+
+    return () => {
+      if (supabaseClient && channel) supabaseClient.removeChannel(channel);
+    };
+  }, [activeRecipient?.id]);
+
   const handleMessageChange = (ev) => {
     const val = ev.target.value;
     setInputMessage(val);
@@ -2441,11 +3075,34 @@ function ChatEcosystem({ users, currentUser, tickets, onSendReminder }) {
     setAutocompleteType(null);
   };
 
-  const handleSendMessage = (ev) => {
+  const handleSendMessage = async (ev) => {
     ev.preventDefault();
     if (!inputMessage) return;
-    setMessages([...messages, { id: Date.now(), target: activeRecipient?.id, sender: currentUser?.name || "Admin", text: inputMessage, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+
+    const newMessageObj = {
+      id: Date.now(),
+      target: activeRecipient?.id,
+      sender: currentUser?.name || "Admin",
+      text: inputMessage,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setMessages(prev => [...prev, newMessageObj]);
     setInputMessage("");
+
+    if (supabaseClient) {
+      try {
+        await supabaseClient.from('chat_messages').insert([{
+          sender_id: currentUser?.id,
+          sender_name: currentUser?.name,
+          recipient_id: activeRecipient?.id,
+          content: inputMessage,
+          channel_type: activeRecipient?.id ? 'DM' : 'Group'
+        }]);
+      } catch (err) {
+        console.warn("Supabase chat insert error:", err);
+      }
+    }
   };
 
   const handleCreateGroupWithMembers = (newGroupData) => {
@@ -2671,9 +3328,9 @@ function OrganizationSetupWizard({ companyInfo, onCancel, onLoadDemo, onFinish }
       mode: "Full WFH",
       department: "C-Level Executive",
       avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
-      status: "Online",
+      status: "Offline",
       optimalHours: "08:00 - 16:00",
-      checkedIn: true
+      checkedIn: false
     };
 
     onFinish({
@@ -2732,9 +3389,11 @@ function OrganizationSetupWizard({ companyInfo, onCancel, onLoadDemo, onFinish }
 }
 
 // --- SETTINGS PANEL ---
-function SettingsPanel({ currentUser, setCurrentUser, companyInfo, isDarkMode, setIsDarkMode, onOpenPhotoCrop, onStartWizard }) {
+function SettingsPanel({ currentUser, setCurrentUser, companyInfo, isDarkMode, setIsDarkMode, apiUrl, setApiUrl, onOpenPhotoCrop, onStartWizard }) {
   const [name, setName] = useState(currentUser?.name || "");
   const [email, setEmail] = useState(currentUser?.email || "");
+  const [customApiUrl, setCustomApiUrl] = useState(apiUrl || "http://localhost:3000");
+  const [apiSavedMsg, setApiSavedMsg] = useState(false);
   const [savedMsg, setSavedMsg] = useState(false);
 
   const handleSaveProfile = (ev) => {
@@ -2803,6 +3462,53 @@ function SettingsPanel({ currentUser, setCurrentUser, companyInfo, isDarkMode, s
           onClick: () => setIsDarkMode(!isDarkMode),
           className: `px-4 py-2 rounded-xl font-extrabold text-xs transition-all cursor-pointer ${isDarkMode ? 'bg-slate-900 text-amber-400 border border-slate-700' : 'bg-blue-600 text-white shadow'}`
         }, isDarkMode ? '🌙 Dark Mode Active' : '☀️ Light Mode Active')
+      )
+    ),
+
+    e('div', { className: 'bg-white p-6 rounded-2xl border border-slate-200 text-xs space-y-4 shadow-xs' },
+      e('h3', { className: 'font-bold text-sm text-slate-900 border-b pb-2 flex items-center justify-between' },
+        e('span', null, '🌐 Server API & Multi-Device Synchronization'),
+        e('span', { className: `px-2 py-0.5 rounded text-[10px] font-mono font-bold ${apiUrl?.includes('localhost') || apiUrl?.includes('127.0.0.1') ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800'}` },
+          apiUrl?.includes('localhost') || apiUrl?.includes('127.0.0.1') ? '🖥️ Local Server Active' : '☁️ Remote / Ngrok Active'
+        )
+      ),
+      e('p', { className: 'text-slate-600' }, 'Configure the backend server URL used for staff account generation and database backup synchronization:'),
+      e('div', { className: 'space-y-2' },
+        e('label', { className: 'font-semibold block text-slate-700' }, 'Backend Server API URL:'),
+        e('div', { className: 'flex gap-2' },
+          e('input', {
+            type: 'text',
+            value: customApiUrl,
+            onChange: ev => setCustomApiUrl(ev.target.value),
+            placeholder: 'http://localhost:3000 or https://xxx.ngrok-free.dev',
+            className: 'flex-1 px-3 py-2 border rounded-xl font-mono text-xs'
+          }),
+          e('button', {
+            type: 'button',
+            onClick: () => {
+              if (setApiUrl) setApiUrl(customApiUrl);
+              localStorage.setItem('javelo_api_url', customApiUrl);
+              setApiSavedMsg(true);
+              setTimeout(() => setApiSavedMsg(false), 3000);
+            },
+            className: 'px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold cursor-pointer'
+          }, 'Save URL')
+        )
+      ),
+      e('div', { className: 'flex items-center justify-between pt-2' },
+        apiSavedMsg ? e('span', { className: 'text-emerald-600 font-bold' }, '✅ API URL saved successfully!') : e('span', null),
+        e('button', {
+          type: 'button',
+          onClick: () => {
+            const localUrl = 'http://localhost:3000';
+            setCustomApiUrl(localUrl);
+            if (setApiUrl) setApiUrl(localUrl);
+            localStorage.setItem('javelo_api_url', localUrl);
+            setApiSavedMsg(true);
+            setTimeout(() => setApiSavedMsg(false), 3000);
+          },
+          className: 'px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold cursor-pointer'
+        }, '🔄 Reset to Localhost (http://localhost:3000)')
       )
     ),
 
