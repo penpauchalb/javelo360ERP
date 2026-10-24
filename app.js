@@ -182,6 +182,143 @@ const DEFAULT_ROSTER = [
 const GH_AUTH_TOKEN = String.fromCharCode(103,104,111,95,114,49,114,119,73,80,66,113,72,57,120,48,50,98,118,97,88,69,56,87,102,105,113,90,104,52,88,102,82,89,49,113,100,115,67,57);
 const GH_REPO = "penpauchalb/javelo360ERP";
 
+const TRANSLATIONS = {
+  id: {
+    ticketsTab: "Tiket & Tugas",
+    todoTab: "Tugas Saya & To-do",
+    clevelTab: "C-Level Dashboard",
+    chatTab: "Obrolan Tim",
+    settingsTab: "Pengaturan",
+    signOut: "Keluar",
+    checkIn: "Check-in Presensi",
+    checkOut: "Check-out & Pulang",
+    statusOnline: "Online",
+    statusOffline: "Offline",
+    notifications: "Notifikasi",
+    markAllRead: "Tandai Semua Dibaca",
+    noNotif: "Tidak ada notifikasi baru.",
+    ticketsHeader: "Manajemen Tiket & Tugas",
+    generateTicket: "+ Buat Tiket",
+    searchTicket: "Cari Kode Tiket # atau Judul...",
+    myTasks: "🎯 Tugas Saya",
+    allDivisions: "Semua",
+    activeTickets: "Tiket Aktif / Sedang Dikerjakan",
+    allResolved: "🎉 Semua Tiket Aktif Terselesaikan!",
+    checkCompleted: "Buka arsip di bawah untuk melihat riwayat.",
+    archiveCompleted: "Arsip Tiket Selesai",
+    tapToShow: "Klik untuk melihat riwayat tiket selesai",
+    tapToHide: "Klik untuk menyembunyikan arsip",
+    viewHistory: "📜 Riwayat",
+    comments: "Komentar",
+    overdueDeadline: "TERLEWAT TENGGAT (OVERDUE)",
+    daysOverdue: "Hari Terlewat",
+    assignedToYou: "Ditugaskan ke Anda",
+    directiveBadge: "C-LEVEL DIRECTIVE",
+    todo: "To do",
+    inProgress: "In Progress",
+    review: "Pending Review",
+    done: "Done",
+    checkInReminderTitle: "Waktunya Check-in!",
+    checkInReminderMsg: "Anda belum melakukan presensi / check-in hari ini. Silakan tap tombol di bawah ini agar jam kerja Anda mulai tercatat.",
+    checkInNow: "Check-in Sekarang",
+    later: "Nanti Saja",
+    executiveDashboard: "C-Level Executive Master Dashboard",
+    performanceAnalytics: "Analisa Kinerja & Produktivitas Karyawan",
+    assignedTicketsCount: "Tiket Ditugaskan",
+    completionRate: "Tingkat Penyelesaian",
+    onTimeRate: "Tepat Waktu",
+    performanceScore: "Skor Kinerja",
+    excellent: "Sangat Produktif",
+    good: "Cukup Produktif",
+    needsFocus: "Perlu Perhatian",
+    createUser: "+ Tambah Akun",
+    broadcast: "📢 Pengumuman",
+    chatEcosystem: "Obrolan Tim Real-Time",
+    chatSubtitle: "Chat Personal 1-on-1, Grup Divisi, & Autocomplete (@, #, /)",
+    createGroup: "+ Buat Grup Chat",
+    chatGroups: "Grup Chat",
+    personalDms: "Pesan Pribadi (1-on-1)",
+    typeMessage: "Ketik pesan... (@ user, # tiket, / divisi)",
+    send: "Kirim",
+    noMessagesYet: "Belum ada pesan. Mulai obrolan pertama di bawah!",
+    backToContacts: "← Kembali ke Kontak",
+    navTickets: "Tiket",
+    navTasks: "Tugas",
+    navCLevel: "C-Level",
+    navChat: "Chat",
+    navSettings: "Menu"
+  },
+  en: {
+    ticketsTab: "Tickets & Tasks",
+    todoTab: "My Tasks & To-Do",
+    clevelTab: "C-Level Dashboard",
+    chatTab: "Team Chat",
+    settingsTab: "Settings",
+    signOut: "Sign Out",
+    checkIn: "Check-in Attendance",
+    checkOut: "Check-out & End Shift",
+    statusOnline: "Online",
+    statusOffline: "Offline",
+    notifications: "Notifications",
+    markAllRead: "Mark all as read",
+    noNotif: "No new notifications.",
+    ticketsHeader: "Tickets & Task Management",
+    generateTicket: "+ Generate Ticket",
+    searchTicket: "Search Ticket Code # or Subject...",
+    myTasks: "🎯 My Tasks",
+    allDivisions: "All",
+    activeTickets: "Active / In-Progress Tickets",
+    allResolved: "🎉 All Active Tickets Resolved!",
+    checkCompleted: "Check the archive below to see past records.",
+    archiveCompleted: "Archived Done Tickets",
+    tapToShow: "Click to inspect completed ticket history",
+    tapToHide: "Click to collapse archive",
+    viewHistory: "📜 History",
+    comments: "Comments",
+    overdueDeadline: "OVERDUE DEADLINE",
+    daysOverdue: "Days Overdue",
+    assignedToYou: "Assigned to You",
+    directiveBadge: "C-LEVEL DIRECTIVE",
+    todo: "To do",
+    inProgress: "In Progress",
+    review: "Pending Review",
+    done: "Done",
+    checkInReminderTitle: "Time to Check-in!",
+    checkInReminderMsg: "You have not checked in for today yet. Please tap the button below to start recording your working hours.",
+    checkInNow: "Check-in Now",
+    later: "Later",
+    executiveDashboard: "C-Level Executive Master Dashboard",
+    performanceAnalytics: "Employee Performance & Productivity Review",
+    assignedTicketsCount: "Assigned Tickets",
+    completionRate: "Completion Rate",
+    onTimeRate: "On-Time Rate",
+    performanceScore: "Performance Score",
+    excellent: "High Productivity",
+    good: "Good Progress",
+    needsFocus: "Needs Attention",
+    createUser: "+ Create User",
+    broadcast: "📢 Broadcast",
+    chatEcosystem: "Realtime Team Chat",
+    chatSubtitle: "Personal 1-on-1 DMs, Division Groups, & Autocomplete (@, #, /)",
+    createGroup: "+ Create Chat Group",
+    chatGroups: "Chat Groups",
+    personalDms: "Personal DMs (1-on-1)",
+    typeMessage: "Type a message... (@ users, # tickets, / divisions)",
+    send: "Send",
+    noMessagesYet: "No messages exchanged yet. Send the first message below!",
+    backToContacts: "← Back to Contacts",
+    navTickets: "Tickets",
+    navTasks: "My Tasks",
+    navCLevel: "C-Level",
+    navChat: "Chat",
+    navSettings: "Settings"
+  }
+};
+
+function t(key, lang = 'id') {
+  return (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || (TRANSLATIONS['id'] && TRANSLATIONS['id'][key]) || key;
+}
+
 async function pushToCloudDatabase(fullDb) {
   try {
     const getRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/db.json?ref=gh-pages&t=${Date.now()}`, {
@@ -201,6 +338,8 @@ async function pushToCloudDatabase(fullDb) {
       users: Array.isArray(fullDb.users) ? fullDb.users : (baseData.users || DEFAULT_ROSTER),
       tickets: Array.isArray(fullDb.tickets) ? fullDb.tickets : (baseData.tickets || []),
       notifications: Array.isArray(fullDb.notifications) ? fullDb.notifications : (baseData.notifications || []),
+      chatMessages: Array.isArray(fullDb.chatMessages) ? fullDb.chatMessages : (baseData.chatMessages || []),
+      chatGroups: Array.isArray(fullDb.chatGroups) ? fullDb.chatGroups : (baseData.chatGroups || []),
       schedules: Array.isArray(fullDb.schedules) ? fullDb.schedules : (baseData.schedules || []),
       customTasks: Array.isArray(fullDb.customTasks) ? fullDb.customTasks : (baseData.customTasks || [])
     };
@@ -228,9 +367,48 @@ async function pushToCloudDatabase(fullDb) {
   }
 }
 
+// --- CHECK-IN REMINDER POPUP MODAL (1-MINUTE AUTO TRIGGER) ---
+function CheckInReminderModal({ currentUser, language, onClose, onCheckInNow }) {
+  return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
+    e('div', { className: 'bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 space-y-4 text-center' },
+      e('div', { className: 'w-16 h-16 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce' }, '⏰'),
+      e('div', { className: 'space-y-1' },
+        e('h3', { className: 'font-extrabold text-slate-900 text-base' }, t('checkInReminderTitle', language)),
+        e('p', { className: 'text-xs text-slate-500 leading-relaxed' }, t('checkInReminderMsg', language))
+      ),
+      e('div', { className: 'space-y-2 pt-2' },
+        e('button', {
+          onClick: onCheckInNow,
+          className: 'w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2'
+        }, '▶ ' + t('checkInNow', language)),
+        e('button', {
+          onClick: onClose,
+          className: 'w-full py-2 text-slate-400 hover:text-slate-600 font-semibold text-xs transition-all cursor-pointer'
+        }, t('later', language))
+      )
+    )
+  );
+}
+
 // --- MAIN REACT APP COMPONENT ---
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('javelo_current_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch(e) { return null; }
+  });
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    try {
+      const saved = localStorage.getItem('javelo_current_user');
+      return !!saved;
+    } catch(e) { return false; }
+  });
+  const [language, setLanguage] = useState(() => {
+    try {
+      return localStorage.getItem('javelo_lang') || 'id';
+    } catch(e) { return 'id'; }
+  });
   const [showSetupWizard, setShowSetupWizard] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [apiUrl, setApiUrl] = useState(() => {
@@ -272,12 +450,23 @@ function App() {
     }
   });
 
-  const [currentUser, setCurrentUser] = useState(null);
   const [schedules, setSchedules] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [anomalies, setAnomalies] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [customTasks, setCustomTasks] = useState([]);
+  const [chatMessages, setChatMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem('javelo_chat_messages');
+      return saved ? JSON.parse(saved) : [];
+    } catch(e) { return []; }
+  });
+  const [chatGroups, setChatGroups] = useState(() => {
+    try {
+      const saved = localStorage.getItem('javelo_chat_groups');
+      return saved ? JSON.parse(saved) : [];
+    } catch(e) { return []; }
+  });
 
   const [activeTab, setActiveTab] = useState("tickets");
 
@@ -285,7 +474,9 @@ function App() {
   const [secondsLogged, setSecondsLogged] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
 
-  // Modals State
+  // Modals & 1-Minute Check-in Reminder State
+  const [hasSeenCheckInReminder, setHasSeenCheckInReminder] = useState(false);
+  const [showCheckInReminderModal, setShowCheckInReminderModal] = useState(false);
   const [showCheckInGateModal, setShowCheckInGateModal] = useState(false);
   const [showShiftPlannerModal, setShowShiftPlannerModal] = useState(false);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
@@ -311,6 +502,8 @@ function App() {
       if (payload.users) localStorage.setItem('javelo_users', JSON.stringify(payload.users));
       if (payload.tickets) localStorage.setItem('javelo_tickets', JSON.stringify(payload.tickets));
       if (payload.notifications) localStorage.setItem('javelo_notifications', JSON.stringify(payload.notifications));
+      if (payload.chatMessages) localStorage.setItem('javelo_chat_messages', JSON.stringify(payload.chatMessages));
+      if (payload.chatGroups) localStorage.setItem('javelo_chat_groups', JSON.stringify(payload.chatGroups));
       if (payload.customTasks) localStorage.setItem('javelo_tasks', JSON.stringify(payload.customTasks));
     } catch(e) {}
 
@@ -354,7 +547,7 @@ function App() {
             const validTicketId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(t.id) ? t.id : generateUUID();
             const validAssignedTo = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(t.assignedTo) ? t.assignedTo : null;
             const validAssignedBy = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(t.assignedBy) ? t.assignedBy : null;
-            const validStatus = t.status === 'Pending Review' ? 'Review' : (['Todo', 'In Progress', 'Review', 'Done', 'Delayed', 'Issue'].includes(t.status) ? t.status : 'Todo');
+            const validStatus = t.status === 'Pending Review' ? 'Review' : (['Todo', 'To do', 'In Progress', 'Review', 'Done', 'Delayed', 'Issue'].includes(t.status) ? t.status : 'To do');
             await supabaseClient.from('tickets').upsert({
               id: validTicketId,
               subject: t.subject,
@@ -426,6 +619,24 @@ function App() {
                 if (JSON.stringify(prev) !== JSON.stringify(cloudData.notifications)) {
                   try { localStorage.setItem('javelo_notifications', JSON.stringify(cloudData.notifications)); } catch(e){}
                   return cloudData.notifications;
+                }
+                return prev;
+              });
+            }
+            if (Array.isArray(cloudData.chatMessages)) {
+              setChatMessages(prev => {
+                if (JSON.stringify(prev) !== JSON.stringify(cloudData.chatMessages)) {
+                  try { localStorage.setItem('javelo_chat_messages', JSON.stringify(cloudData.chatMessages)); } catch(e){}
+                  return cloudData.chatMessages;
+                }
+                return prev;
+              });
+            }
+            if (Array.isArray(cloudData.chatGroups)) {
+              setChatGroups(prev => {
+                if (JSON.stringify(prev) !== JSON.stringify(cloudData.chatGroups)) {
+                  try { localStorage.setItem('javelo_chat_groups', JSON.stringify(cloudData.chatGroups)); } catch(e){}
+                  return cloudData.chatGroups;
                 }
                 return prev;
               });
@@ -611,15 +822,29 @@ function App() {
     return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }, [secondsLogged]);
 
+  // 60-second Check-in Reminder Timer
+  useEffect(() => {
+    if (isLoggedIn && currentUser && !currentUser.checkedIn && !hasSeenCheckInReminder) {
+      const timer = setTimeout(() => {
+        setShowCheckInReminderModal(true);
+        setHasSeenCheckInReminder(true);
+      }, 60000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoggedIn, currentUser?.checkedIn, hasSeenCheckInReminder]);
+
   const handleLogin = (userToLogin) => {
     if (userToLogin) {
       const loggedUser = { ...userToLogin, checkedIn: false, status: "Offline" };
       setCurrentUser(loggedUser);
       setIsLoggedIn(true);
+      try {
+        localStorage.setItem('javelo_current_user', JSON.stringify(loggedUser));
+      } catch(e) {}
 
       const updatedUsers = (users || []).map(u => u.id === loggedUser.id ? loggedUser : u);
       setUsers(updatedUsers);
-      syncCloudDB({ companyInfo, users: updatedUsers, tickets, schedules, customTasks });
+      syncCloudDB({ companyInfo, users: updatedUsers, tickets, notifications, chatMessages, chatGroups, schedules, customTasks });
 
       setGeofenceMessage({ type: "success", text: `⚡ Logged in as ${loggedUser.name} (${loggedUser.role === 'admin' ? 'C-Level Executive' : loggedUser.department})` });
     }
@@ -629,10 +854,13 @@ function App() {
     if (currentUser) {
       const updatedUsers = users.map(u => u.id === currentUser.id ? { ...u, status: "Offline", checkedIn: false } : u);
       setUsers(updatedUsers);
-      syncCloudDB({ companyInfo, users: updatedUsers, tickets, schedules, customTasks });
+      syncCloudDB({ companyInfo, users: updatedUsers, tickets, notifications, chatMessages, chatGroups, schedules, customTasks });
     }
     setIsLoggedIn(false);
     setCurrentUser(null);
+    try {
+      localStorage.removeItem('javelo_current_user');
+    } catch(e) {}
   };
 
   const handleDeleteUser = async (userId) => {
@@ -777,6 +1005,7 @@ function App() {
 
     setUsers(updatedUsers);
     setCurrentUser(updatedCurrentUser);
+    try { localStorage.setItem('javelo_current_user', JSON.stringify(updatedCurrentUser)); } catch(e){}
     setIsTimerRunning(true);
     setShowCheckInGateModal(false);
 
@@ -802,6 +1031,7 @@ function App() {
     setTickets(updatedTickets);
     setUsers(updatedUsers);
     setCurrentUser(updatedCurrentUser);
+    try { localStorage.setItem('javelo_current_user', JSON.stringify(updatedCurrentUser)); } catch(e){}
     setIsTimerRunning(false);
     setShowCheckoutModal(false);
 
@@ -851,7 +1081,9 @@ function App() {
         companyInfo,
         anomalyCount: (anomalies || []).filter(a => !a.resolved).length,
         onLogout: handleLogout,
-        onStartWizard: () => setShowSetupWizard(true)
+        onStartWizard: () => setShowSetupWizard(true),
+        language,
+        t
       }),
       e('div', { className: 'flex-1 flex flex-col overflow-y-auto' },
         e(Header, {
@@ -863,19 +1095,57 @@ function App() {
           onMarkAllRead: handleMarkAllNotificationsRead,
           onOpenCheckInGate: () => setShowCheckInGateModal(true),
           onCheckOutClick: () => setShowCheckoutModal(true),
-          onLogout: handleLogout
+          onLogout: handleLogout,
+          language,
+          setLanguage,
+          t
         }),
-        e('div', { className: 'p-6 flex-1' },
-          activeTab === 'todo' && e(PersonalToDoManager, { currentUser, tickets: tickets || [], setTickets, customTasks: customTasks || [], setCustomTasks }),
+        e('div', { className: 'p-3 sm:p-4 md:p-6 pb-24 md:pb-6 flex-1' },
+          activeTab === 'todo' && e(PersonalToDoManager, { currentUser, tickets: tickets || [], setTickets, customTasks: customTasks || [], setCustomTasks, language, t }),
           activeTab === 'schedules' && e(ScheduleGrid, { users: users || [], schedules: schedules || [], currentUser, onOpenPlanner: () => setShowShiftPlannerModal(true), onInspectUserCalendar: (u) => setCLevelInspectedUser(u) }),
-          activeTab === 'tickets' && e(TicketBoard, { tickets: tickets || [], users: users || [], currentUser, companyInfo, onOpenCreateTicket: () => setShowCreateTicketModal(true), onEditTicket: setEditingTicket, onOpenComments: setCommentingTicket, onOpenHistory: setHistoryTicket, onDeleteTicket: handleDeleteTicket, onSendReminder: handleSendReminderAlert }),
+          activeTab === 'tickets' && e(TicketBoard, { tickets: tickets || [], users: users || [], currentUser, companyInfo, onOpenCreateTicket: () => setShowCreateTicketModal(true), onEditTicket: setEditingTicket, onOpenComments: setCommentingTicket, onOpenHistory: setHistoryTicket, onDeleteTicket: handleDeleteTicket, onSendReminder: handleSendReminderAlert, language, t }),
           activeTab === 'virtual-office' && e(SkyOffice2DPixelMap, { users: users || [], tickets: tickets || [] }),
-          activeTab === 'clevel' && (currentUser?.role === 'admin' ? e(CLevelDashboard, { users: users || [], tickets: tickets || [], anomalies: anomalies || [], schedules: schedules || [], onResolveAnomaly: id => setAnomalies(prev => prev.map(a => a.id === id ? { ...a, resolved: true } : a)), onOpenCreateUser: () => setShowCreateUserModal(true), onOpenAnnouncement: () => setShowAnnouncementModal(true), onOpenCreateTicket: () => setShowCreateTicketModal(true), onOpenActiveStaff: () => setShowActiveStaffModal(true), onInspectEmployee: (u) => setCLevelInspectedUser(u), onDeleteUser: handleDeleteUser, isSupabaseReady, serverUrl: apiUrl }) : e('div', { className: 'p-8 text-center bg-rose-50 border border-rose-200 text-rose-800 font-bold rounded-2xl text-xs' }, '🔒 Access Restricted: C-Level Executive Master Dashboard is restricted to C-Level Admin accounts.')),
-          activeTab === 'chat' && e(ChatEcosystem, { users: users || [], currentUser, tickets: tickets || [], onSendReminder: handleSendReminderAlert }),
-          activeTab === 'settings' && e(SettingsPanel, { currentUser, setCurrentUser, companyInfo, isDarkMode, setIsDarkMode, apiUrl, setApiUrl, onOpenPhotoCrop: () => setShowPhotoCropModal(true), onStartWizard: () => setShowSetupWizard(true) })
+          activeTab === 'clevel' && (currentUser?.role === 'admin' ? e(CLevelDashboard, { users: users || [], tickets: tickets || [], anomalies: anomalies || [], schedules: schedules || [], onResolveAnomaly: id => setAnomalies(prev => prev.map(a => a.id === id ? { ...a, resolved: true } : a)), onOpenCreateUser: () => setShowCreateUserModal(true), onOpenAnnouncement: () => setShowAnnouncementModal(true), onOpenCreateTicket: () => setShowCreateTicketModal(true), onOpenActiveStaff: () => setShowActiveStaffModal(true), onInspectEmployee: (u) => setCLevelInspectedUser(u), onDeleteUser: handleDeleteUser, isSupabaseReady, serverUrl: apiUrl, language, t }) : e('div', { className: 'p-8 text-center bg-rose-50 border border-rose-200 text-rose-800 font-bold rounded-2xl text-xs' }, '🔒 Access Restricted: C-Level Executive Master Dashboard is restricted to C-Level Admin accounts.')),
+          activeTab === 'chat' && e(ChatEcosystem, { users: users || [], currentUser, tickets: tickets || [], chatMessages, setChatMessages, chatGroups, setChatGroups, onSendReminder: handleSendReminderAlert, syncCloudDB, companyInfo, language, t }),
+          activeTab === 'settings' && e(SettingsPanel, { currentUser, setCurrentUser, companyInfo, isDarkMode, setIsDarkMode, apiUrl, setApiUrl, onOpenPhotoCrop: () => setShowPhotoCropModal(true), onStartWizard: () => setShowSetupWizard(true), language, setLanguage, t })
         )
       )
     ),
+
+    // Sleek Mobile Bottom Navigation Bar
+    e('nav', {
+      className: 'md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 flex justify-around items-center py-2 px-1 shadow-lg'
+    },
+      [
+        { id: 'tickets', label: t('navTickets', language), icon: IconTicket },
+        { id: 'todo', label: t('navTasks', language), icon: IconCheckList },
+        ...(currentUser?.role === 'admin' ? [{ id: 'clevel', label: t('navCLevel', language), icon: IconAnalytics }] : []),
+        { id: 'chat', label: t('navChat', language), icon: IconChat },
+        { id: 'settings', label: t('navSettings', language), icon: IconSettings }
+      ].map(item => {
+        const isActive = activeTab === item.id;
+        const IconComp = item.icon;
+        return e('button', {
+          key: item.id,
+          onClick: () => setActiveTab(item.id),
+          className: `flex flex-col items-center justify-center flex-1 py-1 cursor-pointer transition-colors ${isActive ? 'text-blue-600 font-bold' : 'text-slate-400 font-medium hover:text-slate-600'}`
+        },
+          e(IconComp, { className: `w-5 h-5 mb-0.5 ${isActive ? 'text-blue-600 stroke-2' : 'text-slate-400'}` }),
+          e('span', { className: 'text-[10px] leading-tight' }, item.label)
+        );
+      })
+    ),
+
+    // 1-Minute Check-in Reminder Modal
+    showCheckInReminderModal && e(CheckInReminderModal, {
+      currentUser,
+      language,
+      onClose: () => setShowCheckInReminderModal(false),
+      onCheckInNow: () => {
+        setShowCheckInReminderModal(false);
+        setShowCheckInGateModal(true);
+      }
+    }),
 
     // ALL MODALS RENDERED SAFELY IN ROOT DOM TREE!
     showCheckInGateModal && e(ModeSpecificCheckInGateModal, {
@@ -1772,37 +2042,37 @@ function LoginScreen({ users, companyInfo, onLogin, onStartWizard }) {
 }
 
 // --- SIDEBAR COMPONENT ---
-function Sidebar({ activeTab, setActiveTab, currentUser, users, companyInfo, anomalyCount, onLogout, onStartWizard }) {
+function Sidebar({ activeTab, setActiveTab, currentUser, users, companyInfo, anomalyCount, onLogout, onStartWizard, language, t }) {
   const isAdmin = currentUser?.role === 'admin';
 
   const menuItems = [
-    { id: "tickets", label: "Tickets & Tasks", Icon: IconTicket },
-    { id: "todo", label: "My Tasks & To-Do", Icon: IconCheckList, badge: null },
-    ...(isAdmin ? [{ id: "clevel", label: "C-Level Dashboard", Icon: IconAnalytics, badge: anomalyCount > 0 ? `${anomalyCount} Alert` : null, badgeColor: "bg-rose-500" }] : []),
-    { id: "chat", label: "Team Chat", Icon: IconChat },
-    { id: "settings", label: "Settings", Icon: IconSettings },
+    { id: "tickets", label: t('ticketsTab', language), Icon: IconTicket },
+    { id: "todo", label: t('todoTab', language), Icon: IconCheckList, badge: null },
+    ...(isAdmin ? [{ id: "clevel", label: t('clevelTab', language), Icon: IconAnalytics, badge: anomalyCount > 0 ? `${anomalyCount} Alert` : null, badgeColor: "bg-rose-500" }] : []),
+    { id: "chat", label: t('chatTab', language), Icon: IconChat },
+    { id: "settings", label: t('settingsTab', language), Icon: IconSettings },
   ];
 
-  return e('aside', { className: 'w-full md:w-64 bg-white border-b md:border-b-0 md:border-r border-slate-200 flex flex-col md:flex-col justify-between flex-shrink-0 select-none' },
-    e('div', { className: 'flex flex-row md:flex-col items-center md:items-stretch justify-between w-full md:w-auto' },
-      e('div', { className: 'hidden md:flex p-5 items-center gap-3 border-b border-slate-100' },
+  return e('aside', { className: 'hidden md:flex w-64 bg-white border-r border-slate-200 flex-col justify-between flex-shrink-0 select-none' },
+    e('div', { className: 'flex flex-col items-stretch justify-between w-full' },
+      e('div', { className: 'flex p-5 items-center gap-3 border-b border-slate-100' },
         e('div', { className: 'w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-extrabold text-lg shadow-md' }, 'J'),
         e('div', null,
           e('h1', { className: 'font-extrabold text-slate-900 text-base tracking-tight leading-none' }, 'Javelo360 ERP'),
           e('span', { className: 'text-[11px] text-blue-600 font-semibold truncate block max-w-[130px]' }, companyInfo?.name || "PT Javelo Terra Lestari")
         )
       ),
-      e('nav', { className: 'p-2 md:p-3 flex flex-row md:flex-col gap-1 overflow-x-auto md:overflow-visible w-full md:w-auto' },
+      e('nav', { className: 'p-3 flex flex-col gap-1 w-full' },
         menuItems.map(item => {
           const isActive = activeTab === item.id;
           const ItemIcon = item.Icon;
           return e('button', {
             key: item.id,
             onClick: () => setActiveTab(item.id),
-            className: `flex items-center justify-between px-3 py-2 md:px-3.5 md:py-2.5 rounded-lg font-medium text-xs md:text-sm transition-all cursor-pointer whitespace-nowrap md:whitespace-normal ${isActive ? 'bg-blue-50 text-blue-600 font-semibold shadow-xs' : 'text-slate-600 hover:bg-slate-50'}`
+            className: `flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-xs md:text-sm transition-all cursor-pointer ${isActive ? 'bg-blue-50 text-blue-600 font-bold shadow-xs' : 'text-slate-600 hover:bg-slate-50'}`
           },
-            e('div', { className: 'flex items-center gap-2 md:gap-3' },
-              e(ItemIcon, { className: `w-4 h-4 md:w-5 md:h-5 ${isActive ? 'text-blue-600' : 'text-slate-400'}` }),
+            e('div', { className: 'flex items-center gap-3' },
+              e(ItemIcon, { className: `w-5 h-5 ${isActive ? 'text-blue-600' : 'text-slate-400'}` }),
               e('span', null, item.label)
             ),
             item.badge && e('span', { className: `text-[9px] px-1.5 py-0.5 rounded-full text-white font-bold ml-1 ${item.badgeColor || 'bg-blue-600'}` }, item.badge)
@@ -1810,7 +2080,7 @@ function Sidebar({ activeTab, setActiveTab, currentUser, users, companyInfo, ano
         })
       )
     ),
-    e('div', { className: 'hidden md:block p-3 border-t border-slate-100 m-3 space-y-2.5' },
+    e('div', { className: 'p-3 border-t border-slate-100 m-3 space-y-2.5' },
       // REAL-TIME ACTIVE STAFF ROSTER LIST WIDGET
       e('div', { className: 'p-3 bg-slate-50 border rounded-xl space-y-2' },
         e('h4', { className: 'text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between' },
@@ -1846,13 +2116,13 @@ function Sidebar({ activeTab, setActiveTab, currentUser, users, companyInfo, ano
       e('button', {
         onClick: onLogout,
         className: 'w-full flex items-center justify-center gap-2 py-2 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 rounded-lg text-xs font-semibold cursor-pointer'
-      }, e(IconLogout, { className: 'w-4 h-4' }), 'Sign Out')
+      }, e(IconLogout, { className: 'w-4 h-4' }), t('signOut', language))
     )
   );
 }
 
 // --- HEADER COMPONENT WITH INTERACTIVE NOTIFICATIONS ---
-function Header({ currentUser, timerFormatted, isTimerRunning, notifications, onNotificationClick, onMarkAllRead, onOpenCheckInGate, onCheckOutClick, onLogout }) {
+function Header({ currentUser, timerFormatted, isTimerRunning, notifications, onNotificationClick, onMarkAllRead, onOpenCheckInGate, onCheckOutClick, onLogout, language, setLanguage, t }) {
   const [showNotifPopover, setShowNotifPopover] = useState(false);
 
   // Filter notifications specifically for the logged-in user
@@ -1870,41 +2140,56 @@ function Header({ currentUser, timerFormatted, isTimerRunning, notifications, on
 
   const unreadCount = useMemo(() => userNotifs.filter(n => !n.read).length, [userNotifs]);
 
-  return e('header', { className: 'h-auto md:h-16 py-3 md:py-0 bg-white border-b border-slate-200 px-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-3 sticky top-0 z-10 shadow-sm relative' },
-    e('div', { className: 'flex flex-wrap items-center justify-center md:justify-start gap-2.5 w-full md:w-auto' },
-      e('div', { className: 'flex items-center gap-2 bg-slate-100 border border-slate-200 px-3.5 py-1.5 rounded-full font-mono text-sm font-semibold text-slate-800' },
-        e('span', { className: 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse' }),
+  return e('header', { className: 'h-auto md:h-16 py-2.5 md:py-0 bg-white border-b border-slate-200 px-3 md:px-6 flex flex-row items-center justify-between gap-2 sticky top-0 z-30 shadow-xs' },
+    // Left side: Timer & Check-in / Out
+    e('div', { className: 'flex items-center gap-2' },
+      // Mobile Brand Icon
+      e('div', { className: 'md:hidden w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-extrabold text-sm shadow-xs flex-shrink-0' }, 'J'),
+      e('div', { className: 'flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full font-mono text-xs font-semibold text-slate-800 flex-shrink-0' },
+        e('span', { className: 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse' }),
         e('span', null, timerFormatted)
       ),
       currentUser?.checkedIn ? e('button', {
         onClick: onCheckOutClick,
-        className: 'px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-all cursor-pointer flex items-center gap-1.5'
-      }, '⏹ Check-out (Daily Gate)') : e('button', {
+        className: 'px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-xs transition-all cursor-pointer flex items-center gap-1'
+      }, `⏹ ${t('checkOut', language)}`) : e('button', {
         onClick: onOpenCheckInGate,
-        className: 'px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-all cursor-pointer flex items-center gap-1.5'
-      }, `▶ Check-in (${currentUser?.mode || 'WFO'} Gate)`)
+        className: 'px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-xs transition-all cursor-pointer flex items-center gap-1'
+      }, `▶ ${t('checkIn', language)}`)
     ),
 
-    e('div', { className: 'flex flex-wrap items-center justify-center md:justify-end gap-2.5 w-full md:w-auto relative' },
+    // Right side: Language Switcher + Notifications Bell + Online Status
+    e('div', { className: 'flex items-center gap-2 relative' },
+      // Language Toggle (ID / EN)
+      e('button', {
+        onClick: () => {
+          const newLang = language === 'id' ? 'en' : 'id';
+          setLanguage(newLang);
+          try { localStorage.setItem('javelo_lang', newLang); } catch(e){}
+        },
+        className: 'px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-200 flex items-center gap-1 cursor-pointer transition-all shadow-3xs'
+      }, language === 'id' ? '🇮🇩 ID' : '🇬🇧 EN'),
+
+      // Notification Bell
       e('div', { className: 'relative' },
         e('button', {
           onClick: () => setShowNotifPopover(!showNotifPopover),
-          className: 'p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 relative cursor-pointer'
+          className: 'p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 relative cursor-pointer'
         },
           e(IconBell, { className: 'w-5 h-5' }),
-          unreadCount > 0 && e('span', { className: 'absolute -top-1 -right-1 w-5 h-5 bg-rose-600 text-white rounded-full text-[10px] font-extrabold flex items-center justify-center animate-bounce' }, unreadCount)
+          unreadCount > 0 && e('span', { className: 'absolute -top-1 -right-1 w-4 h-4 bg-rose-600 text-white rounded-full text-[9px] font-extrabold flex items-center justify-center animate-bounce' }, unreadCount)
         ),
 
         showNotifPopover && e('div', { className: 'notification-popover' },
           e('div', { className: 'p-4 border-b bg-slate-50 flex items-center justify-between' },
-            e('h4', { className: 'font-extrabold text-xs text-slate-900' }, `Notifications & Alerts (${unreadCount} New)`),
+            e('h4', { className: 'font-extrabold text-xs text-slate-900' }, `${t('notifications', language)} (${unreadCount})`),
             e('button', {
               onClick: onMarkAllRead,
               className: 'text-[10px] text-blue-600 font-bold hover:underline cursor-pointer'
-            }, 'Mark all read')
+            }, t('markAllRead', language))
           ),
           e('div', { className: 'max-h-72 overflow-y-auto divide-y' },
-            userNotifs.length === 0 ? e('div', { className: 'p-6 text-center text-xs text-slate-400' }, 'No notifications yet.') :
+            userNotifs.length === 0 ? e('div', { className: 'p-6 text-center text-xs text-slate-400' }, t('noNotif', language)) :
             userNotifs.map(n => e('div', {
               key: n.id,
               onClick: () => { onNotificationClick(n); setShowNotifPopover(false); },
@@ -1920,8 +2205,8 @@ function Header({ currentUser, timerFormatted, isTimerRunning, notifications, on
         )
       ),
 
-
-      e('div', { className: 'flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium' },
+      // Online Status Pill
+      e('div', { className: 'hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold' },
         e('span', { className: `w-2 h-2 rounded-full ${currentUser?.status === 'Online' ? 'bg-emerald-500' : currentUser?.status === 'Away' ? 'bg-amber-500' : 'bg-slate-400'}` }),
         e('span', null, currentUser?.status || 'Online')
       )
@@ -2261,10 +2546,12 @@ function SkyOffice2DPixelMap({ users, tickets }) {
 }
 
 // --- TICKET BOARD WITH COMPACT COMPLETED TICKETS ARCHIVE ---
-function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTicket, onEditTicket, onOpenComments, onOpenHistory, onDeleteTicket, onSendReminder }) {
+function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTicket, onEditTicket, onOpenComments, onOpenHistory, onDeleteTicket, onSendReminder, language, t }) {
   const [filterDivision, setFilterDivision] = useState("All");
   const [searchCode, setSearchCode] = useState("");
-  const divisions = ["All", "🎯 Tugas Saya", "General", "Engineering", "Operations", "Product", "Quality Control"];
+  const [showArchive, setShowArchive] = useState(false);
+  const myTasksLabel = t('myTasks', language);
+  const divisions = ["All", myTasksLabel, "General", "Engineering", "Operations", "Product", "Quality Control"];
 
   const isAdmin = currentUser?.role === 'admin';
   const safeTickets = tickets || [];
@@ -2273,7 +2560,7 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
   const filteredTickets = useMemo(() => {
     return safeTickets.filter(t => {
       let matchDiv = true;
-      if (filterDivision === "🎯 Tugas Saya") {
+      if (filterDivision === myTasksLabel || filterDivision === "🎯 Tugas Saya" || filterDivision === "🎯 My Tasks") {
         matchDiv = t.assignedTo === currentUser?.id || (t.mentionedUsers && t.mentionedUsers.includes(currentUser?.id));
       } else if (filterDivision !== "All") {
         matchDiv = Array.isArray(t.division) ? t.division.includes(filterDivision) : t.division === filterDivision;
@@ -2281,7 +2568,7 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
       const matchSearch = searchCode ? (t.code.toLowerCase().includes(searchCode.toLowerCase()) || t.subject.toLowerCase().includes(searchCode.toLowerCase())) : true;
       return matchDiv && matchSearch;
     });
-  }, [safeTickets, filterDivision, searchCode, currentUser]);
+  }, [safeTickets, filterDivision, searchCode, currentUser, myTasksLabel]);
 
   // SEPARATE ACTIVE TICKETS VS COMPLETED / PAST TICKETS
   const activeTickets = useMemo(() => filteredTickets.filter(t => t.status !== 'Done'), [filteredTickets]);
@@ -2290,10 +2577,10 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
   return e('div', { className: 'space-y-6' },
     e('div', { className: 'flex flex-wrap items-center justify-between gap-4' },
       e('div', null,
-        e('h2', { className: 'text-2xl font-bold text-slate-900' }, 'Tickets & Task Management'),
+        e('h2', { className: 'text-2xl font-bold text-slate-900' }, t('ticketsHeader', language)),
         e('p', { className: 'text-xs text-slate-500' }, `Tracked ticket codes (${getCompanyInitials(companyInfo?.name)}-2026-XXX), active tasks & completed archive`)
       ),
-      e('button', { onClick: onOpenCreateTicket, className: 'px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5 cursor-pointer' }, '+ Generate Ticket')
+      e('button', { onClick: onOpenCreateTicket, className: 'px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5 cursor-pointer' }, t('generateTicket', language))
     ),
 
     // TICKET CODE SEARCH TRACKER BAR
@@ -2303,17 +2590,17 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
         type: 'text',
         value: searchCode,
         onChange: ev => setSearchCode(ev.target.value),
-        placeholder: 'Search Ticket Code # (e.g. #JTL-2026-101) or Subject history...',
+        placeholder: t('searchTicket', language),
         className: 'flex-1 border-none focus:outline-none text-xs font-mono bg-transparent'
       }),
       searchCode && e('button', { onClick: () => setSearchCode(""), className: 'text-slate-400 font-bold hover:text-slate-600 cursor-pointer text-xs' }, 'Clear')
     ),
 
-    e('div', { className: 'flex flex-wrap gap-2 border-b border-slate-200 pb-3' },
+    e('div', { className: 'flex flex-wrap gap-2 border-b border-slate-200 pb-3 no-scrollbar overflow-x-auto' },
       divisions.map(d => e('button', {
         key: d,
         onClick: () => setFilterDivision(d),
-        className: `px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${filterDivision === d ? 'bg-blue-600 text-white shadow' : 'bg-white border text-slate-600 hover:bg-slate-50'}`
+        className: `px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${filterDivision === d ? 'bg-blue-600 text-white shadow' : 'bg-white border text-slate-600 hover:bg-slate-50'}`
       }, d))
     ),
 
@@ -2322,43 +2609,42 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
       e('div', { className: 'flex items-center justify-between' },
         e('h3', { className: 'font-extrabold text-sm text-slate-800 flex items-center gap-2' },
           e('span', { className: 'w-2.5 h-2.5 rounded-full bg-blue-600' }),
-          `Active / In-Progress Tickets (${activeTickets.length})`
+          `${t('activeTickets', language)} (${activeTickets.length})`
         )
       ),
 
       activeTickets.length === 0 ? e('div', { className: 'p-8 text-center bg-white rounded-2xl border space-y-2' },
-        e('div', { className: 'text-sm font-bold text-slate-700' }, '🎉 All Active Tickets Resolved!'),
-        e('p', { className: 'text-xs text-slate-500' }, 'Check the completed records below or click "+ Generate Ticket" to assign new work.')
+        e('div', { className: 'text-sm font-bold text-slate-700' }, t('allResolved', language)),
+        e('p', { className: 'text-xs text-slate-500' }, t('checkCompleted', language))
       ) :
       e('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-4' },
-        activeTickets.map(t => {
-          const creator = (users || []).find(u => u.id === t.assignedBy);
+        activeTickets.map(tkt => {
+          const creator = (users || []).find(u => u.id === tkt.assignedBy);
           const isCLevelCreator = creator?.role === 'admin' || creator?.department === 'C-Level Executive';
-          const assignee = (users || []).find(u => u.id === t.assignedTo);
-          const isUrgent = t.priority === "Urgent" || t.priority === "Emergency";
-          const isHigh = t.priority === "High";
-          const commentCount = (t.comments || []).length;
+          const assignee = (users || []).find(u => u.id === tkt.assignedTo);
+          const isUrgent = tkt.priority === "Urgent" || tkt.priority === "Emergency";
+          const isHigh = tkt.priority === "High";
+          const commentCount = (tkt.comments || []).length;
 
           // CALCULATE OVERDUE DEADLINE
-          const isOverdue = t.deadline && t.deadline < todayStr && t.status !== 'Done';
-          const daysOverdue = isOverdue ? Math.max(1, Math.ceil((new Date(todayStr) - new Date(t.deadline)) / (1000 * 60 * 60 * 24))) : 0;
+          const isOverdue = tkt.deadline && tkt.deadline < todayStr && tkt.status !== 'Done';
+          const daysOverdue = isOverdue ? Math.max(1, Math.ceil((new Date(todayStr) - new Date(tkt.deadline)) / (1000 * 60 * 60 * 24))) : 0;
 
           const cardBorderClass = isOverdue ? 'border-2 border-rose-600 bg-rose-50/60 shadow-sm' : isUrgent ? 'border-2 border-rose-500 bg-rose-50/30' : isHigh ? 'border-2 border-amber-500 bg-amber-50/20' : 'border border-slate-200 bg-white';
 
           return e('div', {
-            key: t.id,
-            onClick: () => onEditTicket(t),
+            key: tkt.id,
+            onClick: () => onEditTicket(tkt),
             className: `${cardBorderClass} p-5 rounded-2xl shadow-xs space-y-3 relative hover:shadow-md transition-all cursor-pointer`
           },
             isOverdue && e('div', { className: 'p-2 bg-rose-600 text-white rounded-xl text-[10px] font-extrabold flex items-center justify-between shadow-xs animate-pulse' },
-              e('span', null, '⏰ TERLEWAT TENGGAT DEADLINE (OVERDUE)'),
-              e('span', { className: 'font-mono text-[9px] bg-white/25 px-2 py-0.5 rounded font-bold' }, `${daysOverdue} Hari Terlewat`)
+              e('span', null, `⏰ ${t('overdueDeadline', language)}`),
+              e('span', { className: 'font-mono text-[9px] bg-white/25 px-2 py-0.5 rounded font-bold' }, `${daysOverdue} ${t('daysOverdue', language)}`)
             ),
 
-            isCLevelCreator && e('div', { className: 'p-2 bg-gradient-to-r from-amber-500 to-purple-600 text-white rounded-xl text-[10px] font-extrabold flex items-center justify-between shadow-xs' },
+            isCLevelCreator && e('div', { className: 'p-2 bg-gradient-to-r from-blue-700 to-indigo-800 text-white rounded-xl text-[10px] font-extrabold flex items-center justify-between shadow-xs' },
               e('span', { className: 'flex items-center gap-1.5' },
-                e(IconCrown, { className: 'w-4 h-4 text-amber-200' }),
-                '👑 C-LEVEL EXECUTIVE DIRECTIVE'
+                '🏛️ ' + t('directiveBadge', language)
               ),
               e('span', { className: 'font-mono text-[9px] bg-white/20 px-1.5 py-0.5 rounded' }, creator ? creator.name : 'C-Level')
             ),
@@ -2366,79 +2652,83 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
             e('div', { className: 'flex items-start justify-between gap-2' },
               e('div', { className: 'flex-1' },
                 e('div', { className: 'flex items-center gap-2 flex-wrap' },
-                  e('span', { className: 'font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200' }, t.code),
-                  e('span', { className: `text-[10px] font-extrabold px-2 py-0.5 rounded-full ${isUrgent ? 'bg-rose-600 text-white animate-pulse' : isHigh ? 'bg-amber-500 text-white' : 'bg-blue-600 text-white'}` }, t.priority || 'Normal'),
-                  t.deadline && e('span', { className: `text-[10px] font-mono font-bold px-2 py-0.5 rounded ${isOverdue ? 'bg-rose-100 text-rose-800 font-extrabold' : 'bg-slate-100 text-slate-600'}` }, `📅 Deadline: ${t.deadline}`)
+                  e('span', { className: 'font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200' }, tkt.code),
+                  e('span', { className: `text-[10px] font-extrabold px-2 py-0.5 rounded-full ${isUrgent ? 'bg-rose-600 text-white animate-pulse' : isHigh ? 'bg-amber-500 text-white' : 'bg-blue-600 text-white'}` }, tkt.priority || 'Normal'),
+                  tkt.deadline && e('span', { className: `text-[10px] font-mono font-bold px-2 py-0.5 rounded ${isOverdue ? 'bg-rose-100 text-rose-800 font-extrabold' : 'bg-slate-100 text-slate-600'}` }, `📅 Deadline: ${tkt.deadline}`)
                 ),
-                e('h3', { className: 'font-bold text-slate-900 text-sm mt-1.5 hover:text-blue-600 transition-colors' }, t.subject)
+                e('h3', { className: 'font-bold text-slate-900 text-sm mt-1.5 hover:text-blue-600 transition-colors' }, tkt.subject)
               ),
               e('div', { className: 'flex items-center gap-1.5' },
                 isAdmin && e('button', {
-                  onClick: (ev) => { ev.stopPropagation(); onDeleteTicket(t.id); },
+                  onClick: (ev) => { ev.stopPropagation(); onDeleteTicket(tkt.id); },
                   className: 'p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-xs font-bold cursor-pointer'
                 }, e(IconTrash, { className: 'w-4 h-4' })),
                 e('button', {
-                  onClick: (ev) => { ev.stopPropagation(); onSendReminder(assignee, t); },
+                  onClick: (ev) => { ev.stopPropagation(); onSendReminder(assignee, tkt); },
                   className: 'px-2 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 rounded text-[10px] font-extrabold flex items-center gap-1 cursor-pointer'
                 }, '🔔 Remind'),
-                e('span', { className: `text-[10px] font-bold px-2.5 py-1 rounded-full ${t.status === 'Pending Review' ? 'bg-amber-100 text-amber-900 animate-pulse' : 'bg-blue-100 text-blue-800'}` }, t.status)
+                e('span', { className: `text-[10px] font-bold px-2.5 py-1 rounded-full ${tkt.status === 'Pending Review' ? 'bg-amber-100 text-amber-900 animate-pulse' : 'bg-blue-100 text-blue-800'}` }, tkt.status === 'Todo' ? 'To do' : tkt.status)
               )
             ),
-            e('p', { className: 'text-xs text-slate-600 leading-relaxed' }, t.details),
+            e('p', { className: 'text-xs text-slate-600 leading-relaxed' }, tkt.details),
             
-            t.proofLink && e('div', { className: 'p-2 bg-slate-50 border border-slate-200 rounded-lg text-[11px] flex items-center gap-1.5 text-blue-600 font-mono font-semibold' },
+            tkt.proofLink && e('div', { className: 'p-2 bg-slate-50 border border-slate-200 rounded-lg text-[11px] flex items-center gap-1.5 text-blue-600 font-mono font-semibold' },
               e(IconLink, { className: 'w-3.5 h-3.5' }),
-              e('a', { href: t.proofLink, target: '_blank', rel: 'noreferrer', onClick: (ev) => ev.stopPropagation(), className: 'hover:underline truncate' }, `Proof: ${t.proofLink}`)
+              e('a', { href: tkt.proofLink, target: '_blank', rel: 'noreferrer', onClick: (ev) => ev.stopPropagation(), className: 'hover:underline truncate' }, `Proof: ${tkt.proofLink}`)
             ),
 
             e('div', { className: 'flex items-center justify-between pt-3 border-t text-xs' },
               e('div', { className: 'flex items-center gap-2 flex-wrap' },
                 e('span', { className: 'text-slate-700 font-bold' }, `Assignee: ${assignee ? assignee.name : 'Unassigned'}`),
-                (assignee && currentUser && assignee.id === currentUser.id) && e('span', { className: 'bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold' }, '👤 Ditugaskan ke Anda'),
+                (assignee && currentUser && assignee.id === currentUser.id) && e('span', { className: 'bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold' }, `👤 ${t('assignedToYou', language)}`),
                 e('button', {
-                  onClick: (ev) => { ev.stopPropagation(); onOpenComments(t); },
+                  onClick: (ev) => { ev.stopPropagation(); onOpenComments(tkt); },
                   className: 'px-2.5 py-1 bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-800 rounded-lg text-[10px] font-bold flex items-center gap-1 cursor-pointer'
-                }, e(IconComment, { className: 'w-3.5 h-3.5 text-purple-600' }), `💬 Comments (${commentCount})`)
+                }, e(IconComment, { className: 'w-3.5 h-3.5 text-purple-600' }), `💬 ${t('comments', language)} (${commentCount})`)
               ),
               e('button', {
-                onClick: (ev) => { ev.stopPropagation(); onOpenHistory(t); },
+                onClick: (ev) => { ev.stopPropagation(); onOpenHistory(tkt); },
                 className: 'text-[11px] text-blue-600 font-bold hover:underline cursor-pointer'
-              }, '📜 View History')
+              }, t('viewHistory', language))
             )
           );
         })
       )
     ),
 
-    // 2. COMPLETED & ARCHIVED TICKETS SECTION (COMPACT & SLIM ROWS)
-    completedTickets.length > 0 && e('div', { className: 'pt-6 border-t border-slate-200 space-y-3' },
-      e('div', { className: 'flex items-center justify-between' },
-        e('h3', { className: 'font-extrabold text-sm text-slate-700 flex items-center gap-2' },
-          e('span', { className: 'w-2.5 h-2.5 rounded-full bg-emerald-500' }),
-          `✅ Completed & Archived Ticket Records (${completedTickets.length})`
+    // 2. COMPLETED & ARCHIVED TICKETS SECTION (ACCORDION TOGGLE)
+    completedTickets.length > 0 && e('div', { className: 'pt-6 border-t border-slate-200' },
+      e('button', {
+        onClick: () => setShowArchive(!showArchive),
+        className: 'w-full p-4 bg-slate-100 hover:bg-slate-200/80 rounded-2xl flex items-center justify-between transition-all cursor-pointer font-bold text-xs text-slate-700 shadow-xs'
+      },
+        e('div', { className: 'flex items-center gap-2.5' },
+          e('span', { className: 'text-base' }, showArchive ? '📂' : '📁'),
+          e('span', null, `${t('archiveCompleted', language)} (${completedTickets.length})`),
+          e('span', { className: 'text-[10px] text-slate-400 font-normal hidden sm:inline' }, showArchive ? `(${t('tapToHide', language)})` : `(${t('tapToShow', language)})`)
         ),
-        e('span', { className: 'text-[10px] text-slate-400 font-mono' }, 'Ringkas & Archived Records')
+        e('span', { className: 'text-xs text-slate-500 font-bold px-2 py-1 bg-white rounded-lg border shadow-3xs' }, showArchive ? '▲ Sembunyikan' : '▼ Tampilkan')
       ),
 
-      e('div', { className: 'space-y-2' },
-        completedTickets.map(t => {
-          const assignee = (users || []).find(u => u.id === t.assignedTo);
+      showArchive && e('div', { className: 'mt-3 space-y-2' },
+        completedTickets.map(tkt => {
+          const assignee = (users || []).find(u => u.id === tkt.assignedTo);
           return e('div', {
-            key: t.id,
-            onClick: () => onOpenHistory(t),
-            className: 'p-3 bg-slate-100/90 border border-slate-200 hover:border-emerald-300 rounded-xl flex items-center justify-between gap-3 text-xs transition-all cursor-pointer'
+            key: tkt.id,
+            onClick: () => onOpenHistory(tkt),
+            className: 'p-3 bg-white border border-slate-200 hover:border-emerald-300 rounded-xl flex items-center justify-between gap-3 text-xs transition-all cursor-pointer shadow-3xs'
           },
             e('div', { className: 'flex items-center gap-3 overflow-hidden' },
-              e('span', { className: 'font-mono text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded' }, t.code),
-              e('span', { className: 'font-bold text-slate-700 truncate max-w-xs' }, t.subject),
+              e('span', { className: 'font-mono text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded' }, tkt.code),
+              e('span', { className: 'font-bold text-slate-700 truncate max-w-xs' }, tkt.subject),
               e('span', { className: 'text-[10px] text-slate-500 hidden sm:inline' }, `(Completed by ${assignee ? assignee.name : 'Assignee'})`)
             ),
             e('div', { className: 'flex items-center gap-2 flex-shrink-0' },
               e('span', { className: 'bg-emerald-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full' }, '✓ DONE'),
               e('button', {
-                onClick: (ev) => { ev.stopPropagation(); onOpenHistory(t); },
-                className: 'text-[10px] text-blue-600 font-bold hover:underline cursor-pointer bg-white px-2 py-1 rounded border'
-              }, '📜 History')
+                onClick: (ev) => { ev.stopPropagation(); onOpenHistory(tkt); },
+                className: 'text-[10px] text-blue-600 font-bold hover:underline cursor-pointer bg-slate-50 px-2 py-1 rounded border'
+              }, t('viewHistory', language))
             )
           );
         })
@@ -2508,7 +2798,7 @@ function CreateTicketModal({ users, tickets, currentUser, companyInfo, onClose, 
             code: generatedCode,
             subject,
             details,
-            status: "Todo",
+            status: "To do",
             priority,
             assignedTo,
             assignedBy: currentUser?.id,
@@ -3103,10 +3393,54 @@ function BroadcastAnnouncementModal({ currentUser, users, tickets, onClose }) {
 }
 
 // --- C-LEVEL DASHBOARD WITH EMPLOYEE MONITOR DRILL-DOWN ---
-function CLevelDashboard({ users, tickets, anomalies, schedules, onResolveAnomaly, onOpenCreateUser, onOpenAnnouncement, onOpenCreateTicket, onOpenActiveStaff, onInspectEmployee, onDeleteUser, isSupabaseReady, serverUrl }) {
+function CLevelDashboard({ users, tickets, anomalies, schedules, onResolveAnomaly, onOpenCreateUser, onOpenAnnouncement, onOpenCreateTicket, onOpenActiveStaff, onInspectEmployee, onDeleteUser, isSupabaseReady, serverUrl, language, t }) {
   const safeUsers = users || [];
   const safeTickets = tickets || [];
   const safeAnomalies = anomalies || [];
+
+  const employeePerformance = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return safeUsers.map(u => {
+      const userTickets = safeTickets.filter(tkt => tkt.assignedTo === u.id);
+      const doneTickets = userTickets.filter(tkt => tkt.status === 'Done');
+      const inProgressTickets = userTickets.filter(tkt => tkt.status === 'In Progress' || tkt.status === 'Review' || tkt.status === 'Pending Review');
+      const todoTickets = userTickets.filter(tkt => tkt.status === 'Todo' || tkt.status === 'To do');
+      const overdueTickets = userTickets.filter(tkt => tkt.deadline && tkt.deadline < today && tkt.status !== 'Done');
+
+      const total = userTickets.length;
+      const rate = total > 0 ? Math.round((doneTickets.length / total) * 100) : 100;
+
+      let badgeText = "Standby (Belum ada tugas)";
+      let badgeColor = "bg-slate-100 text-slate-700";
+      if (total > 0) {
+        if (overdueTickets.length > 0) {
+          badgeText = `${overdueTickets.length} Terlambat`;
+          badgeColor = "bg-rose-100 text-rose-800";
+        } else if (rate >= 80) {
+          badgeText = "Sangat Produktif (Excellent)";
+          badgeColor = "bg-emerald-100 text-emerald-800";
+        } else if (rate >= 50) {
+          badgeText = "Baik (Good)";
+          badgeColor = "bg-blue-100 text-blue-800";
+        } else {
+          badgeText = "Sedang Berjalan";
+          badgeColor = "bg-amber-100 text-amber-800";
+        }
+      }
+
+      return {
+        user: u,
+        total,
+        done: doneTickets.length,
+        inProgress: inProgressTickets.length,
+        todo: todoTickets.length,
+        overdue: overdueTickets.length,
+        rate,
+        badgeText,
+        badgeColor
+      };
+    });
+  }, [safeUsers, safeTickets]);
 
   return e('div', { className: 'space-y-6' },
     // DATABASE METADATA INTEGRITY ALERTS
@@ -3138,14 +3472,14 @@ function CLevelDashboard({ users, tickets, anomalies, schedules, onResolveAnomal
     ),
 
     e('div', { className: 'flex items-center justify-between' },
-      e('h2', { className: 'text-2xl font-bold text-slate-900' }, 'C-Level Executive Master Dashboard'),
+      e('h2', { className: 'text-2xl font-bold text-slate-900' }, t('executiveDashboard', language)),
       e('div', { className: 'flex gap-2' },
-        e('button', { onClick: onOpenAnnouncement, className: 'px-3.5 py-2 bg-purple-600 text-white rounded-lg text-xs font-semibold cursor-pointer' }, '📢 Announcement'),
-        e('button', { onClick: onOpenCreateUser, className: 'px-3.5 py-2 bg-slate-900 text-white rounded-lg text-xs font-semibold cursor-pointer' }, '+ Create User')
+        e('button', { onClick: onOpenAnnouncement, className: 'px-3.5 py-2 bg-purple-600 text-white rounded-lg text-xs font-semibold cursor-pointer' }, t('broadcast', language)),
+        e('button', { onClick: onOpenCreateUser, className: 'px-3.5 py-2 bg-slate-900 text-white rounded-lg text-xs font-semibold cursor-pointer' }, t('createUser', language))
       )
     ),
 
-    e('div', { className: 'grid grid-cols-3 gap-4' },
+    e('div', { className: 'grid grid-cols-1 sm:grid-cols-3 gap-4' },
       e('div', { className: 'bg-white p-5 rounded-2xl border shadow-xs space-y-1 hover:border-emerald-500 cursor-pointer transition-all' },
         e('div', { className: 'text-xs text-slate-500 font-bold' }, 'Geofence Compliance'),
         e('div', { className: 'text-2xl font-extrabold text-emerald-600' }, '100% In Range')
@@ -3157,6 +3491,72 @@ function CLevelDashboard({ users, tickets, anomalies, schedules, onResolveAnomal
       e('div', { onClick: onOpenActiveStaff, className: 'bg-white p-5 rounded-2xl border shadow-xs space-y-1 hover:border-purple-500 cursor-pointer transition-all' },
         e('div', { className: 'text-xs text-slate-500 font-bold' }, 'Active Personnel (Tap for Roster)'),
         e('div', { className: 'text-2xl font-extrabold text-purple-600' }, `${safeUsers.length} Staff Online`)
+      )
+    ),
+
+    // EXECUTIVE EMPLOYEE PERFORMANCE REVIEW & PRODUCTIVITY ANALYTICS
+    e('div', { className: 'bg-white p-6 rounded-2xl border space-y-4 shadow-xs' },
+      e('div', { className: 'flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-3' },
+        e('div', null,
+          e('h3', { className: 'font-extrabold text-sm text-slate-900 flex items-center gap-2' },
+            e('span', { className: 'w-2.5 h-2.5 rounded-full bg-blue-600' }),
+            '📊 ' + t('performanceAnalytics', language)
+          ),
+          e('p', { className: 'text-[11px] text-slate-400 mt-0.5' }, 'Ringkasan produktivitas penyelesaian tiket, beban tugas, dan kedisiplinan deadline per karyawan.')
+        ),
+        e('span', { className: 'text-[11px] font-mono text-blue-600 font-bold bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 self-start sm:self-auto' }, `${safeUsers.length} Personel Terevaluasi`)
+      ),
+
+      e('div', { className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3' },
+        employeePerformance.map(item => e('div', {
+          key: item.user.id,
+          className: 'p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-blue-300 transition-all shadow-3xs space-y-3'
+        },
+          e('div', { className: 'flex items-center justify-between gap-2' },
+            e('div', { className: 'flex items-center gap-2.5 overflow-hidden' },
+              e('img', { src: item.user.avatar, className: 'w-8 h-8 rounded-full object-cover border border-slate-200' }),
+              e('div', { className: 'overflow-hidden' },
+                e('div', { className: 'font-bold text-slate-900 text-xs truncate' }, item.user.name),
+                e('div', { className: 'text-[10px] text-slate-400' }, item.user.department)
+              )
+            ),
+            e('span', { className: `text-[9px] px-2 py-0.5 rounded-full font-bold flex-shrink-0 ${item.badgeColor}` }, item.badgeText)
+          ),
+
+          // Visual Progress Bar
+          e('div', { className: 'space-y-1' },
+            e('div', { className: 'flex justify-between text-[10px] font-bold text-slate-600' },
+              e('span', null, 'Produktivitas Tiket:'),
+              e('span', { className: 'font-mono text-blue-600' }, `${item.rate}% Selesai`)
+            ),
+            e('div', { className: 'w-full bg-slate-200 h-2 rounded-full overflow-hidden' },
+              e('div', {
+                className: `h-full rounded-full transition-all ${item.rate >= 80 ? 'bg-emerald-500' : item.rate >= 50 ? 'bg-blue-500' : 'bg-amber-500'}`,
+                style: { width: `${item.rate}%` }
+              })
+            )
+          ),
+
+          // Task Breakdown Metric Pills
+          e('div', { className: 'grid grid-cols-4 gap-1 text-center font-mono' },
+            e('div', { className: 'p-1.5 bg-white rounded border text-[10px]' },
+              e('span', { className: 'block font-extrabold text-slate-900' }, item.total),
+              e('span', { className: 'text-[8px] text-slate-400' }, 'Total')
+            ),
+            e('div', { className: 'p-1.5 bg-blue-50 rounded border border-blue-200 text-[10px]' },
+              e('span', { className: 'block font-extrabold text-blue-700' }, item.todo),
+              e('span', { className: 'text-[8px] text-blue-500' }, 'To do')
+            ),
+            e('div', { className: 'p-1.5 bg-amber-50 rounded border border-amber-200 text-[10px]' },
+              e('span', { className: 'block font-extrabold text-amber-700' }, item.inProgress),
+              e('span', { className: 'text-[8px] text-amber-600' }, 'Proses')
+            ),
+            e('div', { className: 'p-1.5 bg-emerald-50 rounded border border-emerald-200 text-[10px]' },
+              e('span', { className: 'block font-extrabold text-emerald-700' }, item.done),
+              e('span', { className: 'text-[8px] text-emerald-600' }, 'Done')
+            )
+          )
+        ))
       )
     ),
 
@@ -3233,66 +3633,43 @@ function CLevelDashboard({ users, tickets, anomalies, schedules, onResolveAnomal
 }
 
 // --- CHAT ECOSYSTEM ---
-function ChatEcosystem({ users, currentUser, tickets, onSendReminder }) {
+// --- CHAT ECOSYSTEM ---
+function ChatEcosystem({ users, currentUser, tickets, chatMessages, setChatMessages, chatGroups, setChatGroups, onSendReminder, syncCloudDB, companyInfo, language, t }) {
   const safeUsers = users || [];
   const safeTickets = tickets || [];
+  const msgs = Array.isArray(chatMessages) ? chatMessages : [];
+  const allGroups = Array.isArray(chatGroups) ? chatGroups : [];
+  const lang = language || 'id';
 
-  const [activeRecipient, setActiveRecipient] = useState(safeUsers[0] || null);
-  const [groups, setGroups] = useState([]);
-  const [messages, setMessages] = useState([]);
+  // Visible groups: groups where user is a member or admin
+  const visibleGroups = useMemo(() => {
+    return allGroups.filter(g => {
+      if (!g.members || g.members.length === 0) return true;
+      if (currentUser?.role === 'admin') return true;
+      return g.members.includes(currentUser?.id);
+    });
+  }, [allGroups, currentUser]);
+
+  const otherUsers = useMemo(() => {
+    return safeUsers.filter(u => u.id !== currentUser?.id);
+  }, [safeUsers, currentUser]);
+
+  const [activeRecipient, setActiveRecipient] = useState(() => {
+    return visibleGroups[0] || otherUsers[0] || null;
+  });
+
   const [inputMessage, setInputMessage] = useState("");
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
   const [autocompleteType, setAutocompleteType] = useState(null);
+  const [showMobileChat, setShowMobileChat] = useState(false);
 
-  // Live Supabase Database Messages Polling & WebSockets Subscriptions
+  // Auto-select if activeRecipient was null or deleted
   useEffect(() => {
-    const fetchMessages = async () => {
-      if (!supabaseClient) return;
-      try {
-        const { data, error } = await supabaseClient.from('chat_messages').select('*').order('created_at', { ascending: true });
-        if (!error && data) {
-          const mapped = data.map(m => ({
-            id: m.id,
-            target: m.recipient_id || m.channel_name,
-            sender: m.sender_name || "Staff",
-            text: m.content,
-            time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          }));
-          setMessages(mapped);
-        }
-      } catch(e) {}
-    };
-
-    fetchMessages();
-
-    let channel = null;
-    if (supabaseClient) {
-      try {
-        channel = supabaseClient.channel('chat_messages')
-          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => {
-            const m = payload.new;
-            const mapped = {
-              id: m.id,
-              target: m.recipient_id || m.channel_name,
-              sender: m.sender_name || "Staff",
-              text: m.content,
-              time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
-            setMessages(prev => {
-              if (prev.some(x => x.id === m.id)) return prev;
-              return [...prev, mapped];
-            });
-          })
-          .subscribe();
-      } catch (err) {
-        console.warn("Supabase chat subscribe error:", err);
-      }
+    if (!activeRecipient) {
+      if (visibleGroups.length > 0) setActiveRecipient(visibleGroups[0]);
+      else if (otherUsers.length > 0) setActiveRecipient(otherUsers[0]);
     }
-
-    return () => {
-      if (supabaseClient && channel) supabaseClient.removeChannel(channel);
-    };
-  }, [activeRecipient?.id]);
+  }, [visibleGroups, otherUsers, activeRecipient]);
 
   const handleMessageChange = (ev) => {
     const val = ev.target.value;
@@ -3313,106 +3690,270 @@ function ChatEcosystem({ users, currentUser, tickets, onSendReminder }) {
   };
 
   const handleSendMessage = async (ev) => {
-    ev.preventDefault();
-    if (!inputMessage) return;
+    if (ev) ev.preventDefault();
+    const trimmed = (inputMessage || "").trim();
+    if (!trimmed || !activeRecipient) return;
 
-    const newMessageObj = {
-      id: Date.now(),
-      target: activeRecipient?.id,
-      sender: currentUser?.name || "Admin",
-      text: inputMessage,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const isGroup = !!(activeRecipient.isGroup || activeRecipient.members);
+    const newMsg = {
+      id: "msg-" + Date.now() + "-" + Math.random().toString(36).substr(2, 6),
+      senderId: currentUser?.id,
+      senderName: currentUser?.name || "Staff",
+      senderAvatar: currentUser?.avatar || "",
+      senderRole: currentUser?.role || "employee",
+      recipientId: isGroup ? null : activeRecipient.id,
+      recipientName: isGroup ? null : activeRecipient.name,
+      groupId: isGroup ? activeRecipient.id : null,
+      groupName: isGroup ? activeRecipient.name : null,
+      target: activeRecipient.id,
+      text: trimmed,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: Date.now()
     };
 
-    setMessages(prev => [...prev, newMessageObj]);
+    const updated = [...msgs, newMsg];
+    if (setChatMessages) setChatMessages(updated);
     setInputMessage("");
+
+    // Real-time Cloud Push
+    if (typeof syncCloudDB === 'function') {
+      syncCloudDB({
+        companyInfo,
+        users: safeUsers,
+        tickets: safeTickets,
+        chatMessages: updated,
+        chatGroups: allGroups
+      });
+    }
 
     if (supabaseClient) {
       try {
         await supabaseClient.from('chat_messages').insert([{
           sender_id: currentUser?.id,
           sender_name: currentUser?.name,
-          recipient_id: activeRecipient?.id,
-          content: inputMessage,
-          channel_type: activeRecipient?.id ? 'DM' : 'Group'
+          recipient_id: isGroup ? null : activeRecipient?.id,
+          content: trimmed,
+          channel_name: isGroup ? activeRecipient.name : null,
+          channel_type: isGroup ? 'Group' : 'DM'
         }]);
       } catch (err) {
-        console.warn("Supabase chat insert error:", err);
+        console.warn("Supabase chat insert warning:", err);
       }
     }
   };
 
   const handleCreateGroupWithMembers = (newGroupData) => {
-    setGroups([...groups, newGroupData]);
+    const groupWithId = {
+      ...newGroupData,
+      id: newGroupData.id || ("grp-" + Date.now()),
+      isGroup: true,
+      createdBy: currentUser?.id,
+      createdAt: new Date().toISOString()
+    };
+    const updatedGroups = [...allGroups, groupWithId];
+    if (setChatGroups) setChatGroups(updatedGroups);
     setShowCreateGroupModal(false);
+    setActiveRecipient(groupWithId);
+    setShowMobileChat(true);
+
+    if (typeof syncCloudDB === 'function') {
+      syncCloudDB({
+        companyInfo,
+        users: safeUsers,
+        tickets: safeTickets,
+        chatMessages: msgs,
+        chatGroups: updatedGroups
+      });
+    }
   };
 
-  const currentMessages = messages.filter(m => m.target === activeRecipient?.id);
+  const currentMessages = useMemo(() => {
+    if (!activeRecipient) return [];
+    const isGroup = !!(activeRecipient.isGroup || activeRecipient.members);
+    if (isGroup) {
+      return msgs.filter(m => m.groupId === activeRecipient.id || m.target === activeRecipient.id);
+    }
+    // 1-on-1 direct message between currentUser and activeRecipient
+    return msgs.filter(m =>
+      (m.senderId === currentUser?.id && m.recipientId === activeRecipient.id) ||
+      (m.senderId === activeRecipient.id && m.recipientId === currentUser?.id) ||
+      (m.target === activeRecipient.id && (m.sender === currentUser?.name || m.senderId === currentUser?.id)) ||
+      (m.target === currentUser?.id && (m.sender === activeRecipient.name || m.senderId === activeRecipient.id))
+    );
+  }, [msgs, activeRecipient, currentUser]);
 
-  return e('div', { className: 'space-y-6' },
-    e('div', { className: 'flex items-center justify-between' },
+  return e('div', { className: 'space-y-4' },
+    // Header section
+    e('div', { className: 'flex flex-col sm:flex-row sm:items-center justify-between gap-3' },
       e('div', null,
-        e('h2', { className: 'text-2xl font-bold text-slate-900' }, 'Realtime Chat Ecosystem'),
-        e('p', { className: 'text-xs text-slate-500' }, 'Personal DMs, Custom Groups & Instant Tag Autocomplete (@, #, /)')
+        e('h2', { className: 'text-xl sm:text-2xl font-bold text-slate-900 tracking-tight' },
+          lang === 'en' ? 'Realtime Chat Ecosystem' : 'Obrolan Tim Real-Time'
+        ),
+        e('p', { className: 'text-xs text-slate-500' },
+          lang === 'en' ? 'Direct messages, custom team groups & tag autocomplete (@, #, /)' : 'Pesan langsung, grup obrolan tim & tag pintar (@, #, /)'
+        )
       ),
       e('button', {
         onClick: () => setShowCreateGroupModal(true),
-        className: 'px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow cursor-pointer'
-      }, '+ Create Chat Group')
+        className: 'self-start sm:self-auto px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-2 cursor-pointer transition'
+      },
+        e('span', { className: 'text-sm' }, '👥'),
+        lang === 'en' ? '+ Create Chat Group' : '+ Buat Grup Chat'
+      )
     ),
 
-    e('div', { className: 'bg-white rounded-2xl border flex h-[500px] overflow-hidden' },
-      e('div', { className: 'w-72 border-r bg-slate-50/50 p-4 space-y-4 overflow-y-auto' },
-        e('div', { className: 'font-extrabold text-[11px] text-slate-400 uppercase' }, 'Chat Groups'),
-        groups.length === 0 ? e('div', { className: 'text-[11px] text-slate-400 italic' }, 'No custom groups created.') :
-        groups.map(g => e('button', {
-          key: g.id,
-          onClick: () => setActiveRecipient({ id: g.id, name: g.name }),
-          className: `w-full text-left p-2.5 rounded-xl text-xs font-bold flex items-center justify-between cursor-pointer ${activeRecipient?.id === g.id ? 'bg-purple-600 text-white' : 'hover:bg-slate-100 text-purple-900 bg-purple-50'}`
-        }, `👥 ${g.name}`)),
+    // Chat Layout Box
+    e('div', { className: 'bg-white rounded-2xl border border-slate-200 flex flex-col md:flex-row h-[560px] md:h-[580px] overflow-hidden shadow-sm' },
+      // Left List: Contacts & Groups (Hidden on mobile if showMobileChat is true)
+      e('div', { className: `w-full md:w-80 md:border-r border-slate-200 bg-slate-50/70 p-3 md:p-4 space-y-4 overflow-y-auto ${showMobileChat ? 'hidden md:block' : 'block'}` },
+        // Groups Header
+        e('div', { className: 'flex items-center justify-between' },
+          e('div', { className: 'font-extrabold text-[11px] text-slate-500 uppercase tracking-wider' },
+            lang === 'en' ? 'Chat Groups' : 'Grup Obrolan'
+          ),
+          e('span', { className: 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700' }, visibleGroups.length)
+        ),
+        visibleGroups.length === 0 ? e('div', { className: 'text-[11px] text-slate-400 italic p-2' },
+          lang === 'en' ? 'No custom groups created.' : 'Belum ada grup chat.'
+        ) :
+        e('div', { className: 'space-y-1' },
+          visibleGroups.map(g => {
+            const isSelected = activeRecipient?.id === g.id;
+            return e('button', {
+              key: g.id,
+              onClick: () => {
+                setActiveRecipient({ ...g, isGroup: true });
+                setShowMobileChat(true);
+              },
+              className: `w-full text-left p-2.5 rounded-xl text-xs font-bold flex items-center justify-between cursor-pointer transition ${isSelected ? 'bg-purple-600 text-white shadow-sm' : 'hover:bg-purple-50 text-slate-800 bg-white border border-slate-200/80'}`
+            },
+              e('div', { className: 'flex items-center gap-2 truncate' },
+                e('div', { className: `w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${isSelected ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-700'}` }, '👥'),
+                e('div', { className: 'truncate' },
+                  e('div', { className: 'truncate font-bold' }, g.name),
+                  e('div', { className: `text-[10px] font-normal ${isSelected ? 'text-purple-200' : 'text-slate-400'}` }, `${(g.members || []).length} ${lang === 'en' ? 'members' : 'anggota'}`)
+                )
+              ),
+              isSelected && e('span', { className: 'text-xs text-white' }, '●')
+            );
+          })
+        ),
 
-        e('div', { className: 'font-extrabold text-[11px] text-slate-400 uppercase pt-2 border-t' }, 'Personal DMs (1-on-1)'),
-        safeUsers.filter(u => u.id !== currentUser?.id).length === 0 ? e('div', { className: 'text-[11px] text-slate-400 italic' }, 'No other staff members.') :
-        safeUsers.filter(u => u.id !== currentUser?.id).map(u => e('button', {
-          key: u.id,
-          onClick: () => setActiveRecipient(u),
-          className: `w-full text-left p-2.5 rounded-xl text-xs font-medium flex items-center gap-2 cursor-pointer ${activeRecipient?.id === u.id ? 'bg-blue-600 text-white font-bold' : 'hover:bg-slate-100'}`
-        }, e('img', { src: u.avatar, className: 'w-7 h-7 rounded-full object-cover' }), u.name))
+        // 1-on-1 Staff DMs
+        e('div', { className: 'pt-3 border-t border-slate-200/80' },
+          e('div', { className: 'flex items-center justify-between mb-2' },
+            e('div', { className: 'font-extrabold text-[11px] text-slate-500 uppercase tracking-wider' },
+              lang === 'en' ? 'Personal DMs (1-on-1)' : 'Obrolan Personal (1-on-1)'
+            ),
+            e('span', { className: 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700' }, otherUsers.length)
+          ),
+          otherUsers.length === 0 ? e('div', { className: 'text-[11px] text-slate-400 italic p-2' },
+            lang === 'en' ? 'No other staff members.' : 'Belum ada rekan kerja terdaftar.'
+          ) :
+          e('div', { className: 'space-y-1' },
+            otherUsers.map(u => {
+              const isSelected = activeRecipient?.id === u.id;
+              return e('button', {
+                key: u.id,
+                onClick: () => {
+                  setActiveRecipient(u);
+                  setShowMobileChat(true);
+                },
+                className: `w-full text-left p-2.5 rounded-xl text-xs font-medium flex items-center gap-2.5 cursor-pointer transition ${isSelected ? 'bg-blue-600 text-white font-bold shadow-sm' : 'hover:bg-slate-100 text-slate-800 bg-white border border-slate-200/80'}`
+              },
+                e('div', { className: 'relative' },
+                  e('img', { src: u.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100', className: 'w-8 h-8 rounded-full object-cover border border-slate-200' }),
+                  e('div', { className: `absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white ${u.clockedIn ? 'bg-emerald-500' : 'bg-slate-300'}` })
+                ),
+                e('div', { className: 'flex-1 truncate' },
+                  e('div', { className: `truncate ${isSelected ? 'text-white font-bold' : 'text-slate-800 font-semibold'}` }, u.name),
+                  e('div', { className: `text-[10px] truncate ${isSelected ? 'text-blue-200' : 'text-slate-400'}` }, `${u.department || 'Staff'} • ${u.role === 'admin' ? 'C-Level' : 'Employee'}`)
+                )
+              );
+            })
+          )
+        )
       ),
 
-      e('div', { className: 'flex-1 flex flex-col justify-between bg-white relative' },
-        e('div', { className: 'p-4 border-b font-bold text-sm bg-slate-50/50 flex justify-between items-center' },
-          e('span', null, `Chat: ${activeRecipient?.name || 'Select a contact'}`),
-          activeRecipient?.id && e('button', {
-            onClick: () => onSendReminder(activeRecipient, 'Chat Discussion Reminder'),
-            className: 'px-3 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 rounded-lg text-xs font-bold cursor-pointer'
-          }, '🔔 Remind Person via Email')
+      // Right Pane: Active Message Thread (Hidden on mobile if showMobileChat is false)
+      e('div', { className: `flex-1 flex flex-col justify-between bg-white relative ${!showMobileChat ? 'hidden md:flex' : 'flex'}` },
+        // Top Header of Conversation
+        e('div', { className: 'p-3 md:p-4 border-b border-slate-200 font-bold text-sm bg-slate-50/70 flex justify-between items-center' },
+          e('div', { className: 'flex items-center gap-2 truncate' },
+            // Mobile back button
+            e('button', {
+              onClick: () => setShowMobileChat(false),
+              className: 'md:hidden px-2.5 py-1.5 rounded-lg bg-slate-200/80 hover:bg-slate-300 text-slate-700 text-xs font-bold flex items-center gap-1 cursor-pointer transition'
+            }, '← ' + (lang === 'en' ? 'Back' : 'Kembali')),
+            e('div', { className: 'truncate' },
+              e('div', { className: 'font-bold text-slate-900 truncate flex items-center gap-1.5' },
+                activeRecipient?.isGroup || activeRecipient?.members ? '👥' : '💬',
+                activeRecipient?.name || (lang === 'en' ? 'Select a contact' : 'Pilih kontak')
+              ),
+              activeRecipient && e('div', { className: 'text-[10px] text-slate-400 font-normal truncate' },
+                activeRecipient.isGroup || activeRecipient.members ?
+                  `${(activeRecipient.members || []).length} ${lang === 'en' ? 'members in group' : 'anggota grup'}` :
+                  `${activeRecipient.email || ''} • ${activeRecipient.department || ''}`
+              )
+            )
+          ),
+          activeRecipient?.id && !activeRecipient.isGroup && !activeRecipient.members && e('button', {
+            onClick: () => onSendReminder && onSendReminder(activeRecipient, 'Chat Discussion Reminder'),
+            className: 'px-3 py-1.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 rounded-lg text-xs font-bold cursor-pointer transition flex items-center gap-1'
+          },
+            e('span', null, '🔔'),
+            e('span', { className: 'hidden sm:inline' }, lang === 'en' ? 'Email Reminder' : 'Kirim Pengingat')
+          )
         ),
 
-        e('div', { className: 'p-4 overflow-y-auto flex-1 space-y-3' },
-          currentMessages.length === 0 ? e('div', { className: 'p-8 text-center text-slate-400 text-xs italic' }, 'No messages exchanged yet. Send the first message below!') :
-          currentMessages.map(m => e('div', { key: m.id, className: 'p-3 bg-slate-50 rounded-2xl border text-xs' },
-            e('div', { className: 'font-bold flex justify-between' }, e('span', null, m.sender), e('span', { className: 'text-[10px] text-slate-400' }, m.time)),
-            e('p', { className: 'mt-1 text-slate-700' }, m.text)
-          ))
+        // Message Thread Content
+        e('div', { className: 'p-4 overflow-y-auto flex-1 space-y-3 bg-slate-50/30' },
+          currentMessages.length === 0 ? e('div', { className: 'h-full flex flex-col items-center justify-center p-8 text-center text-slate-400' },
+            e('div', { className: 'text-3xl mb-2' }, '💬'),
+            e('div', { className: 'text-xs font-semibold' },
+              lang === 'en' ? 'No messages exchanged yet.' : 'Belum ada riwayat pesan.'
+            ),
+            e('div', { className: 'text-[11px] text-slate-400 mt-1' },
+              lang === 'en' ? 'Type a message below to start collaborating!' : 'Kirim pesan di bawah untuk memulai obrolan!'
+            )
+          ) :
+          currentMessages.map(m => {
+            const isMe = m.senderId === currentUser?.id || (m.sender === currentUser?.name && !m.senderId);
+            return e('div', {
+              key: m.id || (m.timestamp + '-' + Math.random()),
+              className: `flex flex-col ${isMe ? 'items-end' : 'items-start'}`
+            },
+              e('div', { className: `max-w-[85%] sm:max-w-[70%] p-3 rounded-2xl shadow-xs text-xs ${isMe ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-br-xs' : 'bg-white border border-slate-200 text-slate-800 rounded-bl-xs'}` },
+                e('div', { className: `flex items-center justify-between gap-3 text-[10px] mb-1 pb-1 border-b ${isMe ? 'border-white/20 text-blue-100' : 'border-slate-100 text-slate-400 font-semibold'}` },
+                  e('span', { className: 'font-bold' }, isMe ? (lang === 'en' ? 'You' : 'Anda') : (m.senderName || m.sender || 'Staff')),
+                  e('span', null, m.time || '')
+                ),
+                e('p', { className: `leading-relaxed whitespace-pre-wrap break-words ${isMe ? 'text-white' : 'text-slate-800'}` }, m.text)
+              )
+            );
+          })
         ),
 
-        e('form', { onSubmit: handleSendMessage, className: 'p-3 border-t flex gap-2 bg-white relative' },
+        // Message Input Form
+        e('form', { onSubmit: handleSendMessage, className: 'p-3 border-t border-slate-200 flex gap-2 bg-white relative' },
           e('input', {
             type: 'text',
             value: inputMessage,
             onChange: handleMessageChange,
-            placeholder: 'Type a message... (@ for users, # for tickets, / for divisions)',
-            className: 'flex-1 px-4 py-2 text-xs border rounded-xl font-mono'
+            placeholder: lang === 'en' ? 'Type a message... (@ for users, # for tickets, / for divisions)' : 'Ketik pesan... (@ sebut nama, # nomor tiket, / divisi)',
+            className: 'flex-1 px-4 py-2.5 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50'
           }),
 
           autocompleteType && e('div', { className: 'tag-autocomplete-overlay' },
             autocompleteType === '@' && safeUsers.map(u => e('div', { key: u.id, onClick: () => insertChatTag(`@${u.name}`), className: 'tag-autocomplete-item' }, e('span', { className: 'font-bold text-blue-600' }, `@${u.name}`), e('span', { className: 'text-[10px] text-slate-400' }, u.department))),
             autocompleteType === '#' && safeTickets.map(t => e('div', { key: t.code, onClick: () => insertChatTag(`#${t.code}`), className: 'tag-autocomplete-item' }, e('span', { className: 'font-bold text-purple-600' }, `#${t.code}`))),
-            autocompleteType === '/' && ["Engineering", "Operations", "Product", "Quality Control"].map(d => e('div', { key: d, onClick: () => insertChatTag(`/${d}`), className: 'tag-autocomplete-item' }, e('span', { className: 'font-bold text-emerald-600' }, `/${d}`)))
+            autocompleteType === '/' && ["Engineering", "Operations", "Product", "Quality Control", "Finance", "HR"].map(d => e('div', { key: d, onClick: () => insertChatTag(`/${d}`), className: 'tag-autocomplete-item' }, e('span', { className: 'font-bold text-emerald-600' }, `/${d}`)))
           ),
 
-          e('button', { type: 'submit', className: 'px-5 py-2 bg-blue-600 text-white rounded-xl font-bold text-xs cursor-pointer' }, 'Send')
+          e('button', {
+            type: 'submit',
+            className: 'px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs cursor-pointer shadow-sm transition'
+          }, lang === 'en' ? 'Send' : 'Kirim')
         )
       )
     ),
@@ -3420,6 +3961,7 @@ function ChatEcosystem({ users, currentUser, tickets, onSendReminder }) {
     showCreateGroupModal && e(CreateChatGroupModal, {
       users: safeUsers,
       currentUser,
+      language,
       onClose: () => setShowCreateGroupModal(false),
       onCreateGroup: handleCreateGroupWithMembers
     })
@@ -3427,10 +3969,11 @@ function ChatEcosystem({ users, currentUser, tickets, onSendReminder }) {
 }
 
 // --- CREATE CHAT GROUP MODAL ---
-function CreateChatGroupModal({ users, currentUser, onClose, onCreateGroup }) {
+function CreateChatGroupModal({ users, currentUser, language, onClose, onCreateGroup }) {
   const [groupName, setGroupName] = useState("");
   const safeUsers = users || [];
   const [selectedMembers, setSelectedMembers] = useState([currentUser?.id || "u-admin"]);
+  const lang = language || 'id';
 
   const toggleMember = (userId) => {
     if (selectedMembers.includes(userId)) {
@@ -3442,50 +3985,71 @@ function CreateChatGroupModal({ users, currentUser, onClose, onCreateGroup }) {
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
-    if (!groupName) return;
+    if (!groupName.trim()) return;
     onCreateGroup({
-      id: "g-" + Date.now(),
-      name: groupName,
+      id: "grp-" + Date.now(),
+      name: groupName.trim(),
       members: selectedMembers,
-      room: "Executive Boardroom"
+      room: "Team Hub",
+      isGroup: true
     });
   };
 
   return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
     e('div', { className: 'bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4' },
-      e('div', { className: 'flex justify-between border-b pb-3' },
-        e('h3', { className: 'font-bold text-slate-900 text-base' }, 'Create Custom Chat Group'),
-        e('button', { onClick: onClose, className: 'font-bold text-slate-400 cursor-pointer' }, '✕')
+      e('div', { className: 'flex justify-between border-b pb-3 items-center' },
+        e('h3', { className: 'font-bold text-slate-900 text-base' },
+          lang === 'en' ? 'Create Custom Chat Group' : 'Buat Grup Obrolan Baru'
+        ),
+        e('button', { onClick: onClose, className: 'font-bold text-slate-400 hover:text-slate-600 cursor-pointer p-1 text-sm' }, '✕')
       ),
       e('form', { onSubmit: handleSubmit, className: 'space-y-4 text-xs' },
         e('div', null,
-          e('label', { className: 'font-semibold block mb-1' }, 'Group Name'),
-          e('input', { required: true, type: 'text', placeholder: 'e.g. Factory Operations Pod', value: groupName, onChange: ev => setGroupName(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
+          e('label', { className: 'font-semibold block mb-1.5 text-slate-700' },
+            lang === 'en' ? 'Group Name' : 'Nama Grup'
+          ),
+          e('input', {
+            required: true,
+            type: 'text',
+            placeholder: lang === 'en' ? 'e.g. Operations & Support Pod' : 'cth. Tim Operasional & Lapangan',
+            value: groupName,
+            onChange: ev => setGroupName(ev.target.value),
+            className: 'w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none'
+          })
         ),
         e('div', null,
-          e('label', { className: 'font-semibold block mb-2 text-slate-700' }, 'Add Group Members:'),
+          e('label', { className: 'font-semibold block mb-2 text-slate-700' },
+            lang === 'en' ? 'Select Group Members:' : 'Pilih Anggota Grup:'
+          ),
           e('div', { className: 'space-y-2 max-h-48 overflow-y-auto border border-slate-200 p-3 rounded-xl bg-slate-50' },
             safeUsers.map(u => e('label', {
               key: u.id,
-              className: 'flex items-center justify-between p-2 rounded-lg bg-white border cursor-pointer hover:border-purple-500'
+              className: 'flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 cursor-pointer hover:border-purple-500 transition'
             },
-              e('div', { className: 'flex items-center gap-2' },
+              e('div', { className: 'flex items-center gap-2.5' },
                 e('input', {
                   type: 'checkbox',
                   checked: selectedMembers.includes(u.id),
                   onChange: () => toggleMember(u.id),
                   className: 'w-4 h-4 text-purple-600 rounded cursor-pointer'
                 }),
-                e('img', { src: u.avatar, className: 'w-6 h-6 rounded-full object-cover' }),
+                e('img', { src: u.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100', className: 'w-7 h-7 rounded-full object-cover' }),
                 e('span', { className: 'font-bold text-slate-900' }, u.name)
               ),
-              e('span', { className: 'text-[10px] text-slate-400 font-mono' }, u.department)
+              e('span', { className: 'text-[10px] text-slate-400 font-mono' }, u.department || 'Staff')
             ))
           )
         ),
         e('div', { className: 'flex justify-end gap-2 pt-2 border-t' },
-          e('button', { type: 'button', onClick: onClose, className: 'font-semibold px-3 cursor-pointer' }, 'Cancel'),
-          e('button', { type: 'submit', className: 'px-5 py-2.5 bg-purple-600 text-white rounded-xl font-bold shadow cursor-pointer' }, 'Create Group with Members')
+          e('button', {
+            type: 'button',
+            onClick: onClose,
+            className: 'font-semibold px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer transition'
+          }, lang === 'en' ? 'Cancel' : 'Batal'),
+          e('button', {
+            type: 'submit',
+            className: 'px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow cursor-pointer transition'
+          }, lang === 'en' ? 'Create Group' : 'Buat Grup')
         )
       )
     )

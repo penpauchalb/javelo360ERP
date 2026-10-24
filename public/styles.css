@@ -306,3 +306,19 @@ body.dark-mode .text-slate-600 {
   z-index: 60;
   width: 260px;
 }
+
+/* Mobile & Touch Responsiveness Utilities (v31) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@media (max-width: 768px) {
+  .modal-backdrop {
+    padding: 12px !important;
+  }
+}
+
