@@ -1,13 +1,13 @@
-// Progressive Web App Service Worker for Javelo360 ERP (v25 Release)
-const CACHE_NAME = 'javelo360-erp-v25';
+// Progressive Web App Service Worker for Javelo360 ERP (v30 Release)
+const CACHE_NAME = 'javelo360-erp-v30';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/manifest.json?v=25',
-  '/styles.css?v=25',
-  '/app.js?v=25',
-  '/react.production.min.js?v=25',
-  '/react-dom.production.min.js?v=25',
-  '/confetti.browser.min.js?v=25'
+  './',
+  './manifest.json?v=30',
+  './styles.css?v=30',
+  './app.js?v=30',
+  './react.production.min.js?v=30',
+  './react-dom.production.min.js?v=30',
+  './confetti.browser.min.js?v=30'
 ];
 
 self.addEventListener('install', (event) => {

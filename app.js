@@ -163,7 +163,7 @@ function IconCrown(props) {
 // --- DEMO MOCK PERSONAS ---
 const DEMO_PERSONAS = [];
 
-// --- DEFAULT SYSTEM ROSTER ---
+// --- DEFAULT SYSTEM ROSTER (Master Founder Account Only) ---
 const DEFAULT_ROSTER = [
   {
     id: "c0000000-0000-4000-8000-000000000001",
@@ -175,57 +175,7 @@ const DEFAULT_ROSTER = [
     department: "C-Level Executive",
     avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
     status: "Offline",
-    optimalHours: "08:00 - 17:00",
     checkedIn: false
-  },
-  {
-    id: "a7f0925a-4acb-45cb-a18a-e82876e828a6",
-    name: "Didan",
-    email: "didan@javelo.com",
-    password: "jtl123",
-    role: "employee",
-    mode: "Full WFH",
-    department: "Engineering",
-    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
-    status: "Offline",
-    checkedIn: false
-  },
-  {
-    id: "u-admin",
-    name: "Hendra Setiawan",
-    email: "hendra@javelo360.com",
-    password: "••••••••",
-    role: "admin",
-    mode: "Full WFH",
-    department: "C-Level Executive",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
-    status: "Online",
-    optimalHours: "08:00 - 16:00",
-    checkedIn: true
-  },
-  {
-    id: "3104be72-7cc0-4a09-9426-e2980ea88807",
-    name: "Acay",
-    email: "tester@javelo.com",
-    role: "employee",
-    mode: "Full WFH",
-    department: "Engineering",
-    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
-    status: "Offline",
-    checkedIn: false,
-    password: "123456"
-  },
-  {
-    id: "cb090fc7-a0e8-4edc-a8ce-83b5c2788b45",
-    name: "Bambang",
-    email: "bambang@gmail.com",
-    role: "employee",
-    mode: "Full WFH",
-    department: "Engineering",
-    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
-    status: "Offline",
-    checkedIn: false,
-    password: "123456"
   }
 ];
 
@@ -248,10 +198,11 @@ async function pushToCloudDatabase(fullDb) {
 
     const mergedDb = {
       companyInfo: fullDb.companyInfo || baseData.companyInfo,
-      users: fullDb.users || baseData.users || DEFAULT_ROSTER,
-      tickets: fullDb.tickets || baseData.tickets || [],
-      schedules: fullDb.schedules || baseData.schedules || [],
-      customTasks: fullDb.customTasks || baseData.customTasks || []
+      users: Array.isArray(fullDb.users) ? fullDb.users : (baseData.users || DEFAULT_ROSTER),
+      tickets: Array.isArray(fullDb.tickets) ? fullDb.tickets : (baseData.tickets || []),
+      notifications: Array.isArray(fullDb.notifications) ? fullDb.notifications : (baseData.notifications || []),
+      schedules: Array.isArray(fullDb.schedules) ? fullDb.schedules : (baseData.schedules || []),
+      customTasks: Array.isArray(fullDb.customTasks) ? fullDb.customTasks : (baseData.customTasks || [])
     };
 
     const jsonStr = JSON.stringify(mergedDb, null, 2);
@@ -359,6 +310,7 @@ function App() {
       if (payload.companyInfo) localStorage.setItem('javelo_company', JSON.stringify(payload.companyInfo));
       if (payload.users) localStorage.setItem('javelo_users', JSON.stringify(payload.users));
       if (payload.tickets) localStorage.setItem('javelo_tickets', JSON.stringify(payload.tickets));
+      if (payload.notifications) localStorage.setItem('javelo_notifications', JSON.stringify(payload.notifications));
       if (payload.customTasks) localStorage.setItem('javelo_tasks', JSON.stringify(payload.customTasks));
     } catch(e) {}
 
@@ -437,10 +389,46 @@ function App() {
           const cloudData = JSON.parse(jsonStr);
           if (cloudData) {
             if (Array.isArray(cloudData.users) && cloudData.users.length > 0) {
-              setUsers(prev => JSON.stringify(prev) !== JSON.stringify(cloudData.users) ? cloudData.users : prev);
+              setUsers(prev => {
+                if (JSON.stringify(prev) !== JSON.stringify(cloudData.users)) {
+                  try { localStorage.setItem('javelo_users', JSON.stringify(cloudData.users)); } catch(e){}
+                  return cloudData.users;
+                }
+                return prev;
+              });
+
+              // If logged-in employee was deleted by Admin, immediately log out and notify
+              if (currentUser) {
+                const userStillExists = cloudData.users.some(u => 
+                  u.id === currentUser.id || 
+                  (u.email && currentUser.email && u.email.toLowerCase() === currentUser.email.toLowerCase())
+                );
+                if (!userStillExists && currentUser.role !== 'admin') {
+                  setIsLoggedIn(false);
+                  setCurrentUser(null);
+                  try { localStorage.removeItem('javelo_current_user'); } catch(e){}
+                  alert("⚠️ Akun Anda telah dinonaktifkan atau dihapus oleh C-Level Admin.");
+                  return;
+                }
+              }
             }
             if (Array.isArray(cloudData.tickets)) {
-              setTickets(prev => JSON.stringify(prev) !== JSON.stringify(cloudData.tickets) ? cloudData.tickets : prev);
+              setTickets(prev => {
+                if (JSON.stringify(prev) !== JSON.stringify(cloudData.tickets)) {
+                  try { localStorage.setItem('javelo_tickets', JSON.stringify(cloudData.tickets)); } catch(e){}
+                  return cloudData.tickets;
+                }
+                return prev;
+              });
+            }
+            if (Array.isArray(cloudData.notifications)) {
+              setNotifications(prev => {
+                if (JSON.stringify(prev) !== JSON.stringify(cloudData.notifications)) {
+                  try { localStorage.setItem('javelo_notifications', JSON.stringify(cloudData.notifications)); } catch(e){}
+                  return cloudData.notifications;
+                }
+                return prev;
+              });
             }
             if (cloudData.companyInfo) {
               setCompanyInfo(prev => JSON.stringify(prev) !== JSON.stringify(cloudData.companyInfo) ? cloudData.companyInfo : prev);
@@ -652,10 +640,12 @@ function App() {
       setGeofenceMessage({ type: "error", text: "❌ Anda tidak dapat menghapus akun Anda sendiri!" });
       return;
     }
+    const targetUser = users.find(u => u.id === userId);
     const updatedUsers = users.filter(u => u.id !== userId);
     setUsers(updatedUsers);
+    try { localStorage.setItem('javelo_users', JSON.stringify(updatedUsers)); } catch(e){}
 
-    syncCloudDB({ companyInfo, users: updatedUsers, tickets, schedules, customTasks });
+    await syncCloudDB({ companyInfo, users: updatedUsers, tickets, notifications, schedules, customTasks });
 
     if (supabaseClient) {
       try {
@@ -665,24 +655,27 @@ function App() {
       }
     }
 
-    setGeofenceMessage({ type: "success", text: "🗑️ Akun karyawan berhasil dihapus secara permanen!" });
+    setGeofenceMessage({ type: "success", text: `🗑️ Akun karyawan ${targetUser?.name || ''} (${targetUser?.email || ''}) berhasil dihapus secara permanen!` });
   };
 
   const handleSendReminderAlert = (targetUser, ticketOrContext) => {
     const newNotif = {
-      id: "n-" + Date.now(),
-      userId: targetUser?.id || "u-1",
-      title: `🔔 Reminder from ${currentUser?.name || 'Admin'}`,
-      text: `Reminder for ${ticketOrContext?.code || 'Task'}: ${ticketOrContext?.subject || ticketOrContext || 'Action required'}`,
+      id: "notif-" + Date.now() + "-" + Math.random().toString(36).substr(2, 5),
+      userId: targetUser?.id,
+      userEmail: targetUser?.email ? targetUser.email.toLowerCase() : "",
+      title: `🔔 Reminder dari ${currentUser?.name || 'Admin'}`,
+      text: `Pengingat untuk ${ticketOrContext?.code || 'Tiket'}: ${ticketOrContext?.subject || ticketOrContext || 'Mohon segera ditindaklanjuti'}`,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       read: false,
       targetTab: 'tickets',
       targetTicketId: ticketOrContext?.id
     };
-    setNotifications(prev => [newNotif, ...prev]);
+    const updatedNotifs = [newNotif, ...(notifications || [])];
+    setNotifications(updatedNotifs);
+    syncCloudDB({ companyInfo, users, tickets, notifications: updatedNotifs, schedules, customTasks });
     setGeofenceMessage({
       type: "success",
-      text: `📧 Corporate Email Blast & In-App Reminder sent to ${targetUser?.name || 'Staff'}!`
+      text: `📧 In-App Reminder & Alert berhasil dikirimkan ke ${targetUser?.name || 'Staff'}!`
     });
   };
 
@@ -728,14 +721,27 @@ function App() {
   };
 
   const handleNotificationClick = (notif) => {
-    setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n));
+    const updated = (notifications || []).map(n => n.id === notif.id ? { ...n, read: true } : n);
+    setNotifications(updated);
+    syncCloudDB({ companyInfo, users, tickets, notifications: updated, schedules, customTasks });
     if (notif.targetTab) {
       setActiveTab(notif.targetTab);
     }
     if (notif.targetTicketId) {
-      const targetT = tickets.find(t => t.id === notif.targetTicketId);
+      const targetT = (tickets || []).find(t => t.id === notif.targetTicketId);
       if (targetT) setEditingTicket(targetT);
     }
+  };
+
+  const handleMarkAllNotificationsRead = () => {
+    const updated = (notifications || []).map(n => {
+      if (!n.userId || n.userId === currentUser?.id || (n.userEmail && n.userEmail === currentUser?.email?.toLowerCase())) {
+        return { ...n, read: true };
+      }
+      return n;
+    });
+    setNotifications(updated);
+    syncCloudDB({ companyInfo, users, tickets, notifications: updated, schedules, customTasks });
   };
 
   const handleConfirmCheckIn = (checkInData) => {
@@ -854,9 +860,9 @@ function App() {
           isTimerRunning,
           notifications: notifications || [],
           onNotificationClick: handleNotificationClick,
+          onMarkAllRead: handleMarkAllNotificationsRead,
           onOpenCheckInGate: () => setShowCheckInGateModal(true),
           onCheckOutClick: () => setShowCheckoutModal(true),
-          onOpenShiftPlanner: () => setShowShiftPlannerModal(true),
           onLogout: handleLogout
         }),
         e('div', { className: 'p-6 flex-1' },
@@ -905,29 +911,47 @@ function App() {
       companyInfo,
       onClose: () => setShowCreateTicketModal(false),
       onCreateTicket: (newTicket) => {
-        setTickets(prev => {
-          const updated = [newTicket, ...prev];
-          syncCloudDB({ companyInfo, users, tickets: updated, schedules, customTasks });
-          return updated;
-        });
-        setShowCreateTicketModal(false);
+        const updatedTickets = [newTicket, ...(tickets || [])];
+        setTickets(updatedTickets);
 
-        // Notify all mentioned users and assignee
-        const targetUserIds = [newTicket.assignedTo, ...(newTicket.mentionedUsers || [])];
+        // Build notifications for assignee & mentioned users
+        const targetUserIds = [newTicket.assignedTo, ...(newTicket.mentionedUsers || [])].filter(Boolean);
+        const newNotifList = [];
         targetUserIds.forEach(targetId => {
           const targetU = (users || []).find(u => u.id === targetId);
           if (targetU) {
-            setNotifications(prev => [{
-              id: "n-" + Date.now() + Math.random(),
+            newNotifList.push({
+              id: "notif-" + Date.now() + "-" + Math.random().toString(36).substr(2, 5),
               userId: targetU.id,
-              title: `🎫 New Ticket ${newTicket.code} (${newTicket.priority})`,
-              text: `${currentUser?.name} assigned/mentioned you: ${newTicket.subject}`,
+              userEmail: targetU.email ? targetU.email.toLowerCase() : "",
+              title: `🎫 Tiket Tugas Baru: ${newTicket.code} [${newTicket.priority}]`,
+              text: `${currentUser?.name || 'C-Level Admin'} menugaskan tiket: "${newTicket.subject}"`,
               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              date: new Date().toISOString().split('T')[0],
               read: false,
               targetTab: 'tickets',
               targetTicketId: newTicket.id
-            }, ...prev]);
+            });
           }
+        });
+
+        const updatedNotifs = [...newNotifList, ...(notifications || [])];
+        setNotifications(updatedNotifs);
+        setShowCreateTicketModal(false);
+
+        // Sync both tickets and notifications to cloud database so other devices immediately receive it
+        syncCloudDB({
+          companyInfo,
+          users,
+          tickets: updatedTickets,
+          notifications: updatedNotifs,
+          schedules,
+          customTasks
+        });
+
+        setGeofenceMessage({
+          type: "success",
+          text: `✅ Tiket ${newTicket.code} berhasil dibuat & notifikasi terkirim ke device karyawan!`
         });
       }
     }),
@@ -942,7 +966,7 @@ function App() {
       onSaveTicket: (updatedT) => {
         setTickets(prev => {
           const updated = prev.map(t => t.id === updatedT.id ? updatedT : t);
-          syncCloudDB({ companyInfo, users, tickets: updated, schedules, customTasks });
+          syncCloudDB({ companyInfo, users, tickets: updated, notifications, schedules, customTasks });
           return updated;
         });
         setEditingTicket(null);
@@ -955,6 +979,28 @@ function App() {
       users: users || [],
       onClose: () => setCommentingTicket(null),
       onPostComment: (ticketId, commentObj) => {
+        const tkt = (tickets || []).find(t => t.id === ticketId);
+        let updatedNotifs = notifications || [];
+        if (tkt) {
+          const recipientId = tkt.assignedTo === currentUser?.id ? tkt.assignedBy : tkt.assignedTo;
+          const targetU = (users || []).find(u => u.id === recipientId);
+          if (targetU && targetU.id !== currentUser?.id) {
+            const commentNotif = {
+              id: "notif-" + Date.now() + "-" + Math.random().toString(36).substr(2, 5),
+              userId: targetU.id,
+              userEmail: targetU.email ? targetU.email.toLowerCase() : "",
+              title: `💬 Komentar Tiket: ${tkt.code}`,
+              text: `${currentUser?.name || 'Staff'}: "${commentObj.text}"`,
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              date: new Date().toISOString().split('T')[0],
+              read: false,
+              targetTab: 'tickets',
+              targetTicketId: tkt.id
+            };
+            updatedNotifs = [commentNotif, ...updatedNotifs];
+            setNotifications(updatedNotifs);
+          }
+        }
         setTickets(prev => {
           const updated = prev.map(t => {
             if (t.id === ticketId) {
@@ -963,7 +1009,7 @@ function App() {
             }
             return t;
           });
-          syncCloudDB({ companyInfo, users, tickets: updated, schedules, customTasks });
+          syncCloudDB({ companyInfo, users, tickets: updated, notifications: updatedNotifs, schedules, customTasks });
           return updated;
         });
         setCommentingTicket(prev => prev ? { ...prev, comments: [...(prev.comments || []), commentObj] } : null);
@@ -1620,15 +1666,13 @@ function LoginScreen({ users, companyInfo, onLogin, onStartWizard }) {
       }
     } catch(e) {}
 
-    // 2. Ensure DEFAULT_ROSTER fallback is included
+    // 2. Only fallback to founder if allUsers is completely empty
     if (!allUsers || allUsers.length === 0) {
       allUsers = DEFAULT_ROSTER;
     }
-    DEFAULT_ROSTER.forEach(defU => {
-      if (!allUsers.some(u => u.email?.toLowerCase() === defU.email?.toLowerCase())) {
-        allUsers.push(defU);
-      }
-    });
+    if (!allUsers.some(u => u.email?.toLowerCase() === "cahaya@javeloterralestari.com")) {
+      allUsers = [DEFAULT_ROSTER[0], ...allUsers];
+    }
 
     // 3. Account lookup by Email, Name, ID, or Email Prefix
     const foundUser = allUsers.find(u => 
@@ -1651,7 +1695,7 @@ function LoginScreen({ users, companyInfo, onLogin, onStartWizard }) {
       setLoginError("");
       onLogin(foundUser);
     } else {
-      setLoginError(`Akun email (${email}) belum terdaftar di database server. Minta C-Level Admin untuk menambahkan akun dari C-Level Dashboard, atau klik Buat Akun Karyawan.`);
+      setLoginError(`Akun email (${email}) tidak terdaftar atau telah dinonaktifkan oleh Admin.`);
     }
   };
 
@@ -1808,10 +1852,23 @@ function Sidebar({ activeTab, setActiveTab, currentUser, users, companyInfo, ano
 }
 
 // --- HEADER COMPONENT WITH INTERACTIVE NOTIFICATIONS ---
-function Header({ currentUser, timerFormatted, isTimerRunning, notifications, onNotificationClick, onOpenCheckInGate, onCheckOutClick, onOpenShiftPlanner, onLogout }) {
+function Header({ currentUser, timerFormatted, isTimerRunning, notifications, onNotificationClick, onMarkAllRead, onOpenCheckInGate, onCheckOutClick, onLogout }) {
   const [showNotifPopover, setShowNotifPopover] = useState(false);
-  const safeNotifs = notifications || [];
-  const unreadCount = useMemo(() => safeNotifs.filter(n => !n.read).length, [safeNotifs]);
+
+  // Filter notifications specifically for the logged-in user
+  const userNotifs = useMemo(() => {
+    const list = notifications || [];
+    if (!currentUser) return [];
+    return list.filter(n => {
+      if (n.userId && n.userId === currentUser.id) return true;
+      if (n.userEmail && currentUser.email && n.userEmail.toLowerCase() === currentUser.email.toLowerCase()) return true;
+      if (!n.userId && !n.userEmail) return true; // broadcast
+      if (currentUser.role === 'admin' && n.targetRole === 'admin') return true;
+      return false;
+    });
+  }, [notifications, currentUser]);
+
+  const unreadCount = useMemo(() => userNotifs.filter(n => !n.read).length, [userNotifs]);
 
   return e('header', { className: 'h-auto md:h-16 py-3 md:py-0 bg-white border-b border-slate-200 px-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-3 sticky top-0 z-10 shadow-sm relative' },
     e('div', { className: 'flex flex-wrap items-center justify-center md:justify-start gap-2.5 w-full md:w-auto' },
@@ -1840,15 +1897,15 @@ function Header({ currentUser, timerFormatted, isTimerRunning, notifications, on
 
         showNotifPopover && e('div', { className: 'notification-popover' },
           e('div', { className: 'p-4 border-b bg-slate-50 flex items-center justify-between' },
-            e('h4', { className: 'font-extrabold text-xs text-slate-900' }, 'Notifications & Alerts (Click to Navigate)'),
+            e('h4', { className: 'font-extrabold text-xs text-slate-900' }, `Notifications & Alerts (${unreadCount} New)`),
             e('button', {
-              onClick: () => { notifications.forEach(n => n.read = true); },
+              onClick: onMarkAllRead,
               className: 'text-[10px] text-blue-600 font-bold hover:underline cursor-pointer'
             }, 'Mark all read')
           ),
           e('div', { className: 'max-h-72 overflow-y-auto divide-y' },
-            safeNotifs.length === 0 ? e('div', { className: 'p-6 text-center text-xs text-slate-400' }, 'No notifications yet.') :
-            safeNotifs.map(n => e('div', {
+            userNotifs.length === 0 ? e('div', { className: 'p-6 text-center text-xs text-slate-400' }, 'No notifications yet.') :
+            userNotifs.map(n => e('div', {
               key: n.id,
               onClick: () => { onNotificationClick(n); setShowNotifPopover(false); },
               className: `p-3.5 text-xs transition-all cursor-pointer hover:bg-blue-100/50 ${n.read ? 'bg-white' : 'bg-blue-50/50 font-medium'}`
@@ -2207,7 +2264,7 @@ function SkyOffice2DPixelMap({ users, tickets }) {
 function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTicket, onEditTicket, onOpenComments, onOpenHistory, onDeleteTicket, onSendReminder }) {
   const [filterDivision, setFilterDivision] = useState("All");
   const [searchCode, setSearchCode] = useState("");
-  const divisions = ["All", "General", "Engineering", "Operations", "Product", "Quality Control"];
+  const divisions = ["All", "🎯 Tugas Saya", "General", "Engineering", "Operations", "Product", "Quality Control"];
 
   const isAdmin = currentUser?.role === 'admin';
   const safeTickets = tickets || [];
@@ -2215,11 +2272,16 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
 
   const filteredTickets = useMemo(() => {
     return safeTickets.filter(t => {
-      const matchDiv = filterDivision === "All" ? true : (Array.isArray(t.division) ? t.division.includes(filterDivision) : t.division === filterDivision);
+      let matchDiv = true;
+      if (filterDivision === "🎯 Tugas Saya") {
+        matchDiv = t.assignedTo === currentUser?.id || (t.mentionedUsers && t.mentionedUsers.includes(currentUser?.id));
+      } else if (filterDivision !== "All") {
+        matchDiv = Array.isArray(t.division) ? t.division.includes(filterDivision) : t.division === filterDivision;
+      }
       const matchSearch = searchCode ? (t.code.toLowerCase().includes(searchCode.toLowerCase()) || t.subject.toLowerCase().includes(searchCode.toLowerCase())) : true;
       return matchDiv && matchSearch;
     });
-  }, [safeTickets, filterDivision, searchCode]);
+  }, [safeTickets, filterDivision, searchCode, currentUser]);
 
   // SEPARATE ACTIVE TICKETS VS COMPLETED / PAST TICKETS
   const activeTickets = useMemo(() => filteredTickets.filter(t => t.status !== 'Done'), [filteredTickets]);
@@ -2330,8 +2392,9 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
             ),
 
             e('div', { className: 'flex items-center justify-between pt-3 border-t text-xs' },
-              e('div', { className: 'flex items-center gap-2' },
+              e('div', { className: 'flex items-center gap-2 flex-wrap' },
                 e('span', { className: 'text-slate-700 font-bold' }, `Assignee: ${assignee ? assignee.name : 'Unassigned'}`),
+                (assignee && currentUser && assignee.id === currentUser.id) && e('span', { className: 'bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold' }, '👤 Ditugaskan ke Anda'),
                 e('button', {
                   onClick: (ev) => { ev.stopPropagation(); onOpenComments(t); },
                   className: 'px-2.5 py-1 bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-800 rounded-lg text-[10px] font-bold flex items-center gap-1 cursor-pointer'

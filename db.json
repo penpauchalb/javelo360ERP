@@ -23,18 +23,6 @@
       "checkedIn": false
     },
     {
-      "id": "a7f0925a-4acb-45cb-a18a-e82876e828a6",
-      "name": "Didan",
-      "email": "didan@javelo.com",
-      "password": "jtl123",
-      "role": "employee",
-      "mode": "Full WFH",
-      "department": "Engineering",
-      "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
-      "status": "Offline",
-      "checkedIn": false
-    },
-    {
       "id": "u-admin",
       "name": "Hendra Setiawan",
       "email": "hendra@javelo360.com",
@@ -115,6 +103,7 @@
       ]
     }
   ],
+  "notifications": [],
   "schedules": [
     {
       "id": "0e52ff78-0092-4ee8-a9a1-20757b02a6dd",
