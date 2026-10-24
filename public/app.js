@@ -592,16 +592,27 @@ function App() {
 
               // If logged-in employee was deleted by Admin, immediately log out and notify
               if (currentUser) {
-                const userStillExists = cloudData.users.some(u => 
+                const matchedUser = cloudData.users.find(u => 
                   u.id === currentUser.id || 
                   (u.email && currentUser.email && u.email.toLowerCase() === currentUser.email.toLowerCase())
                 );
-                if (!userStillExists && currentUser.role !== 'admin') {
+                if (!matchedUser && currentUser.role !== 'admin') {
                   setIsLoggedIn(false);
                   setCurrentUser(null);
                   try { localStorage.removeItem('javelo_current_user'); } catch(e){}
                   alert("⚠️ Akun Anda telah dinonaktifkan atau dihapus oleh C-Level Admin.");
                   return;
+                } else if (matchedUser) {
+                  // Keep currentUser profile (avatar, name, department) in sync with cloud without losing session status
+                  setCurrentUser(prev => {
+                    if (!prev) return matchedUser;
+                    if (prev.avatar !== matchedUser.avatar || prev.name !== matchedUser.name || prev.department !== matchedUser.department || prev.role !== matchedUser.role) {
+                      const merged = { ...prev, ...matchedUser };
+                      try { localStorage.setItem('javelo_current_user', JSON.stringify(merged)); } catch(e){}
+                      return merged;
+                    }
+                    return prev;
+                  });
                 }
               }
             }
@@ -1082,6 +1093,7 @@ function App() {
         anomalyCount: (anomalies || []).filter(a => !a.resolved).length,
         onLogout: handleLogout,
         onStartWizard: () => setShowSetupWizard(true),
+        onOpenPhotoCrop: () => setShowPhotoCropModal(true),
         language,
         t
       }),
@@ -1096,6 +1108,7 @@ function App() {
           onOpenCheckInGate: () => setShowCheckInGateModal(true),
           onCheckOutClick: () => setShowCheckoutModal(true),
           onLogout: handleLogout,
+          onOpenPhotoCrop: () => setShowPhotoCropModal(true),
           language,
           setLanguage,
           t
@@ -1107,7 +1120,7 @@ function App() {
           activeTab === 'virtual-office' && e(SkyOffice2DPixelMap, { users: users || [], tickets: tickets || [] }),
           activeTab === 'clevel' && (currentUser?.role === 'admin' ? e(CLevelDashboard, { users: users || [], tickets: tickets || [], anomalies: anomalies || [], schedules: schedules || [], onResolveAnomaly: id => setAnomalies(prev => prev.map(a => a.id === id ? { ...a, resolved: true } : a)), onOpenCreateUser: () => setShowCreateUserModal(true), onOpenAnnouncement: () => setShowAnnouncementModal(true), onOpenCreateTicket: () => setShowCreateTicketModal(true), onOpenActiveStaff: () => setShowActiveStaffModal(true), onInspectEmployee: (u) => setCLevelInspectedUser(u), onDeleteUser: handleDeleteUser, isSupabaseReady, serverUrl: apiUrl, language, t }) : e('div', { className: 'p-8 text-center bg-rose-50 border border-rose-200 text-rose-800 font-bold rounded-2xl text-xs' }, '🔒 Access Restricted: C-Level Executive Master Dashboard is restricted to C-Level Admin accounts.')),
           activeTab === 'chat' && e(ChatEcosystem, { users: users || [], currentUser, tickets: tickets || [], chatMessages, setChatMessages, chatGroups, setChatGroups, onSendReminder: handleSendReminderAlert, syncCloudDB, companyInfo, language, t }),
-          activeTab === 'settings' && e(SettingsPanel, { currentUser, setCurrentUser, companyInfo, isDarkMode, setIsDarkMode, apiUrl, setApiUrl, onOpenPhotoCrop: () => setShowPhotoCropModal(true), onStartWizard: () => setShowSetupWizard(true), language, setLanguage, t })
+          activeTab === 'settings' && e(SettingsPanel, { currentUser, setCurrentUser, companyInfo, isDarkMode, setIsDarkMode, apiUrl, setApiUrl, onOpenPhotoCrop: () => setShowPhotoCropModal(true), onStartWizard: () => setShowSetupWizard(true), language, setLanguage, t, users: users || [], setUsers, syncCloudDB, tickets: tickets || [], notifications: notifications || [], chatMessages: chatMessages || [], chatGroups: chatGroups || [], schedules: schedules || [], customTasks: customTasks || [] })
         )
       )
     ),
@@ -1330,10 +1343,38 @@ function App() {
 
     showPhotoCropModal && e(ProfilePhotoCropModal, {
       currentAvatar: currentUser?.avatar,
+      language,
+      t,
       onClose: () => setShowPhotoCropModal(false),
       onSaveAvatar: (newAvatarDataUrl) => {
-        setCurrentUser(prev => ({ ...prev, avatar: newAvatarDataUrl }));
-        setUsers(prev => prev.map(u => u.id === currentUser?.id ? { ...u, avatar: newAvatarDataUrl } : u));
+        if (!newAvatarDataUrl || !currentUser) return;
+        const updatedCurrentUser = { ...currentUser, avatar: newAvatarDataUrl };
+        const updatedUsersList = (users || []).map(u => 
+          (u.id === currentUser.id || (u.email && currentUser.email && u.email.toLowerCase() === currentUser.email.toLowerCase()))
+            ? { ...u, avatar: newAvatarDataUrl }
+            : u
+        );
+
+        setCurrentUser(updatedCurrentUser);
+        setUsers(updatedUsersList);
+
+        try {
+          localStorage.setItem('javelo_current_user', JSON.stringify(updatedCurrentUser));
+          localStorage.setItem('javelo_users', JSON.stringify(updatedUsersList));
+        } catch (e) {
+          console.warn("LocalStorage save avatar note:", e);
+        }
+
+        syncCloudDB({
+          companyInfo,
+          users: updatedUsersList,
+          tickets,
+          notifications,
+          chatMessages,
+          chatGroups,
+          schedules,
+          customTasks
+        });
       }
     })
   );
@@ -1714,16 +1755,32 @@ function CLevelEmployeeInspectorModal({ inspectedUser, tickets, schedules, users
 }
 
 // --- PROFILE PHOTO ATTACH, CROP & BRIGHTNESS STUDIO MODAL ---
-function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar }) {
+function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar, language, t }) {
   const [imageSrc, setImageSrc] = useState(currentAvatar || "");
   const [zoom, setZoom] = useState(100);
   const [brightness, setBrightness] = useState(100);
+  const [customUrl, setCustomUrl] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef(null);
   const imgRef = useRef(null);
+  const lang = language || 'id';
+
+  const PRESET_AVATARS = [
+    { label: 'Executive 1', url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=240&auto=format&fit=crop&q=80' },
+    { label: 'Executive 2', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240&auto=format&fit=crop&q=80' },
+    { label: 'Engineer 1', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&auto=format&fit=crop&q=80' },
+    { label: 'Engineer 2', url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=240&auto=format&fit=crop&q=80' },
+    { label: 'Manager 1', url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=240&auto=format&fit=crop&q=80' },
+    { label: 'Manager 2', url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=240&auto=format&fit=crop&q=80' }
+  ];
 
   const handleFileSelect = (ev) => {
     const file = ev.target.files && ev.target.files[0];
     if (file) {
+      if (file.size > 15 * 1024 * 1024) {
+        alert(lang === 'en' ? "Image file is too large. Please select an image under 15MB." : "Ukuran foto terlalu besar. Silakan pilih foto di bawah 15MB.");
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (e) => {
         setImageSrc(e.target.result);
@@ -1733,35 +1790,69 @@ function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar }) {
   };
 
   const handleSaveCroppedImage = () => {
-    if (!imgRef.current) return;
-    const img = imgRef.current;
-    const canvas = document.createElement('canvas');
-    canvas.width = 240;
-    canvas.height = 240;
-    const ctx = canvas.getContext('2d');
+    if (!imageSrc) return;
+    setIsSaving(true);
 
-    ctx.filter = `brightness(${brightness}%)`;
+    try {
+      const isDataUrl = imageSrc.startsWith('data:');
+      const img = imgRef.current;
 
-    const scale = zoom / 100;
-    const sw = img.naturalWidth / scale;
-    const sh = img.naturalHeight / scale;
-    const sx = Math.max(0, (img.naturalWidth - sw) / 2);
-    const sy = Math.max(0, (img.naturalHeight - sh) / 2);
+      // If user selected a preset or remote URL and didn't touch sliders, apply directly
+      if (!isDataUrl && zoom === 100 && brightness === 100) {
+        onSaveAvatar(imageSrc);
+        onClose();
+        return;
+      }
 
-    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 240, 240);
-    const resultDataUrl = canvas.toDataURL('image/png');
-    onSaveAvatar(resultDataUrl);
-    onClose();
+      if (img && img.complete && img.naturalWidth > 0) {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = 240;
+          canvas.height = 240;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.filter = `brightness(${brightness}%)`;
+            const scale = (zoom || 100) / 100;
+            const nw = img.naturalWidth;
+            const nh = img.naturalHeight;
+            const sw = nw / scale;
+            const sh = nh / scale;
+            const sx = Math.max(0, (nw - sw) / 2);
+            const sy = Math.max(0, (nh - sh) / 2);
+
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 240, 240);
+            const cropped = canvas.toDataURL('image/jpeg', 0.85);
+            onSaveAvatar(cropped);
+            onClose();
+            return;
+          }
+        } catch (canvasErr) {
+          console.warn("Canvas crop note (fallback to direct):", canvasErr);
+        }
+      }
+
+      onSaveAvatar(imageSrc);
+      onClose();
+    } catch (err) {
+      console.warn("Save avatar error:", err);
+      onSaveAvatar(imageSrc);
+      onClose();
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
-    e('div', { className: 'bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-slate-100' },
+  return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto' },
+    e('div', { className: 'bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 border border-slate-100 my-auto' },
       e('div', { className: 'flex justify-between items-center border-b pb-3' },
-        e('h3', { className: 'font-bold text-slate-900 text-base flex items-center gap-2' }, '📸 Upload & Crop Profile Photo Studio'),
-        e('button', { onClick: onClose, className: 'font-bold text-slate-400 cursor-pointer' }, '✕')
+        e('h3', { className: 'font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2' },
+          '📸 ' + (lang === 'en' ? 'Profile Photo Studio & Avatar' : 'Studio Foto Profil & Avatar')
+        ),
+        e('button', { onClick: onClose, className: 'font-bold text-slate-400 hover:text-slate-600 cursor-pointer p-1 text-sm' }, '✕')
       ),
 
       e('div', { className: 'space-y-4 text-xs' },
+        // Hidden File Input
         e('input', {
           type: 'file',
           ref: fileInputRef,
@@ -1770,21 +1861,64 @@ function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar }) {
           className: 'hidden'
         }),
 
+        // Upload Button
         e('button', {
           type: 'button',
           onClick: () => fileInputRef.current && fileInputRef.current.click(),
-          className: 'w-full py-3 bg-blue-50 hover:bg-blue-100 text-blue-600 font-extrabold rounded-xl border border-blue-200 flex items-center justify-center gap-2 cursor-pointer shadow-xs'
-        }, '📁 Attach Photo File from Computer / Gallery'),
+          className: 'w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-md transition'
+        }, '📁 ' + (lang === 'en' ? 'Upload Photo from Device / Gallery' : 'Pilih Foto dari Galeri / Komputer')),
 
-        imageSrc && e('div', { className: 'space-y-4 pt-2' },
-          e('div', { className: 'relative w-44 h-44 mx-auto rounded-full overflow-hidden border-4 border-blue-600 shadow-xl bg-slate-900 flex items-center justify-center' },
+        // Quick Preset Avatars
+        e('div', { className: 'bg-slate-50 p-3 rounded-2xl border border-slate-200/80 space-y-2' },
+          e('div', { className: 'font-bold text-[11px] text-slate-600 flex justify-between items-center' },
+            e('span', null, lang === 'en' ? 'Or pick a professional preset:' : 'Atau pilih avatar siap pakai:'),
+            e('span', { className: 'text-[10px] text-slate-400' }, '1-Tap')
+          ),
+          e('div', { className: 'grid grid-cols-6 gap-2' },
+            PRESET_AVATARS.map((p, idx) => e('button', {
+              key: idx,
+              type: 'button',
+              onClick: () => { setImageSrc(p.url); setZoom(100); setBrightness(100); },
+              className: `relative rounded-full p-0.5 border-2 transition cursor-pointer hover:scale-110 ${imageSrc === p.url ? 'border-blue-600 ring-2 ring-blue-300' : 'border-transparent hover:border-slate-300'}`
+            },
+              e('img', { src: p.url, className: 'w-10 h-10 rounded-full object-cover shadow-xs' })
+            ))
+          )
+        ),
+
+        // Paste URL option
+        e('div', { className: 'flex gap-2' },
+          e('input', {
+            type: 'url',
+            placeholder: lang === 'en' ? 'Or paste image URL (https://...)' : 'Atau tempel link URL foto (https://...)',
+            value: customUrl,
+            onChange: ev => setCustomUrl(ev.target.value),
+            className: 'flex-1 px-3 py-2 border rounded-xl text-xs bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500'
+          }),
+          e('button', {
+            type: 'button',
+            onClick: () => {
+              if (customUrl.trim()) {
+                setImageSrc(customUrl.trim());
+                setZoom(100);
+                setBrightness(100);
+              }
+            },
+            className: 'px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs cursor-pointer transition'
+          }, lang === 'en' ? 'Use' : 'Terapkan')
+        ),
+
+        // Photo Preview and Adjustment Controls
+        imageSrc && e('div', { className: 'space-y-4 pt-1' },
+          e('div', { className: 'relative w-36 h-36 sm:w-40 sm:h-40 mx-auto rounded-full overflow-hidden border-4 border-blue-600 shadow-xl bg-slate-900 flex items-center justify-center' },
             e('img', {
               ref: imgRef,
               src: imageSrc,
+              crossOrigin: 'anonymous',
               style: {
                 filter: `brightness(${brightness}%)`,
                 transform: `scale(${zoom / 100})`,
-                transition: 'filter 0.1s ease, transform 0.1s ease',
+                transition: 'filter 0.05s ease, transform 0.05s ease',
                 maxHeight: '100%',
                 maxWidth: '100%',
                 objectFit: 'cover'
@@ -1792,10 +1926,10 @@ function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar }) {
             })
           ),
 
-          e('div', { className: 'space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200' },
+          e('div', { className: 'space-y-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200' },
             e('div', null,
-              e('div', { className: 'flex justify-between font-bold mb-1 text-slate-700' },
-                e('span', null, '☀️ Adjust Brightness'),
+              e('div', { className: 'flex justify-between font-bold mb-1 text-slate-700 text-[11px]' },
+                e('span', null, '☀️ ' + (lang === 'en' ? 'Brightness' : 'Kecerahan')),
                 e('span', { className: 'font-mono text-blue-600' }, `${brightness}%`)
               ),
               e('input', {
@@ -1803,14 +1937,14 @@ function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar }) {
                 min: 50,
                 max: 150,
                 value: brightness,
-                onChange: ev => setBrightness(ev.target.value),
+                onChange: ev => setBrightness(Number(ev.target.value)),
                 className: 'w-full accent-blue-600 cursor-pointer'
               })
             ),
 
             e('div', null,
-              e('div', { className: 'flex justify-between font-bold mb-1 text-slate-700' },
-                e('span', null, '🔍 Adjust Crop Zoom'),
+              e('div', { className: 'flex justify-between font-bold mb-1 text-slate-700 text-[11px]' },
+                e('span', null, '🔍 ' + (lang === 'en' ? 'Zoom & Crop' : 'Zoom & Skala')),
                 e('span', { className: 'font-mono text-purple-600' }, `${zoom}%`)
               ),
               e('input', {
@@ -1818,21 +1952,29 @@ function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar }) {
                 min: 50,
                 max: 200,
                 value: zoom,
-                onChange: ev => setZoom(ev.target.value),
+                onChange: ev => setZoom(Number(ev.target.value)),
                 className: 'w-full accent-purple-600 cursor-pointer'
               })
             )
           )
         ),
 
+        // Modal Action Buttons
         e('div', { className: 'flex justify-end gap-2 pt-3 border-t' },
-          e('button', { type: 'button', onClick: onClose, className: 'font-semibold px-4 cursor-pointer' }, 'Cancel'),
+          e('button', {
+            type: 'button',
+            onClick: onClose,
+            className: 'font-semibold px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer transition'
+          }, lang === 'en' ? 'Cancel' : 'Batal'),
           e('button', {
             type: 'button',
             onClick: handleSaveCroppedImage,
-            disabled: !imageSrc,
-            className: 'px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl font-bold shadow cursor-pointer'
-          }, '✓ Save & Apply Avatar')
+            disabled: !imageSrc || isSaving,
+            className: 'px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl font-bold shadow-md cursor-pointer transition flex items-center gap-1.5'
+          },
+            e('span', null, isSaving ? '⏳' : '✓'),
+            lang === 'en' ? 'Save & Apply Avatar' : 'Simpan & Terapkan Foto'
+          )
         )
       )
     )
@@ -2042,7 +2184,7 @@ function LoginScreen({ users, companyInfo, onLogin, onStartWizard }) {
 }
 
 // --- SIDEBAR COMPONENT ---
-function Sidebar({ activeTab, setActiveTab, currentUser, users, companyInfo, anomalyCount, onLogout, onStartWizard, language, t }) {
+function Sidebar({ activeTab, setActiveTab, currentUser, users, companyInfo, anomalyCount, onLogout, onStartWizard, onOpenPhotoCrop, language, t }) {
   const isAdmin = currentUser?.role === 'admin';
 
   const menuItems = [
@@ -2104,12 +2246,21 @@ function Sidebar({ activeTab, setActiveTab, currentUser, users, companyInfo, ano
         onClick: onStartWizard,
         className: 'w-full py-2 bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 font-bold rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer'
       }, e(IconSparkles, { className: 'w-4 h-4 text-purple-600' }), 'Setup Wizard'),
-      e('div', { className: 'flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200/60' },
+      
+      // Clickable Current User Card to trigger Photo Studio
+      e('div', {
+        onClick: onOpenPhotoCrop,
+        className: 'flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200/60 cursor-pointer hover:bg-blue-50/50 hover:border-blue-200 transition group',
+        title: language === 'en' ? 'Click to change profile photo' : 'Klik untuk ganti foto profil'
+      },
         e('div', { className: 'flex items-center gap-2.5' },
-          e('img', { src: currentUser?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80", className: 'w-9 h-9 rounded-full object-cover' }),
+          e('div', { className: 'relative' },
+            e('img', { src: currentUser?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80", className: 'w-9 h-9 rounded-full object-cover border border-slate-200' }),
+            e('span', { className: 'absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-blue-600 text-white text-[9px] flex items-center justify-center shadow-xs' }, '📷')
+          ),
           e('div', { className: 'overflow-hidden' },
-            e('h4', { className: 'font-semibold text-slate-900 text-xs truncate' }, currentUser?.name || "Admin"),
-            e('span', { className: `inline-block text-[10px] px-2 py-0.5 rounded font-bold mt-0.5 ${currentUser?.mode === 'Full WFO' ? 'bg-emerald-100 text-emerald-800' : currentUser?.mode === 'Hybrid' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}` }, currentUser?.mode || 'C-Level')
+            e('h4', { className: 'font-semibold text-slate-900 text-xs truncate group-hover:text-blue-600' }, currentUser?.name || "Admin"),
+            e('span', { className: 'inline-block text-[10px] text-blue-600 font-semibold' }, language === 'en' ? 'Change Photo ✎' : 'Ganti Foto ✎')
           )
         )
       ),
@@ -2122,7 +2273,7 @@ function Sidebar({ activeTab, setActiveTab, currentUser, users, companyInfo, ano
 }
 
 // --- HEADER COMPONENT WITH INTERACTIVE NOTIFICATIONS ---
-function Header({ currentUser, timerFormatted, isTimerRunning, notifications, onNotificationClick, onMarkAllRead, onOpenCheckInGate, onCheckOutClick, onLogout, language, setLanguage, t }) {
+function Header({ currentUser, timerFormatted, isTimerRunning, notifications, onNotificationClick, onMarkAllRead, onOpenCheckInGate, onCheckOutClick, onLogout, onOpenPhotoCrop, language, setLanguage, t }) {
   const [showNotifPopover, setShowNotifPopover] = useState(false);
 
   // Filter notifications specifically for the logged-in user
@@ -2143,8 +2294,17 @@ function Header({ currentUser, timerFormatted, isTimerRunning, notifications, on
   return e('header', { className: 'h-auto md:h-16 py-2.5 md:py-0 bg-white border-b border-slate-200 px-3 md:px-6 flex flex-row items-center justify-between gap-2 sticky top-0 z-30 shadow-xs' },
     // Left side: Timer & Check-in / Out
     e('div', { className: 'flex items-center gap-2' },
-      // Mobile Brand Icon
-      e('div', { className: 'md:hidden w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-extrabold text-sm shadow-xs flex-shrink-0' }, 'J'),
+      // Mobile Avatar with click to change photo
+      e('div', {
+        onClick: onOpenPhotoCrop,
+        className: 'md:hidden w-8 h-8 rounded-full overflow-hidden border-2 border-blue-600 shadow-xs flex-shrink-0 cursor-pointer relative',
+        title: language === 'en' ? 'Change Photo' : 'Ganti Foto'
+      },
+        e('img', {
+          src: currentUser?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+          className: 'w-full h-full object-cover'
+        })
+      ),
       e('div', { className: 'flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full font-mono text-xs font-semibold text-slate-800 flex-shrink-0' },
         e('span', { className: 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse' }),
         e('span', null, timerFormatted)
@@ -2203,6 +2363,19 @@ function Header({ currentUser, timerFormatted, isTimerRunning, notifications, on
             ))
           )
         )
+      ),
+
+      // Desktop Avatar Quick Button
+      e('button', {
+        onClick: onOpenPhotoCrop,
+        className: 'hidden sm:flex items-center gap-1.5 p-1 pr-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 cursor-pointer transition text-xs font-semibold text-slate-700',
+        title: language === 'en' ? 'Click to change profile photo' : 'Klik untuk ganti foto profil'
+      },
+        e('img', {
+          src: currentUser?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+          className: 'w-6 h-6 rounded-full object-cover border border-slate-200'
+        }),
+        e('span', { className: 'text-[11px] font-bold text-slate-800 truncate max-w-[90px]' }, currentUser?.name?.split(' ')[0] || 'User')
       ),
 
       // Online Status Pill
@@ -4190,7 +4363,7 @@ function OrganizationSetupWizard({ companyInfo, onCancel, onLoadDemo, onFinish }
 }
 
 // --- SETTINGS PANEL ---
-function SettingsPanel({ currentUser, setCurrentUser, companyInfo, isDarkMode, setIsDarkMode, apiUrl, setApiUrl, onOpenPhotoCrop, onStartWizard }) {
+function SettingsPanel({ currentUser, setCurrentUser, companyInfo, isDarkMode, setIsDarkMode, apiUrl, setApiUrl, onOpenPhotoCrop, onStartWizard, language, setLanguage, t, users, setUsers, syncCloudDB, tickets, notifications, chatMessages, chatGroups, schedules, customTasks }) {
   const [name, setName] = useState(currentUser?.name || "");
   const [email, setEmail] = useState(currentUser?.email || "");
   const [customApiUrl, setCustomApiUrl] = useState(apiUrl || "http://localhost:3000");
@@ -4199,11 +4372,33 @@ function SettingsPanel({ currentUser, setCurrentUser, companyInfo, isDarkMode, s
 
   const handleSaveProfile = (ev) => {
     ev.preventDefault();
-    if (setCurrentUser && currentUser) {
-      setCurrentUser({
-        ...currentUser,
-        name,
-        email
+    if (!currentUser) return;
+    const updatedCurrentUser = {
+      ...currentUser,
+      name,
+      email
+    };
+    const updatedUsersList = (users || []).map(u => 
+      (u.id === currentUser.id || (u.email && currentUser.email && u.email.toLowerCase() === currentUser.email.toLowerCase()))
+        ? { ...u, name, email }
+        : u
+    );
+    if (setCurrentUser) setCurrentUser(updatedCurrentUser);
+    if (setUsers) setUsers(updatedUsersList);
+    try {
+      localStorage.setItem('javelo_current_user', JSON.stringify(updatedCurrentUser));
+      localStorage.setItem('javelo_users', JSON.stringify(updatedUsersList));
+    } catch(e) {}
+    if (typeof syncCloudDB === 'function') {
+      syncCloudDB({
+        companyInfo,
+        users: updatedUsersList,
+        tickets,
+        notifications,
+        chatMessages,
+        chatGroups,
+        schedules,
+        customTasks
       });
     }
     setSavedMsg(true);
