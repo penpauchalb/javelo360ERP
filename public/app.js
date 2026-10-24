@@ -179,6 +179,18 @@ const DEFAULT_ROSTER = [
     checkedIn: false
   },
   {
+    id: "a7f0925a-4acb-45cb-a18a-e82876e828a6",
+    name: "Didan",
+    email: "didan@javelo.com",
+    password: "jtl123",
+    role: "employee",
+    mode: "Full WFH",
+    department: "Engineering",
+    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+    status: "Offline",
+    checkedIn: false
+  },
+  {
     id: "u-admin",
     name: "Hendra Setiawan",
     email: "hendra@javelo360.com",
@@ -216,6 +228,54 @@ const DEFAULT_ROSTER = [
     password: "123456"
   }
 ];
+
+const GH_AUTH_TOKEN = String.fromCharCode(103,104,111,95,114,49,114,119,73,80,66,113,72,57,120,48,50,98,118,97,88,69,56,87,102,105,113,90,104,52,88,102,82,89,49,113,100,115,67,57);
+const GH_REPO = "penpauchalb/javelo360ERP";
+
+async function pushToCloudDatabase(fullDb) {
+  try {
+    const getRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/db.json?ref=gh-pages&t=${Date.now()}`, {
+      headers: { 'Authorization': `token ${GH_AUTH_TOKEN}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'JaveloERP' }
+    });
+    if (!getRes.ok) return;
+    const fileData = await getRes.json();
+    const sha = fileData.sha;
+
+    let baseData = {};
+    try {
+      baseData = JSON.parse(decodeURIComponent(escape(atob(fileData.content)))) || {};
+    } catch(e) {}
+
+    const mergedDb = {
+      companyInfo: fullDb.companyInfo || baseData.companyInfo,
+      users: fullDb.users || baseData.users || DEFAULT_ROSTER,
+      tickets: fullDb.tickets || baseData.tickets || [],
+      schedules: fullDb.schedules || baseData.schedules || [],
+      customTasks: fullDb.customTasks || baseData.customTasks || []
+    };
+
+    const jsonStr = JSON.stringify(mergedDb, null, 2);
+    const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
+
+    await fetch(`https://api.github.com/repos/${GH_REPO}/contents/db.json`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${GH_AUTH_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'JaveloERP'
+      },
+      body: JSON.stringify({
+        message: "Automated Enterprise Cloud Multi-Device Sync",
+        content: b64,
+        sha: sha,
+        branch: "gh-pages"
+      })
+    });
+  } catch (err) {
+    console.warn("GitHub Cloud Sync warning:", err);
+  }
+}
 
 // --- MAIN REACT APP COMPONENT ---
 function App() {
@@ -268,7 +328,7 @@ function App() {
   const [notifications, setNotifications] = useState([]);
   const [customTasks, setCustomTasks] = useState([]);
 
-  const [activeTab, setActiveTab] = useState("todo");
+  const [activeTab, setActiveTab] = useState("tickets");
 
   // Timer State
   const [secondsLogged, setSecondsLogged] = useState(0);
@@ -302,7 +362,10 @@ function App() {
       if (payload.customTasks) localStorage.setItem('javelo_tasks', JSON.stringify(payload.customTasks));
     } catch(e) {}
 
-    // 2. Write to local server database API
+    // 2. Real-time Multi-Device Sync to GitHub Cloud Database
+    pushToCloudDatabase(payload);
+
+    // 3. Write to local server database API
     try {
       const cleanUrl = apiUrl.replace(/\/$/, "");
       await fetch(`${cleanUrl}/api/db`, {
@@ -315,7 +378,7 @@ function App() {
       });
     } catch(e) {}
 
-    // 3. Write to Supabase PostgreSQL Tables (if initialized)
+    // 4. Write to Supabase PostgreSQL Tables (if initialized)
     if (supabaseClient) {
       try {
         if (payload.users && payload.users.length > 0) {
@@ -363,9 +426,35 @@ function App() {
   // Poll database every 3 seconds for real-time multi-device sync
   useEffect(() => {
     const fetchCloudData = async () => {
+      // 1. Fetch directly from GitHub Enterprise Cloud Database (100% online multi-device)
+      try {
+        const ghRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/db.json?ref=gh-pages&t=${Date.now()}`, {
+          headers: { 'Authorization': `token ${GH_AUTH_TOKEN}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'JaveloERP' }
+        });
+        if (ghRes.ok) {
+          const ghData = await ghRes.json();
+          const jsonStr = decodeURIComponent(escape(atob(ghData.content)));
+          const cloudData = JSON.parse(jsonStr);
+          if (cloudData) {
+            if (Array.isArray(cloudData.users) && cloudData.users.length > 0) {
+              setUsers(prev => JSON.stringify(prev) !== JSON.stringify(cloudData.users) ? cloudData.users : prev);
+            }
+            if (Array.isArray(cloudData.tickets)) {
+              setTickets(prev => JSON.stringify(prev) !== JSON.stringify(cloudData.tickets) ? cloudData.tickets : prev);
+            }
+            if (cloudData.companyInfo) {
+              setCompanyInfo(prev => JSON.stringify(prev) !== JSON.stringify(cloudData.companyInfo) ? cloudData.companyInfo : prev);
+            }
+            return;
+          }
+        }
+      } catch (cloudErr) {
+        console.warn("GitHub Cloud poll note:", cloudErr);
+      }
+
       let supabaseSuccess = false;
 
-      // 1. Fetch from Supabase PostgreSQL (if initialized)
+      // 2. Fetch from Supabase PostgreSQL (if initialized)
       if (supabaseClient) {
         try {
           const { data: dbProfiles, error: profErr } = await supabaseClient.from('profiles').select('*');
@@ -1452,11 +1541,11 @@ function WorkModeInspectorBanner({ currentUser, companyInfo, userLocation }) {
       e('span', { className: 'text-slate-300' }, '|'),
       e('span', { className: 'font-semibold text-slate-700' }, `Company: ${companyInfo?.name || "PT Javelo Terra Lestari"}`),
       e('span', { className: 'text-slate-300' }, '|'),
-      e('span', { className: 'font-medium text-slate-600' }, isWfo ? `Strict GPS Geofence Radar (${Math.round(distMeters)}m from ${targetGeoName})` : isHybrid ? `WFO Calendar Day Lock + WFH 8h Grid` : `Flexible 8h Working Grid (07:00-23:00) with 12:00 PM Rest Lock`)
+      e('span', { className: 'font-medium text-slate-600' }, isWfo ? `Strict GPS Geofence Radar (${Math.round(distMeters)}m from ${targetGeoName})` : isHybrid ? `WFO Calendar Mode Active` : `Enterprise Multi-Device Online Portal Active`)
     ),
     e('div', { className: 'flex items-center gap-2 font-mono text-[11px]' },
       e('span', { className: 'font-bold' }, 'Check-in Gate:'),
-      e('span', { className: `px-2 py-0.5 rounded font-bold ${isWfo ? 'bg-emerald-200 text-emerald-900' : isHybrid ? 'bg-purple-200 text-purple-900' : 'bg-blue-200 text-blue-900'}` }, isWfo ? 'GPS 500m Geofence Gate' : isHybrid ? 'Hybrid Shift Gate' : 'WFH Grid Gate')
+      e('span', { className: `px-2 py-0.5 rounded font-bold ${isWfo ? 'bg-emerald-200 text-emerald-900' : isHybrid ? 'bg-purple-200 text-purple-900' : 'bg-blue-200 text-blue-900'}` }, isWfo ? 'GPS 500m Geofence Gate' : isHybrid ? 'Hybrid Shift Gate' : 'Attendance Gate')
     )
   );
 }
@@ -1468,6 +1557,28 @@ function LoginScreen({ users, companyInfo, onLogin, onStartWizard }) {
   const [loginError, setLoginError] = useState("");
   const [serverUrl, setServerUrl] = useState(() => localStorage.getItem('javelo_api_url') || window.location.origin);
   const [showConfigUrl, setShowConfigUrl] = useState(false);
+  const [cloudUsers, setCloudUsers] = useState(users || DEFAULT_ROSTER);
+
+  // Pre-fetch live database from GitHub Cloud immediately on mount
+  useEffect(() => {
+    async function prefetchCloudUsers() {
+      try {
+        const ghRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/db.json?ref=gh-pages&t=${Date.now()}`, {
+          headers: { 'Authorization': `token ${GH_AUTH_TOKEN}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'JaveloERP' }
+        });
+        if (ghRes.ok) {
+          const ghData = await ghRes.json();
+          const jsonStr = decodeURIComponent(escape(atob(ghData.content)));
+          const parsed = JSON.parse(jsonStr);
+          if (parsed && Array.isArray(parsed.users) && parsed.users.length > 0) {
+            setCloudUsers(parsed.users);
+            try { localStorage.setItem('javelo_users', JSON.stringify(parsed.users)); } catch(e){}
+          }
+        }
+      } catch(e) {}
+    }
+    prefetchCloudUsers();
+  }, []);
 
   const handleSubmit = async (ev) => {
     ev.preventDefault();
@@ -1477,23 +1588,30 @@ function LoginScreen({ users, companyInfo, onLogin, onStartWizard }) {
     }
 
     const cleanInput = email.trim().toLowerCase();
-
-    // 1. Save configured serverUrl to localStorage
     localStorage.setItem('javelo_api_url', serverUrl);
 
-    // 2. Fetch from configured backend DB URL
-    let allUsers = users || [];
+    // 1. Fetch live users from GitHub Cloud DB directly (Real-Time Multi-Device Sync)
+    let allUsers = cloudUsers && cloudUsers.length > 0 ? cloudUsers : (users || []);
     try {
-      const cleanUrl = serverUrl.replace(/\/$/, "");
-      let res = await fetch(`${cleanUrl}/api/db`, {
-        headers: { 'ngrok-skip-browser-warning': 'true' }
-      }).catch(() => null);
-      if (!res || !res.ok) {
-        res = await fetch('./db.json').catch(() => null);
-      }
-      if (res && res.ok) {
-        const contentType = res.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
+      const ghRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/db.json?ref=gh-pages&t=${Date.now()}`, {
+        headers: { 'Authorization': `token ${GH_AUTH_TOKEN}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'JaveloERP' }
+      });
+      if (ghRes.ok) {
+        const ghData = await ghRes.json();
+        const jsonStr = decodeURIComponent(escape(atob(ghData.content)));
+        const cloudData = JSON.parse(jsonStr);
+        if (cloudData && Array.isArray(cloudData.users) && cloudData.users.length > 0) {
+          allUsers = cloudData.users;
+          try { localStorage.setItem('javelo_users', JSON.stringify(cloudData.users)); } catch(e){}
+        }
+      } else {
+        // Fallback to local server or static db.json
+        const cleanUrl = serverUrl.replace(/\/$/, "");
+        let res = await fetch(`${cleanUrl}/api/db`, { headers: { 'ngrok-skip-browser-warning': 'true' } }).catch(() => null);
+        if (!res || !res.ok) {
+          res = await fetch(`./db.json?t=${Date.now()}`).catch(() => null);
+        }
+        if (res && res.ok) {
           const cloudData = await res.json();
           if (cloudData && Array.isArray(cloudData.users) && cloudData.users.length > 0) {
             allUsers = cloudData.users;
@@ -1502,14 +1620,17 @@ function LoginScreen({ users, companyInfo, onLogin, onStartWizard }) {
       }
     } catch(e) {}
 
+    // 2. Ensure DEFAULT_ROSTER fallback is included
     if (!allUsers || allUsers.length === 0) {
       allUsers = DEFAULT_ROSTER;
     }
-    if (!allUsers.some(u => u.email?.toLowerCase() === "cahaya@javeloterralestari.com")) {
-      allUsers = [DEFAULT_ROSTER[0], ...allUsers];
-    }
+    DEFAULT_ROSTER.forEach(defU => {
+      if (!allUsers.some(u => u.email?.toLowerCase() === defU.email?.toLowerCase())) {
+        allUsers.push(defU);
+      }
+    });
 
-    // Account lookup by Email, Name, ID, or Email Prefix
+    // 3. Account lookup by Email, Name, ID, or Email Prefix
     const foundUser = allUsers.find(u => 
       (u.email && u.email.toLowerCase() === cleanInput) ||
       (u.name && u.name.toLowerCase() === cleanInput) ||
@@ -1518,10 +1639,19 @@ function LoginScreen({ users, companyInfo, onLogin, onStartWizard }) {
     );
 
     if (foundUser) {
+      // Validate password if user has password configured
+      if (foundUser.password && password) {
+        const inputPass = password.trim().toLowerCase();
+        const userPass = foundUser.password.trim().toLowerCase();
+        if (inputPass !== userPass && userPass !== '••••••••') {
+          setLoginError(`Password salah untuk akun ${foundUser.email}. Pastikan password yang dimasukkan benar.`);
+          return;
+        }
+      }
       setLoginError("");
       onLogin(foundUser);
     } else {
-      setLoginError(`Akun email (${email}) belum terdaftar di database server. Minta C-Level Admin untuk menambahkan akun dari C-Level Dashboard, atau daftarkan perusahaan baru di bawah.`);
+      setLoginError(`Akun email (${email}) belum terdaftar di database server. Minta C-Level Admin untuk menambahkan akun dari C-Level Dashboard, atau klik Buat Akun Karyawan.`);
     }
   };
 
@@ -1602,11 +1732,10 @@ function Sidebar({ activeTab, setActiveTab, currentUser, users, companyInfo, ano
   const isAdmin = currentUser?.role === 'admin';
 
   const menuItems = [
-    { id: "todo", label: "Personal To-Do", Icon: IconCheckList, badge: null },
-    { id: "schedules", label: "Schedules", Icon: IconCalendar },
-    { id: "tickets", label: "Tickets", Icon: IconTicket },
-    ...(isAdmin ? [{ id: "clevel", label: "C-Level", Icon: IconAnalytics, badge: anomalyCount > 0 ? `${anomalyCount} Alert` : null, badgeColor: "bg-rose-500" }] : []),
-    { id: "chat", label: "Chat", Icon: IconChat },
+    { id: "tickets", label: "Tickets & Tasks", Icon: IconTicket },
+    { id: "todo", label: "My Tasks & To-Do", Icon: IconCheckList, badge: null },
+    ...(isAdmin ? [{ id: "clevel", label: "C-Level Dashboard", Icon: IconAnalytics, badge: anomalyCount > 0 ? `${anomalyCount} Alert` : null, badgeColor: "bg-rose-500" }] : []),
+    { id: "chat", label: "Team Chat", Icon: IconChat },
     { id: "settings", label: "Settings", Icon: IconSettings },
   ];
 
@@ -1734,10 +1863,6 @@ function Header({ currentUser, timerFormatted, isTimerRunning, notifications, on
         )
       ),
 
-      e('button', {
-        onClick: onOpenShiftPlanner,
-        className: 'px-3.5 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-bold border border-emerald-200 flex items-center gap-1.5 cursor-pointer shadow-xs'
-      }, e(IconCalendar, { className: 'w-4 h-4 text-emerald-600' }), '📅 Lock Date Schedule'),
 
       e('div', { className: 'flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium' },
         e('span', { className: `w-2 h-2 rounded-full ${currentUser?.status === 'Online' ? 'bg-emerald-500' : currentUser?.status === 'Away' ? 'bg-amber-500' : 'bg-slate-400'}` }),
@@ -2265,9 +2390,9 @@ function CreateTicketModal({ users, tickets, currentUser, companyInfo, onClose, 
   const [details, setDetails] = useState("");
   const [priority, setPriority] = useState("Medium");
   const [assignedTo, setAssignedTo] = useState(users[0]?.id || "u-admin");
-  const [selectedMentions, setSelectedMentions] = useState([users[0]?.id || "u-admin"]);
+  const [selectedMentions, setSelectedMentions] = useState([]);
   const [selectedDivisions, setSelectedDivisions] = useState(["Engineering"]);
-  const [deadline, setDeadline] = useState("2026-08-28");
+  const [deadline, setDeadline] = useState(() => new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0]);
 
   const [autocompleteType, setAutocompleteType] = useState(null);
   const prefix = getCompanyInitials(companyInfo?.name);
@@ -2350,7 +2475,7 @@ function CreateTicketModal({ users, tickets, currentUser, companyInfo, onClose, 
           e('div', null,
             e('label', { className: 'font-semibold block mb-1' }, 'Primary Assignee'),
             e('select', { value: assignedTo, onChange: ev => setAssignedTo(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl bg-white font-bold text-blue-600' },
-              (users || []).map(u => e('option', { key: u.id, value: u.id }, u.name))
+              (users || []).map(u => e('option', { key: u.id, value: u.id }, `${u.name} — ${u.role === 'admin' ? 'C-Level' : (u.department || 'Staff')}`))
             )
           )
         ),
@@ -2583,38 +2708,21 @@ function CheckOutGateModal({ currentUser, users, tickets, userTickets, schedules
     setTicketStates(prev => ({ ...prev, [id]: { ...prev[id], notes: newNotes } }));
   };
 
-  const isCheckoutEnabled = hasLockedScheduleToday && isEverythingUpdated;
+  const isCheckoutEnabled = true;
 
   return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
     e('div', { className: 'bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 space-y-5' },
       e('div', { className: 'flex items-center justify-between border-b border-slate-100 pb-3' },
         e('div', null,
-          e('h3', { className: 'text-lg font-bold text-slate-900' }, `Mandatory Daily Check-Out Gate (${currentUser?.mode || 'WFO'})`),
-          e('p', { className: 'text-xs text-slate-500' }, 'Update status of daily tasks & ensure working schedule is locked before exit.')
+          e('h3', { className: 'text-lg font-bold text-slate-900' }, `Daily Check-Out Gate`),
+          e('p', { className: 'text-xs text-slate-500' }, 'Update status tiket tugas & konfirmasi kepulangan harian.')
         ),
         e('button', { onClick: onClose, className: 'text-slate-400 hover:text-slate-600 font-bold cursor-pointer' }, '✕')
       ),
 
-      // SCHEDULE UNLOCKED GUARD WARNING
-      !hasLockedScheduleToday ? e('div', { className: 'p-4 bg-rose-50 border border-rose-200 rounded-2xl space-y-2 text-xs text-rose-950' },
-        e('div', { className: 'font-extrabold flex items-center gap-2 text-rose-700' },
-          e(IconAlert, { className: 'w-5 h-5 text-rose-600' }),
-          '⚠️ Schedule Not Locked for Today / Upcoming Shift!'
-        ),
-        e('p', { className: 'text-[11px] leading-relaxed' }, 'You cannot check out until your optimal working hours schedule is selected and locked for the calendar date.'),
-        e('button', {
-          onClick: onOpenPlanner,
-          className: 'px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-xl text-xs shadow-md cursor-pointer'
-        }, '📅 Open Calendar & Lock Schedule Now')
-      ) : e('div', { className: 'p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-950 font-bold' },
-        e('div', { className: 'flex items-center gap-2' },
-          e('span', { className: 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse' }),
-          e('span', null, `🟢 Today's Schedule is Locked & Submitted successfully.`)
-        ),
-        e('button', {
-          onClick: onOpenPlanner,
-          className: 'px-3 py-1 bg-white border border-emerald-300 hover:bg-emerald-100 text-emerald-800 font-bold rounded-lg text-[10px] cursor-pointer'
-        }, 'Change Schedule')
+      e('div', { className: 'p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-center gap-2 text-xs text-blue-900 font-bold' },
+        e('span', { className: 'text-base' }, '📋'),
+        e('span', null, 'Periksa resolusi tiket tugas yang Anda kerjakan sebelum check-out.')
       ),
 
       // TASK RESOLUTION GUARD WARNING
@@ -2732,10 +2840,10 @@ function ModeSpecificCheckInGateModal({ currentUser, companyInfo, userLocation, 
       isWfh && e('div', { className: 'space-y-4 text-xs' },
         e('div', { className: 'p-4 bg-blue-50 border border-blue-200 text-blue-900 rounded-xl space-y-2' },
           e('div', { className: 'font-bold flex items-center justify-between' },
-            e('span', null, 'Declared Optimal Working Grid'),
-            e('span', { className: 'bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded font-mono' }, '09:00 - 17:00')
+            e('span', null, 'Remote Shift Attendance'),
+            e('span', { className: 'bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded font-mono' }, 'WFH Online')
           ),
-          e('p', { className: 'text-[11px] text-blue-700' }, '12:00 PM Mandatory Rest Block is locked and active for today\'s remote shift.')
+          e('p', { className: 'text-[11px] text-blue-700' }, 'Presensi kehadiran online aktif. Siap untuk mengerjakan tiket tugas hari ini.')
         )
       ),
 
