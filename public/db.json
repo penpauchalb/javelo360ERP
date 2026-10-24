@@ -1,0 +1,130 @@
+{
+  "companyInfo": {
+    "name": "PT Javelo Terra Lestari",
+    "factoryGeo": {
+      "lat": -7.4218,
+      "lng": 109.1352,
+      "name": "PT Javelo Terra Lestari Factory (Banyumas)",
+      "radiusMeters": 500
+    }
+  },
+  "users": [
+    {
+      "id": "c0000000-0000-4000-8000-000000000001",
+      "name": "Cahaya",
+      "email": "cahaya@javeloterralestari.com",
+      "password": "JTL123",
+      "role": "admin",
+      "mode": "Full WFH",
+      "department": "C-Level Executive",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+      "status": "Offline",
+      "optimalHours": "08:00 - 17:00",
+      "checkedIn": false
+    },
+    {
+      "id": "u-admin",
+      "name": "Hendra Setiawan",
+      "email": "hendra@javelo360.com",
+      "password": "••••••••",
+      "role": "admin",
+      "mode": "Full WFH",
+      "department": "C-Level Executive",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      "status": "Online",
+      "optimalHours": "08:00 - 16:00",
+      "checkedIn": true,
+      "checkInTime": "12:33 PM"
+    },
+    {
+      "id": "3104be72-7cc0-4a09-9426-e2980ea88807",
+      "name": "Acay",
+      "email": "tester@javelo.com",
+      "role": "employee",
+      "mode": "Full WFH",
+      "department": "Engineering",
+      "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+      "status": "Offline",
+      "checkedIn": false,
+      "checkInTime": null,
+      "password": "123456"
+    },
+    {
+      "id": "cb090fc7-a0e8-4edc-a8ce-83b5c2788b45",
+      "name": "Bambang",
+      "email": "bambang@gmail.com",
+      "role": "employee",
+      "mode": "Full WFH",
+      "department": "Engineering",
+      "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+      "status": "Offline",
+      "checkedIn": false,
+      "checkInTime": null,
+      "password": "123456"
+    },
+    {
+      "id": "9cd30d3c-829c-419a-a677-ca61b9aee1c8",
+      "name": "tester2",
+      "email": "tester2@javelo.com",
+      "role": "employee",
+      "mode": "Full WFH",
+      "department": "Engineering",
+      "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+      "status": "Offline",
+      "checkedIn": false,
+      "checkInTime": null,
+      "password": "123456"
+    }
+  ],
+  "tickets": [
+    {
+      "id": "c270fb7f-93ca-4866-985a-36b488c264f7",
+      "code": "JTL-2026-101",
+      "subject": "Perbaiki Genteng",
+      "details": "Perbaiki ini dong @Bambang ",
+      "status": "Todo",
+      "priority": "Medium",
+      "assignedTo": "cb090fc7-a0e8-4edc-a8ce-83b5c2788b45",
+      "assignedBy": "u-admin",
+      "division": [
+        "Operations"
+      ],
+      "deadline": "2026-08-29",
+      "mentionedUsers": [
+        "u-admin"
+      ],
+      "comments": [
+        {
+          "id": "c-1788845717652",
+          "author": "Hendra Setiawan",
+          "text": "OK",
+          "time": "12:35 PM"
+        }
+      ]
+    }
+  ],
+  "schedules": [
+    {
+      "id": "0e52ff78-0092-4ee8-a9a1-20757b02a6dd",
+      "userId": "u-admin",
+      "date": "2026-09-08",
+      "day": "2026-09-08",
+      "type": "Shift",
+      "status": "Locked & Confirmed",
+      "time": "8:00 - 9 pm",
+      "hours": [
+        8,
+        10,
+        13,
+        14,
+        15,
+        16,
+        20,
+        21
+      ],
+      "locked": true,
+      "color": "bg-emerald-600 text-white"
+    }
+  ],
+  "customTasks": []
+}

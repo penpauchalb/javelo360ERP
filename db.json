@@ -10,6 +10,19 @@
   },
   "users": [
     {
+      "id": "c0000000-0000-4000-8000-000000000001",
+      "name": "Cahaya",
+      "email": "cahaya@javeloterralestari.com",
+      "password": "JTL123",
+      "role": "admin",
+      "mode": "Full WFH",
+      "department": "C-Level Executive",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+      "status": "Offline",
+      "optimalHours": "08:00 - 17:00",
+      "checkedIn": false
+    },
+    {
       "id": "u-admin",
       "name": "Hendra Setiawan",
       "email": "hendra@javelo360.com",

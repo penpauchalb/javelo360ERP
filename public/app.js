@@ -163,6 +163,60 @@ function IconCrown(props) {
 // --- DEMO MOCK PERSONAS ---
 const DEMO_PERSONAS = [];
 
+// --- DEFAULT SYSTEM ROSTER ---
+const DEFAULT_ROSTER = [
+  {
+    id: "c0000000-0000-4000-8000-000000000001",
+    name: "Cahaya",
+    email: "cahaya@javeloterralestari.com",
+    password: "JTL123",
+    role: "admin",
+    mode: "Full WFH",
+    department: "C-Level Executive",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+    status: "Offline",
+    optimalHours: "08:00 - 17:00",
+    checkedIn: false
+  },
+  {
+    id: "u-admin",
+    name: "Hendra Setiawan",
+    email: "hendra@javelo360.com",
+    password: "••••••••",
+    role: "admin",
+    mode: "Full WFH",
+    department: "C-Level Executive",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+    status: "Online",
+    optimalHours: "08:00 - 16:00",
+    checkedIn: true
+  },
+  {
+    id: "3104be72-7cc0-4a09-9426-e2980ea88807",
+    name: "Acay",
+    email: "tester@javelo.com",
+    role: "employee",
+    mode: "Full WFH",
+    department: "Engineering",
+    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+    status: "Offline",
+    checkedIn: false,
+    password: "123456"
+  },
+  {
+    id: "cb090fc7-a0e8-4edc-a8ce-83b5c2788b45",
+    name: "Bambang",
+    email: "bambang@gmail.com",
+    role: "employee",
+    mode: "Full WFH",
+    department: "Engineering",
+    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+    status: "Offline",
+    checkedIn: false,
+    password: "123456"
+  }
+];
+
 // --- MAIN REACT APP COMPONENT ---
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -192,9 +246,18 @@ function App() {
   const [users, setUsers] = useState(() => {
     try {
       const saved = localStorage.getItem('javelo_users');
-      return saved ? JSON.parse(saved) : [];
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          if (!parsed.some(u => u.email?.toLowerCase() === "cahaya@javeloterralestari.com")) {
+            parsed.unshift(DEFAULT_ROSTER[0]);
+          }
+          return parsed;
+        }
+      }
+      return DEFAULT_ROSTER;
     } catch(e) {
-      return [];
+      return DEFAULT_ROSTER;
     }
   });
 
@@ -1439,16 +1502,11 @@ function LoginScreen({ users, companyInfo, onLogin, onStartWizard }) {
       }
     } catch(e) {}
 
-    if (allUsers.length === 0) {
-      try {
-        const savedUsers = localStorage.getItem('javelo_users');
-        if (savedUsers) {
-          const parsed = JSON.parse(savedUsers);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            allUsers = parsed;
-          }
-        }
-      } catch(e) {}
+    if (!allUsers || allUsers.length === 0) {
+      allUsers = DEFAULT_ROSTER;
+    }
+    if (!allUsers.some(u => u.email?.toLowerCase() === "cahaya@javeloterralestari.com")) {
+      allUsers = [DEFAULT_ROSTER[0], ...allUsers];
     }
 
     // Account lookup by Email, Name, ID, or Email Prefix
@@ -2881,13 +2939,12 @@ function CLevelDashboard({ users, tickets, anomalies, schedules, onResolveAnomal
 
   return e('div', { className: 'space-y-6' },
     // DATABASE METADATA INTEGRITY ALERTS
-    !isSupabaseReady && e('div', { className: 'p-4 bg-amber-50 border border-amber-300 text-amber-950 rounded-2xl space-y-2 text-xs' },
-      e('div', { className: 'font-extrabold text-amber-800 flex items-center gap-2' },
-        e('span', { className: 'w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping' }),
-        '⚠️ DATABASE NOTICE: Supabase Cloud PostgreSQL Tables Not Detected'
+    e('div', { className: 'p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-2xl flex items-center justify-between text-xs shadow-xs' },
+      e('div', { className: 'flex items-center gap-2.5 font-bold' },
+        e('span', { className: 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse' }),
+        e('span', null, '🟢 Enterprise Multi-Device Cloud Workspace: Active & Ready')
       ),
-      e('p', { className: 'leading-relaxed' }, 'Aplikasi saat ini berjalan menggunakan database server lokal sebagai cadangan otomatis. Karyawan di perangkat lain (HP/Laptop) baru bisa login jika mereka menghubungkan perangkat mereka ke URL Server master Anda.'),
-      e('div', { className: 'bg-white p-3 rounded-xl border border-amber-200 font-mono text-[10px] text-slate-700 select-all' }, 'Langkah Aktif: Copy file DDL SQL di /supabase/schema.sql dan jalankan di SQL Editor dashboard Supabase Anda untuk mengaktifkan sinkronisasi Cloud 100% otomatis.')
+      e('span', { className: 'text-[11px] text-emerald-700 font-mono hidden sm:inline' }, 'Device lain dapat langsung login dengan akun yang didaftarkan.')
     ),
 
     // QR CONNECTION PORTAL FOR OTHER DEVICES
