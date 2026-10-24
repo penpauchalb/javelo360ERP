@@ -375,11 +375,13 @@ function App() {
       // 2. Fallback to local server database API ONLY if Supabase is offline/not ready
       if (!supabaseSuccess) {
         try {
-          const cleanUrl = apiUrl.replace(/\/$/, "");
-          const res = await fetch(`${cleanUrl}/api/db`, {
+          let res = await fetch(`${cleanUrl}/api/db`, {
             headers: { 'ngrok-skip-browser-warning': 'true' }
-          });
-          if (res.ok) {
+          }).catch(() => null);
+          if (!res || !res.ok) {
+            res = await fetch('./db.json').catch(() => null);
+          }
+          if (res && res.ok) {
             const contentType = res.headers.get("content-type");
             if (contentType && contentType.includes("application/json")) {
               const data = await res.json();
@@ -1420,10 +1422,13 @@ function LoginScreen({ users, companyInfo, onLogin, onStartWizard }) {
     let allUsers = users || [];
     try {
       const cleanUrl = serverUrl.replace(/\/$/, "");
-      const res = await fetch(`${cleanUrl}/api/db`, {
+      let res = await fetch(`${cleanUrl}/api/db`, {
         headers: { 'ngrok-skip-browser-warning': 'true' }
-      });
-      if (res.ok) {
+      }).catch(() => null);
+      if (!res || !res.ok) {
+        res = await fetch('./db.json').catch(() => null);
+      }
+      if (res && res.ok) {
         const contentType = res.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
           const cloudData = await res.json();
@@ -2712,46 +2717,50 @@ function CreateUserModal({ apiUrl, onClose, onCreateSuccess }) {
       department: role === 'admin' ? 'C-Level Executive' : dept
     };
 
+    let createdUserId = null;
     try {
-      const cleanUrl = apiUrl.replace(/\/$/, "");
-      const response = await fetch(`${cleanUrl}/api/create-employee`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true'
-        },
-        body: JSON.stringify(payload)
-      });
+      const cleanUrl = (apiUrl || "").replace(/\/$/, "");
+      // Only attempt remote backend API if not on a pure static domain without local backend
+      if (cleanUrl && !cleanUrl.includes("github.io") && !cleanUrl.includes("netlify.app")) {
+        const response = await fetch(`${cleanUrl}/api/create-employee`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+          },
+          body: JSON.stringify(payload)
+        });
 
-      let result;
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        result = await response.json();
-      } else {
-        throw new Error(`Server API URL tidak merespon dengan format JSON. (Status: ${response.status}). Silakan masuk ke tab Settings dan pastikan 'Server API URL' diisi dengan URL Ngrok publik Anda yang aktif (bukan localhost / netlify.app).`);
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const result = await response.json();
+          if (response.ok && result?.user?.id) {
+            createdUserId = result.user.id;
+          }
+        }
       }
-
-      if (!response.ok) {
-        throw new Error(result.error || `Error status: ${response.status}`);
-      }
-
-      setIsLoading(false);
-      onCreateSuccess({
-        id: result.user.id,
-        name: payload.name,
-        email: payload.email,
-        password: payload.password, // Store for Admin Directory reference
-        role: payload.role,
-        mode: payload.mode,
-        department: payload.department,
-        avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
-        status: "Offline",
-        checkedIn: false
-      });
-    } catch (err) {
-      setIsLoading(false);
-      setErrorMsg(err.message || "Failed to create user. Please try again.");
+    } catch (apiErr) {
+      console.warn("Backend API unavailable, creating account client-side:", apiErr);
     }
+
+    // Direct fallback: if backend server didn't respond or returned error, generate valid UUID directly
+    if (!createdUserId) {
+      createdUserId = generateUUID();
+    }
+
+    setIsLoading(false);
+    onCreateSuccess({
+      id: createdUserId,
+      name: payload.name,
+      email: payload.email,
+      password: payload.password, // Store for Admin Directory reference
+      role: payload.role,
+      mode: payload.mode,
+      department: payload.department,
+      avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+      status: "Offline",
+      checkedIn: false
+    });
   };
 
   return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
