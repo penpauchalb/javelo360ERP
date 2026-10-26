@@ -17,12 +17,90 @@ const DEFAULT_FACTORY_GEO = {
 
 // Helper: Derive Ticket Prefix from Company Name Initials
 function getCompanyInitials(name) {
-  if (!name) return "JTL";
-  const clean = name.replace(/PT|CV|Inc|Ltd/gi, "").trim();
+  if (!name || typeof name !== 'string') return "JTL";
+  const clean = name.replace(/\b(pt|cv|inc|ltd|tbk)\.?\b/gi, "").trim();
   const words = clean.split(/\s+/).filter(w => w.length > 0);
   if (words.length === 0) return "JTL";
   if (words.length === 1) return words[0].substring(0, 3).toUpperCase();
   return words.map(w => w[0]).join("").toUpperCase();
+}
+
+// --- DYNAMIC DIVISIONS & EMPLOYEE ID SYSTEM ---
+const DEFAULT_DIVISIONS = [
+  { id: 'div-01', code: '01', name: 'C-Level Executive', isSystem: true },
+  { id: 'div-02', code: '02', name: 'Engineering', isSystem: false },
+  { id: 'div-03', code: '03', name: 'Operations', isSystem: false },
+  { id: 'div-04', code: '04', name: 'Marketing', isSystem: false },
+  { id: 'div-05', code: '05', name: 'HR', isSystem: false },
+  { id: 'div-06', code: '06', name: 'Product', isSystem: false },
+  { id: 'div-07', code: '07', name: 'Quality Control', isSystem: false }
+];
+
+function getCompanyDivisions(companyInfo, users = []) {
+  let list = Array.isArray(companyInfo?.divisions) && companyInfo.divisions.length > 0
+    ? [...companyInfo.divisions]
+    : [...DEFAULT_DIVISIONS];
+
+  const existingNames = new Set(list.map(d => (d.name || '').trim().toLowerCase()));
+  let maxCode = list.reduce((max, d) => Math.max(max, parseInt(d.code || '0', 10) || 0), 0);
+
+  (users || []).forEach(u => {
+    const dept = (u.department || (u.role === 'admin' ? 'C-Level Executive' : '')).trim();
+    if (dept && !existingNames.has(dept.toLowerCase())) {
+      maxCode++;
+      const codeStr = maxCode < 10 ? `0${maxCode}` : `${maxCode}`;
+      list.push({
+        id: `div-${codeStr}`,
+        code: codeStr,
+        name: dept,
+        isSystem: false
+      });
+      existingNames.add(dept.toLowerCase());
+    }
+  });
+
+  return list;
+}
+
+function formatEmployeeId(user, companyInfo, allUsers = [], divisions = []) {
+  if (!user) return 'JTL-00-000';
+  if (user.employeeId && /^[A-Z]{2,5}-\d{2}-\d{3}$/.test(user.employeeId)) {
+    return user.employeeId;
+  }
+  const prefix = getCompanyInitials(companyInfo?.name);
+  const divList = divisions && divisions.length > 0 ? divisions : getCompanyDivisions(companyInfo, allUsers);
+  
+  const userDept = (user.department || (user.role === 'admin' ? 'C-Level Executive' : 'Engineering')).trim().toLowerCase();
+  const divObj = divList.find(d => (d.name || '').trim().toLowerCase() === userDept);
+  const divCode = divObj ? divObj.code : '02';
+
+  const sameDeptUsers = (allUsers || []).filter(u => {
+    const d = (u.department || (u.role === 'admin' ? 'C-Level Executive' : 'Engineering')).trim().toLowerCase();
+    return d === userDept;
+  });
+  
+  const userIndex = sameDeptUsers.findIndex(u => u.id === user.id);
+  const seqNum = userIndex >= 0 ? userIndex + 1 : sameDeptUsers.length + 1;
+  const seqStr = seqNum < 10 ? `00${seqNum}` : (seqNum < 100 ? `0${seqNum}` : `${seqNum}`);
+
+  return `${prefix}-${divCode}-${seqStr}`;
+}
+
+function isHRUser(user) {
+  if (!user) return false;
+  const dept = (user.department || '').trim().toLowerCase();
+  const role = (user.role || '').trim().toLowerCase();
+  return dept === 'hr' || dept === 'human resources' || dept === 'human resource' || role === 'hr';
+}
+
+function canManageEmployees(user) {
+  if (!user) return false;
+  return user.role === 'admin' || isHRUser(user);
+}
+
+function isCLevelUser(user) {
+  if (!user) return false;
+  return user.role === 'admin' || (user.department || '').trim().toLowerCase() === 'c-level executive';
 }
 
 // Haversine Distance Formula in Meters
@@ -37,6 +115,7 @@ function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
           Math.cos(φ1) * Math.cos(φ2) *
           Math.sin(Δλ/2) * Math.sin(Δλ/2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
 }
 
 // Helper: Generate RFC 4122 version 4 compliant UUID
@@ -319,51 +398,164 @@ function t(key, lang = 'id') {
   return (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || (TRANSLATIONS['id'] && TRANSLATIONS['id'][key]) || key;
 }
 
-async function pushToCloudDatabase(fullDb) {
+// --- MUTEX-LOCKED SERIALIZED CLOUD SYNC ENGINE WITH ZERO-DATA-LOSS MERGING ---
+let isCloudPushInProgress = false;
+let pendingCloudPayload = null;
+
+function mergePayloads(p1, p2) {
+  if (!p1) return p2;
+  if (!p2) return p1;
+  return {
+    companyInfo: p2.companyInfo ? { ...(p1.companyInfo || {}), ...p2.companyInfo } : p1.companyInfo,
+    users: p2.users || p1.users,
+    deletedUserId: p2.deletedUserId || p1.deletedUserId,
+    tickets: p2.tickets || p1.tickets,
+    deletedTicketId: p2.deletedTicketId || p1.deletedTicketId,
+    notifications: p2.notifications || p1.notifications,
+    chatMessages: p2.chatMessages || p1.chatMessages,
+    chatGroups: p2.chatGroups || p1.chatGroups,
+    schedules: p2.schedules || p1.schedules,
+    customTasks: p2.customTasks || p1.customTasks
+  };
+}
+
+function unionMergeById(baseList = [], incomingList = [], sortKey = null, sortDesc = false) {
+  const map = new Map();
+  (baseList || []).forEach(item => {
+    if (item && (item.id || item.code)) {
+      map.set(item.id || item.code, item);
+    }
+  });
+  (incomingList || []).forEach(item => {
+    if (item && (item.id || item.code)) {
+      const existing = map.get(item.id || item.code);
+      if (existing) {
+        map.set(item.id || item.code, { ...existing, ...item });
+      } else {
+        map.set(item.id || item.code, item);
+      }
+    }
+  });
+  const res = Array.from(map.values());
+  if (sortKey) {
+    res.sort((a, b) => {
+      const valA = a[sortKey] || 0;
+      const valB = b[sortKey] || 0;
+      return sortDesc ? (valB > valA ? 1 : -1) : (valA > valB ? 1 : -1);
+    });
+  }
+  return res;
+}
+
+async function pushToCloudDatabase(payload) {
+  if (!payload) return;
+  pendingCloudPayload = mergePayloads(pendingCloudPayload, payload);
+
+  if (isCloudPushInProgress) {
+    return; // Will be executed sequentially by active loop
+  }
+
+  isCloudPushInProgress = true;
   try {
-    const getRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/db.json?ref=gh-pages&t=${Date.now()}`, {
-      headers: { 'Authorization': `token ${GH_AUTH_TOKEN}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'JaveloERP' }
-    });
-    if (!getRes.ok) return;
-    const fileData = await getRes.json();
-    const sha = fileData.sha;
+    while (pendingCloudPayload) {
+      const current = pendingCloudPayload;
+      pendingCloudPayload = null;
 
-    let baseData = {};
-    try {
-      baseData = JSON.parse(decodeURIComponent(escape(atob(fileData.content)))) || {};
-    } catch(e) {}
+      let success = false;
+      let attempt = 0;
+      while (attempt < 3 && !success) {
+        attempt++;
+        try {
+          const getRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/db.json?ref=gh-pages&t=${Date.now()}`, {
+            headers: { 'Authorization': `token ${GH_AUTH_TOKEN}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'JaveloERP' }
+          });
+          if (!getRes.ok) break;
+          const fileData = await getRes.json();
+          const sha = fileData.sha;
 
-    const mergedDb = {
-      companyInfo: fullDb.companyInfo || baseData.companyInfo,
-      users: Array.isArray(fullDb.users) ? fullDb.users : (baseData.users || DEFAULT_ROSTER),
-      tickets: Array.isArray(fullDb.tickets) ? fullDb.tickets : (baseData.tickets || []),
-      notifications: Array.isArray(fullDb.notifications) ? fullDb.notifications : (baseData.notifications || []),
-      chatMessages: Array.isArray(fullDb.chatMessages) ? fullDb.chatMessages : (baseData.chatMessages || []),
-      chatGroups: Array.isArray(fullDb.chatGroups) ? fullDb.chatGroups : (baseData.chatGroups || []),
-      schedules: Array.isArray(fullDb.schedules) ? fullDb.schedules : (baseData.schedules || []),
-      customTasks: Array.isArray(fullDb.customTasks) ? fullDb.customTasks : (baseData.customTasks || [])
-    };
+          let baseData = {};
+          try {
+            baseData = JSON.parse(decodeURIComponent(escape(atob(fileData.content)))) || {};
+          } catch(e) {}
 
-    const jsonStr = JSON.stringify(mergedDb, null, 2);
-    const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
+          // Union-merge chat messages so concurrent sends never drop messages
+          const mergedChatMessages = unionMergeById(baseData.chatMessages || [], current.chatMessages || [], 'timestamp', false);
+          
+          // Union-merge tickets so concurrent updates/creations never drop tickets
+          let mergedTickets = unionMergeById(baseData.tickets || [], current.tickets || []);
+          if (current.deletedTicketId) {
+            mergedTickets = mergedTickets.filter(t => t.id !== current.deletedTicketId);
+          }
 
-    await fetch(`https://api.github.com/repos/${GH_REPO}/contents/db.json`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `token ${GH_AUTH_TOKEN}`,
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json',
-        'User-Agent': 'JaveloERP'
-      },
-      body: JSON.stringify({
-        message: "Automated Enterprise Cloud Multi-Device Sync",
-        content: b64,
-        sha: sha,
-        branch: "gh-pages"
-      })
-    });
-  } catch (err) {
-    console.warn("GitHub Cloud Sync warning:", err);
+          // Merge users safely preserving existing accounts
+          let mergedUsers = unionMergeById(baseData.users || DEFAULT_ROSTER, current.users || []);
+          if (current.deletedUserId) {
+            mergedUsers = mergedUsers.filter(u => u.id !== current.deletedUserId);
+          }
+
+          // Union-merge notifications
+          const mergedNotifications = unionMergeById(baseData.notifications || [], current.notifications || [], 'timestamp', true);
+
+          // Union-merge chat groups
+          const mergedChatGroups = unionMergeById(baseData.chatGroups || [], current.chatGroups || []);
+
+          // Union-merge schedules & custom tasks
+          const mergedSchedules = unionMergeById(baseData.schedules || [], current.schedules || []);
+          const mergedCustomTasks = unionMergeById(baseData.customTasks || [], current.customTasks || []);
+
+          // Company info merge
+          const mergedCompanyInfo = {
+            ...(baseData.companyInfo || {}),
+            ...(current.companyInfo || {})
+          };
+
+          const mergedDb = {
+            companyInfo: mergedCompanyInfo,
+            users: mergedUsers,
+            tickets: mergedTickets,
+            notifications: mergedNotifications,
+            chatMessages: mergedChatMessages,
+            chatGroups: mergedChatGroups,
+            schedules: mergedSchedules,
+            customTasks: mergedCustomTasks
+          };
+
+          const jsonStr = JSON.stringify(mergedDb, null, 2);
+          const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
+
+          const putRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/db.json`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `token ${GH_AUTH_TOKEN}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json',
+              'User-Agent': 'JaveloERP'
+            },
+            body: JSON.stringify({
+              message: "Automated Enterprise Cloud Multi-Device Sync",
+              content: b64,
+              sha: sha,
+              branch: "gh-pages"
+            })
+          });
+
+          if (putRes.ok) {
+            success = true;
+          } else if (putRes.status === 409) {
+            // 409 Conflict: another device pushed in parallel. Wait briefly and retry with fresh sha!
+            await new Promise(r => setTimeout(r, 250 * attempt));
+          } else {
+            console.warn("Cloud push response:", putRes.status);
+            break;
+          }
+        } catch (pushErr) {
+          console.warn("Cloud push retry note:", pushErr);
+          await new Promise(r => setTimeout(r, 300));
+        }
+      }
+    }
+  } finally {
+    isCloudPushInProgress = false;
   }
 }
 
@@ -385,6 +577,163 @@ function CheckInReminderModal({ currentUser, language, onClose, onCheckInNow }) 
           onClick: onClose,
           className: 'w-full py-2 text-slate-400 hover:text-slate-600 font-semibold text-xs transition-all cursor-pointer'
         }, t('later', language))
+      )
+    )
+  );
+}
+
+// --- ANNOUNCEMENT POPUP MODAL (AUTO 3-MIN / INSTANT BROADCAST TRIGGER) ---
+function AnnouncementPopupModal({ announcement, language, onClose }) {
+  if (!announcement) return null;
+  const isEn = language === 'en';
+  return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
+    e('div', { className: 'bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 text-center' },
+      e('div', { className: 'w-16 h-16 bg-purple-50 text-purple-600 rounded-3xl flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce' }, '📢'),
+      e('div', { className: 'space-y-1' },
+        e('span', { className: 'text-[10px] uppercase tracking-wider font-extrabold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full' }, isEn ? 'OFFICIAL ANNOUNCEMENT' : 'PENGUMUMAN RESMI'),
+        e('h3', { className: 'font-extrabold text-slate-900 text-base pt-1.5' }, announcement.title),
+        e('div', { className: 'text-[11px] text-slate-400 font-medium' },
+          `${isEn ? 'From:' : 'Dari:'} ${announcement.authorName || 'Management'} • ${announcement.targetDivision === 'All' ? (isEn ? 'All Divisions' : 'Semua Divisi') : announcement.targetDivision}`
+        )
+      ),
+      e('div', { className: 'p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-700 text-left whitespace-pre-wrap leading-relaxed max-h-52 overflow-y-auto' },
+        announcement.content
+      ),
+      e('button', {
+        onClick: onClose,
+        className: 'w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5'
+      }, isEn ? '✓ I Have Read This' : '✓ Saya Mengerti')
+    )
+  );
+}
+
+// --- DIVISION MANAGEMENT MODAL (DYNAMIC DEPARTMENTS & 2-DIGIT CODES) ---
+function DivisionManagementModal({ companyInfo, users, onClose, onUpdateDivisions, language }) {
+  const currentDivisions = getCompanyDivisions(companyInfo, users);
+  const [divisions, setDivisions] = useState(currentDivisions);
+  const [newName, setNewName] = useState("");
+  const [newCode, setNewCode] = useState(() => {
+    const max = currentDivisions.reduce((m, d) => Math.max(m, parseInt(d.code || '0', 10) || 0), 0);
+    const next = max + 1;
+    return next < 10 ? `0${next}` : `${next}`;
+  });
+  const isEn = language === 'en';
+
+  const handleAddDivision = (ev) => {
+    ev.preventDefault();
+    if (!newName.trim()) return;
+    const trimmed = newName.trim();
+    if (divisions.some(d => (d.name || '').toLowerCase() === trimmed.toLowerCase())) {
+      alert(isEn ? "Division already exists!" : "Divisi dengan nama tersebut sudah ada!");
+      return;
+    }
+    const cleanCode = (newCode || '01').padStart(2, '0').slice(-2);
+    const added = [
+      ...divisions,
+      {
+        id: `div-${Date.now()}`,
+        code: cleanCode,
+        name: trimmed,
+        isSystem: false
+      }
+    ];
+    setDivisions(added);
+    onUpdateDivisions(added);
+    setNewName("");
+    const max = added.reduce((m, d) => Math.max(m, parseInt(d.code || '0', 10) || 0), 0);
+    const next = max + 1;
+    setNewCode(next < 10 ? `0${next}` : `${next}`);
+  };
+
+  const handleDeleteDivision = (divId) => {
+    const target = divisions.find(d => d.id === divId);
+    if (!target) return;
+    if (target.isSystem || target.code === '01') {
+      alert(isEn ? "C-Level Executive division cannot be deleted." : "Divisi C-Level Executive tidak dapat dihapus.");
+      return;
+    }
+    if (confirm(isEn ? `Delete division "${target.name}"?` : `Hapus divisi "${target.name}"?`)) {
+      const filtered = divisions.filter(d => d.id !== divId);
+      setDivisions(filtered);
+      onUpdateDivisions(filtered);
+    }
+  };
+
+  return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
+    e('div', { className: 'bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto' },
+      e('div', { className: 'flex justify-between items-center border-b pb-3' },
+        e('div', null,
+          e('h3', { className: 'font-extrabold text-slate-900 text-base flex items-center gap-2' },
+            e('span', null, '🏢'),
+            isEn ? 'Manage Company Divisions' : 'Pengaturan Divisi Perusahaan'
+          ),
+          e('p', { className: 'text-[11px] text-slate-400 mt-0.5' },
+            isEn ? 'Configure division names and 2-digit codes for Employee ID (NIK) generation.' : 'Kelola divisi kerja dan nomor kode 2-digit untuk format NIK / Employee ID.'
+          )
+        ),
+        e('button', { onClick: onClose, className: 'w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center cursor-pointer' }, '✕')
+      ),
+
+      // List of existing divisions
+      e('div', { className: 'space-y-2' },
+        e('label', { className: 'text-xs font-bold text-slate-700 block' },
+          isEn ? 'Active Divisions List' : 'Daftar Divisi Aktif'
+        ),
+        e('div', { className: 'divide-y border rounded-2xl max-h-56 overflow-y-auto bg-slate-50/50' },
+          divisions.map(d => e('div', { key: d.id || d.code, className: 'p-3 flex items-center justify-between text-xs hover:bg-white transition' },
+            e('div', { className: 'flex items-center gap-2.5' },
+              e('span', { className: 'px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-mono font-bold text-[11px]' }, d.code),
+              e('span', { className: 'font-semibold text-slate-800' }, d.name),
+              d.isSystem && e('span', { className: 'text-[9px] px-1.5 py-0.2 bg-slate-200 text-slate-600 rounded font-bold' }, 'System')
+            ),
+            !d.isSystem && d.code !== '01' && e('button', {
+              onClick: () => handleDeleteDivision(d.id),
+              className: 'text-rose-500 hover:text-rose-700 text-xs font-bold px-2 py-1 rounded hover:bg-rose-50 cursor-pointer'
+            }, '🗑️')
+          ))
+        )
+      ),
+
+      // Add new division form
+      e('form', { onSubmit: handleAddDivision, className: 'p-4 bg-slate-50 border rounded-2xl space-y-3 text-xs' },
+        e('h4', { className: 'font-bold text-slate-800 text-xs' },
+          isEn ? '+ Add New Division' : '+ Tambah Divisi Baru'
+        ),
+        e('div', { className: 'grid grid-cols-3 gap-2' },
+          e('div', null,
+            e('label', { className: 'text-[11px] font-semibold text-slate-600 block mb-1' }, isEn ? 'Division Code' : 'Kode (2-digit)'),
+            e('input', {
+              type: 'text',
+              required: true,
+              maxLength: 2,
+              value: newCode,
+              onChange: ev => setNewCode(ev.target.value.replace(/\D/g, '')),
+              className: 'w-full px-3 py-2 border rounded-xl font-mono font-bold text-center bg-white'
+            })
+          ),
+          e('div', { className: 'col-span-2' },
+            e('label', { className: 'text-[11px] font-semibold text-slate-600 block mb-1' }, isEn ? 'Division Name' : 'Nama Divisi'),
+            e('input', {
+              type: 'text',
+              required: true,
+              placeholder: isEn ? 'e.g. Marketing, Finance, HR' : 'contoh: Marketing, Finance, HR',
+              value: newName,
+              onChange: ev => setNewName(ev.target.value),
+              className: 'w-full px-3 py-2 border rounded-xl bg-white'
+            })
+          )
+        ),
+        e('button', {
+          type: 'submit',
+          className: 'w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold cursor-pointer transition shadow-xs flex items-center justify-center gap-1.5'
+        }, isEn ? 'Save Division' : 'Simpan Divisi')
+      ),
+
+      e('div', { className: 'flex justify-end pt-2' },
+        e('button', {
+          onClick: onClose,
+          className: 'px-5 py-2 bg-slate-900 text-white font-bold rounded-xl text-xs cursor-pointer'
+        }, isEn ? 'Done' : 'Selesai')
       )
     )
   );
@@ -488,6 +837,9 @@ function App() {
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
   const [showActiveStaffModal, setShowActiveStaffModal] = useState(false);
   const [showPhotoCropModal, setShowPhotoCropModal] = useState(false);
+  const [showDivisionModal, setShowDivisionModal] = useState(false);
+  const [activeAnnouncementPopup, setActiveAnnouncementPopup] = useState(null);
+  const [loginTimestamp] = useState(() => Date.now());
   const [cLevelInspectedUser, setCLevelInspectedUser] = useState(null);
 
   // GPS Simulator State
@@ -618,42 +970,69 @@ function App() {
             }
             if (Array.isArray(cloudData.tickets)) {
               setTickets(prev => {
-                if (JSON.stringify(prev) !== JSON.stringify(cloudData.tickets)) {
-                  try { localStorage.setItem('javelo_tickets', JSON.stringify(cloudData.tickets)); } catch(e){}
-                  return cloudData.tickets;
+                const merged = unionMergeById(cloudData.tickets, prev);
+                if (JSON.stringify(prev) !== JSON.stringify(merged)) {
+                  try { localStorage.setItem('javelo_tickets', JSON.stringify(merged)); } catch(e){}
+                  return merged;
                 }
                 return prev;
               });
             }
             if (Array.isArray(cloudData.notifications)) {
               setNotifications(prev => {
-                if (JSON.stringify(prev) !== JSON.stringify(cloudData.notifications)) {
-                  try { localStorage.setItem('javelo_notifications', JSON.stringify(cloudData.notifications)); } catch(e){}
-                  return cloudData.notifications;
+                const merged = unionMergeById(cloudData.notifications, prev, 'timestamp', true);
+                if (JSON.stringify(prev) !== JSON.stringify(merged)) {
+                  try { localStorage.setItem('javelo_notifications', JSON.stringify(merged)); } catch(e){}
+                  return merged;
                 }
                 return prev;
               });
             }
             if (Array.isArray(cloudData.chatMessages)) {
               setChatMessages(prev => {
-                if (JSON.stringify(prev) !== JSON.stringify(cloudData.chatMessages)) {
-                  try { localStorage.setItem('javelo_chat_messages', JSON.stringify(cloudData.chatMessages)); } catch(e){}
-                  return cloudData.chatMessages;
+                const merged = unionMergeById(cloudData.chatMessages, prev, 'timestamp', false);
+                if (JSON.stringify(prev) !== JSON.stringify(merged)) {
+                  try { localStorage.setItem('javelo_chat_messages', JSON.stringify(merged)); } catch(e){}
+                  return merged;
                 }
                 return prev;
               });
             }
             if (Array.isArray(cloudData.chatGroups)) {
               setChatGroups(prev => {
-                if (JSON.stringify(prev) !== JSON.stringify(cloudData.chatGroups)) {
-                  try { localStorage.setItem('javelo_chat_groups', JSON.stringify(cloudData.chatGroups)); } catch(e){}
-                  return cloudData.chatGroups;
+                const merged = unionMergeById(cloudData.chatGroups, prev);
+                if (JSON.stringify(prev) !== JSON.stringify(merged)) {
+                  try { localStorage.setItem('javelo_chat_groups', JSON.stringify(merged)); } catch(e){}
+                  return merged;
+                }
+                return prev;
+              });
+            }
+            if (Array.isArray(cloudData.schedules)) {
+              setSchedules(prev => {
+                const merged = unionMergeById(cloudData.schedules, prev);
+                return JSON.stringify(prev) !== JSON.stringify(merged) ? merged : prev;
+              });
+            }
+            if (Array.isArray(cloudData.customTasks)) {
+              setCustomTasks(prev => {
+                const merged = unionMergeById(cloudData.customTasks, prev);
+                if (JSON.stringify(prev) !== JSON.stringify(merged)) {
+                  try { localStorage.setItem('javelo_tasks', JSON.stringify(merged)); } catch(e){}
+                  return merged;
                 }
                 return prev;
               });
             }
             if (cloudData.companyInfo) {
-              setCompanyInfo(prev => JSON.stringify(prev) !== JSON.stringify(cloudData.companyInfo) ? cloudData.companyInfo : prev);
+              setCompanyInfo(prev => {
+                const merged = { ...(prev || {}), ...cloudData.companyInfo };
+                if (JSON.stringify(prev) !== JSON.stringify(merged)) {
+                  try { localStorage.setItem('javelo_company', JSON.stringify(merged)); } catch(e){}
+                  return merged;
+                }
+                return prev;
+              });
             }
             return;
           }
@@ -960,7 +1339,21 @@ function App() {
   };
 
   const handleNotificationClick = (notif) => {
-    const updated = (notifications || []).map(n => n.id === notif.id ? { ...n, read: true } : n);
+    try {
+      const readKey = `javelo_read_notifs_${currentUser?.id}`;
+      const readSet = new Set(JSON.parse(localStorage.getItem(readKey) || '[]'));
+      readSet.add(notif.id);
+      localStorage.setItem(readKey, JSON.stringify(Array.from(readSet)));
+    } catch(e){}
+
+    const updated = (notifications || []).map(n => {
+      if (n.id === notif.id) {
+        const readBy = Array.isArray(n.readBy) ? [...n.readBy] : [];
+        if (currentUser?.id && !readBy.includes(currentUser.id)) readBy.push(currentUser.id);
+        return { ...n, read: true, readBy };
+      }
+      return n;
+    });
     setNotifications(updated);
     syncCloudDB({ companyInfo, users, tickets, notifications: updated, schedules, customTasks });
     if (notif.targetTab) {
@@ -972,16 +1365,141 @@ function App() {
     }
   };
 
+  const handleDismissNotification = (notifId) => {
+    try {
+      const dismissedKey = `javelo_dismissed_notifs_${currentUser?.id}`;
+      const dismissedSet = new Set(JSON.parse(localStorage.getItem(dismissedKey) || '[]'));
+      dismissedSet.add(notifId);
+      localStorage.setItem(dismissedKey, JSON.stringify(Array.from(dismissedSet)));
+    } catch(e){}
+
+    const updated = (notifications || []).filter(n => n.id !== notifId);
+    setNotifications(updated);
+    syncCloudDB({ companyInfo, users, tickets, notifications: updated, schedules, customTasks });
+  };
+
   const handleMarkAllNotificationsRead = () => {
+    try {
+      const readKey = `javelo_read_notifs_${currentUser?.id}`;
+      const readSet = new Set(JSON.parse(localStorage.getItem(readKey) || '[]'));
+      (notifications || []).forEach(n => readSet.add(n.id));
+      localStorage.setItem(readKey, JSON.stringify(Array.from(readSet)));
+    } catch(e){}
+
     const updated = (notifications || []).map(n => {
       if (!n.userId || n.userId === currentUser?.id || (n.userEmail && n.userEmail === currentUser?.email?.toLowerCase())) {
-        return { ...n, read: true };
+        const readBy = Array.isArray(n.readBy) ? [...n.readBy] : [];
+        if (currentUser?.id && !readBy.includes(currentUser.id)) readBy.push(currentUser.id);
+        return { ...n, read: true, readBy };
       }
       return n;
     });
     setNotifications(updated);
     syncCloudDB({ companyInfo, users, tickets, notifications: updated, schedules, customTasks });
   };
+
+  const handleSendAnnouncement = (newAnnouncement) => {
+    const updatedAnnouncements = [newAnnouncement, ...(companyInfo?.announcements || [])];
+    const updatedCompanyInfo = {
+      ...companyInfo,
+      announcements: updatedAnnouncements
+    };
+    setCompanyInfo(updatedCompanyInfo);
+
+    const notifItem = {
+      id: "notif-ann-" + Date.now(),
+      title: `📢 ${newAnnouncement.title}`,
+      text: newAnnouncement.content,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      date: new Date().toISOString().split('T')[0],
+      timestamp: Date.now(),
+      read: false,
+      readBy: [],
+      type: 'announcement',
+      targetDivision: newAnnouncement.targetDivision
+    };
+    const updatedNotifs = [notifItem, ...(notifications || [])];
+    setNotifications(updatedNotifs);
+
+    syncCloudDB({
+      companyInfo: updatedCompanyInfo,
+      users,
+      tickets,
+      notifications: updatedNotifs,
+      chatMessages,
+      chatGroups,
+      schedules,
+      customTasks
+    });
+  };
+
+  const handleUpdateDivisions = (updatedDivisions) => {
+    const updatedCompany = {
+      ...companyInfo,
+      divisions: updatedDivisions
+    };
+    setCompanyInfo(updatedCompany);
+    syncCloudDB({
+      companyInfo: updatedCompany,
+      users,
+      tickets,
+      notifications,
+      chatMessages,
+      chatGroups,
+      schedules,
+      customTasks
+    });
+  };
+
+  const handleDismissAnnouncementPopup = () => {
+    if (activeAnnouncementPopup && currentUser) {
+      try {
+        const key = `javelo_seen_ann_${currentUser.id}`;
+        const seen = JSON.parse(localStorage.getItem(key) || '[]');
+        if (!seen.includes(activeAnnouncementPopup.id)) {
+          seen.push(activeAnnouncementPopup.id);
+          localStorage.setItem(key, JSON.stringify(seen));
+        }
+      } catch(e){}
+    }
+    setActiveAnnouncementPopup(null);
+  };
+
+  // 3-Minute Login Announcement Popup Checker
+  useEffect(() => {
+    if (!currentUser || !isLoggedIn) return;
+    const checkAnnouncement = () => {
+      const announcements = companyInfo?.announcements || [];
+      if (!Array.isArray(announcements) || announcements.length === 0) return;
+
+      let seenIds = [];
+      try {
+        seenIds = JSON.parse(localStorage.getItem(`javelo_seen_ann_${currentUser.id}`) || '[]');
+      } catch(e){}
+
+      const elapsedSeconds = (Date.now() - loginTimestamp) / 1000;
+
+      const unacknowledged = announcements.find(ann => {
+        if (!ann || !ann.id) return false;
+        if (seenIds.includes(ann.id)) return false;
+        if (ann.targetDivision && ann.targetDivision !== 'All') {
+          const userDept = (currentUser.department || (currentUser.role === 'admin' ? 'C-Level Executive' : '')).trim().toLowerCase();
+          if (userDept !== ann.targetDivision.trim().toLowerCase()) return false;
+        }
+        if (ann.popupMode === 'instant') return true;
+        if ((ann.popupMode === '3min' || !ann.popupMode) && elapsedSeconds >= 180) return true;
+        return false;
+      });
+
+      if (unacknowledged && !activeAnnouncementPopup) {
+        setActiveAnnouncementPopup(unacknowledged);
+      }
+    };
+
+    const interval = setInterval(checkAnnouncement, 5000);
+    checkAnnouncement();
+    return () => clearInterval(interval);
+  }, [currentUser?.id, isLoggedIn, companyInfo?.announcements, loginTimestamp, activeAnnouncementPopup]);
 
   const handleConfirmCheckIn = (checkInData) => {
     const targetGeo = companyInfo?.factoryGeo || DEFAULT_FACTORY_GEO;
@@ -1104,6 +1622,7 @@ function App() {
           isTimerRunning,
           notifications: notifications || [],
           onNotificationClick: handleNotificationClick,
+          onDismissNotification: handleDismissNotification,
           onMarkAllRead: handleMarkAllNotificationsRead,
           onOpenCheckInGate: () => setShowCheckInGateModal(true),
           onCheckOutClick: () => setShowCheckoutModal(true),
@@ -1116,9 +1635,9 @@ function App() {
         e('div', { className: 'p-3 sm:p-4 md:p-6 pb-24 md:pb-6 flex-1' },
           activeTab === 'todo' && e(PersonalToDoManager, { currentUser, tickets: tickets || [], setTickets, customTasks: customTasks || [], setCustomTasks, language, t }),
           activeTab === 'schedules' && e(ScheduleGrid, { users: users || [], schedules: schedules || [], currentUser, onOpenPlanner: () => setShowShiftPlannerModal(true), onInspectUserCalendar: (u) => setCLevelInspectedUser(u) }),
-          activeTab === 'tickets' && e(TicketBoard, { tickets: tickets || [], users: users || [], currentUser, companyInfo, onOpenCreateTicket: () => setShowCreateTicketModal(true), onEditTicket: setEditingTicket, onOpenComments: setCommentingTicket, onOpenHistory: setHistoryTicket, onDeleteTicket: handleDeleteTicket, onSendReminder: handleSendReminderAlert, language, t }),
+          activeTab === 'tickets' && e(TicketBoard, { tickets: tickets || [], users: users || [], currentUser, companyInfo, onOpenCreateTicket: () => setShowCreateTicketModal(true), onOpenDivisionManager: () => setShowDivisionModal(true), onEditTicket: setEditingTicket, onOpenComments: setCommentingTicket, onOpenHistory: setHistoryTicket, onDeleteTicket: handleDeleteTicket, onSendReminder: handleSendReminderAlert, language, t }),
           activeTab === 'virtual-office' && e(SkyOffice2DPixelMap, { users: users || [], tickets: tickets || [] }),
-          activeTab === 'clevel' && (currentUser?.role === 'admin' ? e(CLevelDashboard, { users: users || [], tickets: tickets || [], anomalies: anomalies || [], schedules: schedules || [], onResolveAnomaly: id => setAnomalies(prev => prev.map(a => a.id === id ? { ...a, resolved: true } : a)), onOpenCreateUser: () => setShowCreateUserModal(true), onOpenAnnouncement: () => setShowAnnouncementModal(true), onOpenCreateTicket: () => setShowCreateTicketModal(true), onOpenActiveStaff: () => setShowActiveStaffModal(true), onInspectEmployee: (u) => setCLevelInspectedUser(u), onDeleteUser: handleDeleteUser, isSupabaseReady, serverUrl: apiUrl, language, t }) : e('div', { className: 'p-8 text-center bg-rose-50 border border-rose-200 text-rose-800 font-bold rounded-2xl text-xs' }, '🔒 Access Restricted: C-Level Executive Master Dashboard is restricted to C-Level Admin accounts.')),
+          activeTab === 'clevel' && (canManageEmployees(currentUser) ? e(CLevelDashboard, { users: users || [], tickets: tickets || [], anomalies: anomalies || [], schedules: schedules || [], currentUser, companyInfo, onResolveAnomaly: id => setAnomalies(prev => prev.map(a => a.id === id ? { ...a, resolved: true } : a)), onOpenCreateUser: () => setShowCreateUserModal(true), onOpenAnnouncement: () => setShowAnnouncementModal(true), onOpenDivisionManager: () => setShowDivisionModal(true), onOpenCreateTicket: () => setShowCreateTicketModal(true), onOpenActiveStaff: () => setShowActiveStaffModal(true), onInspectEmployee: (u) => setCLevelInspectedUser(u), onDeleteUser: handleDeleteUser, isSupabaseReady, serverUrl: apiUrl, language, t }) : e('div', { className: 'p-8 text-center bg-rose-50 border border-rose-200 text-rose-800 font-bold rounded-2xl text-xs' }, '🔒 Access Restricted: Dashboard is restricted to C-Level and HR accounts.')),
           activeTab === 'chat' && e(ChatEcosystem, { users: users || [], currentUser, tickets: tickets || [], chatMessages, setChatMessages, chatGroups, setChatGroups, onSendReminder: handleSendReminderAlert, syncCloudDB, companyInfo, language, t }),
           activeTab === 'settings' && e(SettingsPanel, { currentUser, setCurrentUser, companyInfo, isDarkMode, setIsDarkMode, apiUrl, setApiUrl, onOpenPhotoCrop: () => setShowPhotoCropModal(true), onStartWizard: () => setShowSetupWizard(true), language, setLanguage, t, users: users || [], setUsers, syncCloudDB, tickets: tickets || [], notifications: notifications || [], chatMessages: chatMessages || [], chatGroups: chatGroups || [], schedules: schedules || [], customTasks: customTasks || [] })
         )
@@ -1132,7 +1651,7 @@ function App() {
       [
         { id: 'tickets', label: t('navTickets', language), icon: IconTicket },
         { id: 'todo', label: t('navTasks', language), icon: IconCheckList },
-        ...(currentUser?.role === 'admin' ? [{ id: 'clevel', label: t('navCLevel', language), icon: IconAnalytics }] : []),
+        ...(canManageEmployees(currentUser) ? [{ id: 'clevel', label: currentUser?.role === 'admin' ? t('navCLevel', language) : 'HR', icon: IconAnalytics }] : []),
         { id: 'chat', label: t('navChat', language), icon: IconChat },
         { id: 'settings', label: t('navSettings', language), icon: IconSettings }
       ].map(item => {
@@ -1316,6 +1835,9 @@ function App() {
 
     showCreateUserModal && e(CreateUserModal, {
       apiUrl,
+      companyInfo,
+      users: users || [],
+      onOpenDivisionManager: () => setShowDivisionModal(true),
       onClose: () => setShowCreateUserModal(false),
       onCreateSuccess: (newUser) => {
         const updatedUsers = [...users, newUser];
@@ -1332,8 +1854,25 @@ function App() {
     showAnnouncementModal && e(BroadcastAnnouncementModal, {
       currentUser,
       users: users || [],
-      tickets: tickets || [],
-      onClose: () => setShowAnnouncementModal(false)
+      companyInfo,
+      onClose: () => setShowAnnouncementModal(false),
+      onSendAnnouncement: handleSendAnnouncement,
+      language,
+      t
+    }),
+
+    showDivisionModal && e(DivisionManagementModal, {
+      companyInfo,
+      users: users || [],
+      onClose: () => setShowDivisionModal(false),
+      onUpdateDivisions: handleUpdateDivisions,
+      language
+    }),
+
+    activeAnnouncementPopup && e(AnnouncementPopupModal, {
+      announcement: activeAnnouncementPopup,
+      language,
+      onClose: handleDismissAnnouncementPopup
     }),
 
     showActiveStaffModal && e(ActiveStaffModal, {
@@ -2186,11 +2725,12 @@ function LoginScreen({ users, companyInfo, onLogin, onStartWizard }) {
 // --- SIDEBAR COMPONENT ---
 function Sidebar({ activeTab, setActiveTab, currentUser, users, companyInfo, anomalyCount, onLogout, onStartWizard, onOpenPhotoCrop, language, t }) {
   const isAdmin = currentUser?.role === 'admin';
+  const canManage = canManageEmployees(currentUser);
 
   const menuItems = [
     { id: "tickets", label: t('ticketsTab', language), Icon: IconTicket },
     { id: "todo", label: t('todoTab', language), Icon: IconCheckList, badge: null },
-    ...(isAdmin ? [{ id: "clevel", label: t('clevelTab', language), Icon: IconAnalytics, badge: anomalyCount > 0 ? `${anomalyCount} Alert` : null, badgeColor: "bg-rose-500" }] : []),
+    ...(canManage ? [{ id: "clevel", label: isAdmin ? t('clevelTab', language) : (language === 'en' ? 'HR / Management' : 'HR & Divisi'), Icon: IconAnalytics, badge: anomalyCount > 0 ? `${anomalyCount} Alert` : null, badgeColor: "bg-rose-500" }] : []),
     { id: "chat", label: t('chatTab', language), Icon: IconChat },
     { id: "settings", label: t('settingsTab', language), Icon: IconSettings },
   ];
@@ -2273,23 +2813,42 @@ function Sidebar({ activeTab, setActiveTab, currentUser, users, companyInfo, ano
 }
 
 // --- HEADER COMPONENT WITH INTERACTIVE NOTIFICATIONS ---
-function Header({ currentUser, timerFormatted, isTimerRunning, notifications, onNotificationClick, onMarkAllRead, onOpenCheckInGate, onCheckOutClick, onLogout, onOpenPhotoCrop, language, setLanguage, t }) {
+function Header({ currentUser, timerFormatted, isTimerRunning, notifications, onNotificationClick, onDismissNotification, onMarkAllRead, onOpenCheckInGate, onCheckOutClick, onLogout, onOpenPhotoCrop, language, setLanguage, t }) {
   const [showNotifPopover, setShowNotifPopover] = useState(false);
 
-  // Filter notifications specifically for the logged-in user
+  // Filter notifications specifically for the logged-in user with persistent read/dismiss tracking
   const userNotifs = useMemo(() => {
     const list = notifications || [];
     if (!currentUser) return [];
-    return list.filter(n => {
-      if (n.userId && n.userId === currentUser.id) return true;
-      if (n.userEmail && currentUser.email && n.userEmail.toLowerCase() === currentUser.email.toLowerCase()) return true;
-      if (!n.userId && !n.userEmail) return true; // broadcast
-      if (currentUser.role === 'admin' && n.targetRole === 'admin') return true;
-      return false;
-    });
+
+    let dismissedSet = new Set();
+    let readSet = new Set();
+    try {
+      dismissedSet = new Set(JSON.parse(localStorage.getItem(`javelo_dismissed_notifs_${currentUser.id}`) || '[]'));
+      readSet = new Set(JSON.parse(localStorage.getItem(`javelo_read_notifs_${currentUser.id}`) || '[]'));
+    } catch(e){}
+
+    return list
+      .filter(n => {
+        if (!n || !n.id) return false;
+        if (dismissedSet.has(n.id)) return false;
+        if (n.userId && n.userId === currentUser.id) return true;
+        if (n.userEmail && currentUser.email && n.userEmail.toLowerCase() === currentUser.email.toLowerCase()) return true;
+        if (n.targetDivision && n.targetDivision !== 'All') {
+          const userDept = (currentUser.department || (currentUser.role === 'admin' ? 'C-Level Executive' : '')).trim().toLowerCase();
+          if (userDept !== n.targetDivision.trim().toLowerCase()) return false;
+        }
+        if (!n.userId && !n.userEmail) return true; // broadcast
+        if (currentUser.role === 'admin' && n.targetRole === 'admin') return true;
+        return false;
+      })
+      .map(n => {
+        const isRead = n.read || readSet.has(n.id) || (Array.isArray(n.readBy) && n.readBy.includes(currentUser.id));
+        return { ...n, isRead };
+      });
   }, [notifications, currentUser]);
 
-  const unreadCount = useMemo(() => userNotifs.filter(n => !n.read).length, [userNotifs]);
+  const unreadCount = useMemo(() => userNotifs.filter(n => !n.isRead).length, [userNotifs]);
 
   return e('header', { className: 'h-auto md:h-16 py-2.5 md:py-0 bg-white border-b border-slate-200 px-3 md:px-6 flex flex-row items-center justify-between gap-2 sticky top-0 z-30 shadow-xs' },
     // Left side: Timer & Check-in / Out
@@ -2352,14 +2911,26 @@ function Header({ currentUser, timerFormatted, isTimerRunning, notifications, on
             userNotifs.length === 0 ? e('div', { className: 'p-6 text-center text-xs text-slate-400' }, t('noNotif', language)) :
             userNotifs.map(n => e('div', {
               key: n.id,
-              onClick: () => { onNotificationClick(n); setShowNotifPopover(false); },
-              className: `p-3.5 text-xs transition-all cursor-pointer hover:bg-blue-100/50 ${n.read ? 'bg-white' : 'bg-blue-50/50 font-medium'}`
+              className: `p-3 text-xs transition-all flex items-start justify-between gap-2 hover:bg-blue-50/70 ${n.isRead ? 'bg-white opacity-85' : 'bg-blue-50/60 font-semibold'}`
             },
-              e('div', { className: 'font-bold text-slate-900 flex justify-between' },
-                e('span', null, n.title),
-                e('span', { className: 'text-[10px] text-slate-400 font-normal' }, n.time)
+              e('div', {
+                onClick: () => { onNotificationClick(n); setShowNotifPopover(false); },
+                className: 'flex-1 cursor-pointer space-y-0.5'
+              },
+                e('div', { className: 'font-bold text-slate-900 flex items-center justify-between' },
+                  e('span', null, n.title),
+                  e('span', { className: 'text-[10px] text-slate-400 font-normal ml-2 flex-shrink-0' }, n.time)
+                ),
+                e('p', { className: 'text-slate-600 text-[11px] leading-relaxed' }, n.text)
               ),
-              e('p', { className: 'text-slate-600 text-[11px] mt-1' }, n.text)
+              e('button', {
+                onClick: (ev) => {
+                  ev.stopPropagation();
+                  if (onDismissNotification) onDismissNotification(n.id);
+                },
+                title: language === 'en' ? 'Dismiss' : 'Hapus',
+                className: 'text-slate-400 hover:text-rose-600 p-1 rounded-lg hover:bg-slate-100 transition cursor-pointer flex-shrink-0 text-xs'
+              }, '✕')
             ))
           )
         )
@@ -2719,14 +3290,18 @@ function SkyOffice2DPixelMap({ users, tickets }) {
 }
 
 // --- TICKET BOARD WITH COMPACT COMPLETED TICKETS ARCHIVE ---
-function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTicket, onEditTicket, onOpenComments, onOpenHistory, onDeleteTicket, onSendReminder, language, t }) {
+function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTicket, onOpenDivisionManager, onEditTicket, onOpenComments, onOpenHistory, onDeleteTicket, onSendReminder, language, t }) {
   const [filterDivision, setFilterDivision] = useState("All");
   const [searchCode, setSearchCode] = useState("");
   const [showArchive, setShowArchive] = useState(false);
   const myTasksLabel = t('myTasks', language);
-  const divisions = ["All", myTasksLabel, "General", "Engineering", "Operations", "Product", "Quality Control"];
+
+  const companyDivisions = getCompanyDivisions(companyInfo, users);
+  const dynamicDivNames = companyDivisions.map(d => d.name);
+  const divisions = ["All", myTasksLabel, "General", ...dynamicDivNames.filter(d => d !== 'C-Level Executive' && d !== 'General')];
 
   const isAdmin = currentUser?.role === 'admin';
+  const canManage = canManageEmployees(currentUser);
   const safeTickets = tickets || [];
   const todayStr = new Date().toISOString().split('T')[0];
 
@@ -2753,7 +3328,13 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
         e('h2', { className: 'text-2xl font-bold text-slate-900' }, t('ticketsHeader', language)),
         e('p', { className: 'text-xs text-slate-500' }, `Tracked ticket codes (${getCompanyInitials(companyInfo?.name)}-2026-XXX), active tasks & completed archive`)
       ),
-      e('button', { onClick: onOpenCreateTicket, className: 'px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5 cursor-pointer' }, t('generateTicket', language))
+      e('div', { className: 'flex items-center gap-2' },
+        canManage && e('button', {
+          onClick: onOpenDivisionManager,
+          className: 'px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold border border-slate-200 shadow-xs flex items-center gap-1.5 cursor-pointer transition'
+        }, '⚙️ ' + (language === 'en' ? 'Divisions' : 'Atur Divisi')),
+        e('button', { onClick: onOpenCreateTicket, className: 'px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5 cursor-pointer' }, t('generateTicket', language))
+      )
     ),
 
     // TICKET CODE SEARCH TRACKER BAR
@@ -2769,12 +3350,16 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
       searchCode && e('button', { onClick: () => setSearchCode(""), className: 'text-slate-400 font-bold hover:text-slate-600 cursor-pointer text-xs' }, 'Clear')
     ),
 
-    e('div', { className: 'flex flex-wrap gap-2 border-b border-slate-200 pb-3 no-scrollbar overflow-x-auto' },
+    e('div', { className: 'flex items-center gap-2 border-b border-slate-200 pb-3 overflow-x-auto' },
       divisions.map(d => e('button', {
         key: d,
         onClick: () => setFilterDivision(d),
-        className: `px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${filterDivision === d ? 'bg-blue-600 text-white shadow' : 'bg-white border text-slate-600 hover:bg-slate-50'}`
-      }, d))
+        className: `px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex-shrink-0 ${filterDivision === d ? 'bg-blue-600 text-white shadow' : 'bg-white border text-slate-600 hover:bg-slate-50'}`
+      }, d)),
+      canManage && e('button', {
+        onClick: onOpenDivisionManager,
+        className: 'px-3 py-1.5 rounded-lg text-xs font-bold border border-dashed border-blue-300 text-blue-700 hover:bg-blue-50 transition-all cursor-pointer whitespace-nowrap flex-shrink-0 flex items-center gap-1'
+      }, '+ ' + (language === 'en' ? 'New Division' : 'Divisi Baru'))
     ),
 
     // 1. ACTIVE TICKETS SECTION
@@ -2917,7 +3502,9 @@ function CreateTicketModal({ users, tickets, currentUser, companyInfo, onClose, 
   const [priority, setPriority] = useState("Medium");
   const [assignedTo, setAssignedTo] = useState(users[0]?.id || "u-admin");
   const [selectedMentions, setSelectedMentions] = useState([]);
-  const [selectedDivisions, setSelectedDivisions] = useState(["Engineering"]);
+  const companyDivisions = getCompanyDivisions(companyInfo, users);
+  const availableDivisions = companyDivisions.map(d => d.name).filter(d => d !== 'C-Level Executive');
+  const [selectedDivisions, setSelectedDivisions] = useState(() => [availableDivisions[0] || "General"]);
   const [deadline, setDeadline] = useState(() => new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0]);
 
   const [autocompleteType, setAutocompleteType] = useState(null);
@@ -3022,14 +3609,14 @@ function CreateTicketModal({ users, tickets, currentUser, companyInfo, onClose, 
           autocompleteType && e('div', { className: 'tag-autocomplete-overlay' },
             autocompleteType === '@' && (users || []).map(u => e('div', { key: u.id, onClick: () => insertTag(`@${u.name}`), className: 'tag-autocomplete-item' }, e('span', { className: 'font-bold text-blue-600' }, `@${u.name}`), e('span', { className: 'text-[10px] text-slate-400' }, u.department))),
             autocompleteType === '#' && safeTickets.concat([{ code: "PRJ-ENG-101" }, { code: "PRJ-OPS-202" }]).map(t => e('div', { key: t.code, onClick: () => insertTag(`#${t.code}`), className: 'tag-autocomplete-item' }, e('span', { className: 'font-bold text-purple-600' }, `#${t.code}`))),
-            autocompleteType === '/' && ["Engineering", "Operations", "Product", "Quality Control"].map(d => e('div', { key: d, onClick: () => insertTag(`/${d}`), className: 'tag-autocomplete-item' }, e('span', { className: 'font-bold text-emerald-600' }, `/${d}`)))
+            autocompleteType === '/' && availableDivisions.map(d => e('div', { key: d, onClick: () => insertTag(`/${d}`), className: 'tag-autocomplete-item' }, e('span', { className: 'font-bold text-emerald-600' }, `/${d}`)))
           )
         ),
 
         e('div', null,
           e('label', { className: 'font-semibold block mb-1 text-slate-700' }, 'Select Multiple Divisions:'),
           e('div', { className: 'flex flex-wrap gap-2' },
-            ["Engineering", "Operations", "Product", "Quality Control"].map(d => e('button', {
+            availableDivisions.map(d => e('button', {
               key: d,
               type: 'button',
               onClick: () => toggleDivision(d),
@@ -3385,15 +3972,24 @@ function ModeSpecificCheckInGateModal({ currentUser, companyInfo, userLocation, 
 }
 
 // --- CREATE USER MODAL ---
-function CreateUserModal({ apiUrl, onClose, onCreateSuccess }) {
+function CreateUserModal({ apiUrl, companyInfo, users, onOpenDivisionManager, onClose, onCreateSuccess }) {
+  const divisions = getCompanyDivisions(companyInfo, users);
+  const nonCLevelDivisions = divisions.filter(d => d.name !== 'C-Level Executive');
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("employee");
   const [mode, setMode] = useState("Full WFH");
-  const [dept, setDept] = useState("Engineering");
+  const [dept, setDept] = useState(() => nonCLevelDivisions[0]?.name || "Engineering");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  const effectiveDept = role === 'admin' ? 'C-Level Executive' : dept;
+  const previewId = useMemo(() => {
+    const dummyUser = { id: 'temp', department: effectiveDept, role };
+    return formatEmployeeId(dummyUser, companyInfo, users || [], divisions);
+  }, [effectiveDept, role, companyInfo, users, divisions]);
 
   const handleSubmit = async (ev) => {
     ev.preventDefault();
@@ -3406,13 +4002,13 @@ function CreateUserModal({ apiUrl, onClose, onCreateSuccess }) {
       password,
       role,
       mode,
-      department: role === 'admin' ? 'C-Level Executive' : dept
+      department: effectiveDept,
+      employeeId: previewId
     };
 
     let createdUserId = null;
     try {
       const cleanUrl = (apiUrl || "").replace(/\/$/, "");
-      // Only attempt remote backend API if not on a pure static domain without local backend
       if (cleanUrl && !cleanUrl.includes("github.io") && !cleanUrl.includes("netlify.app")) {
         const response = await fetch(`${cleanUrl}/api/create-employee`, {
           method: 'POST',
@@ -3435,7 +4031,6 @@ function CreateUserModal({ apiUrl, onClose, onCreateSuccess }) {
       console.warn("Backend API unavailable, creating account client-side:", apiErr);
     }
 
-    // Direct fallback: if backend server didn't respond or returned error, generate valid UUID directly
     if (!createdUserId) {
       createdUserId = generateUUID();
     }
@@ -3443,9 +4038,10 @@ function CreateUserModal({ apiUrl, onClose, onCreateSuccess }) {
     setIsLoading(false);
     onCreateSuccess({
       id: createdUserId,
+      employeeId: previewId,
       name: payload.name,
       email: payload.email,
-      password: payload.password, // Store for Admin Directory reference
+      password: payload.password,
       role: payload.role,
       mode: payload.mode,
       department: payload.department,
@@ -3458,8 +4054,17 @@ function CreateUserModal({ apiUrl, onClose, onCreateSuccess }) {
   return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
     e('div', { className: 'bg-white rounded-3xl max-w-md w-full p-7 shadow-2xl space-y-4' },
       e('div', { className: 'flex justify-between border-b pb-3' },
-        e('h3', { className: 'font-bold text-slate-900 text-base' }, 'Create Employee Account'),
+        e('div', null,
+          e('h3', { className: 'font-bold text-slate-900 text-base' }, 'Create Employee Account'),
+          e('p', { className: 'text-[11px] text-slate-400' }, 'Buat akun karyawan dan NIK / Employee ID tergenerate otomatis.')
+        ),
         e('button', { onClick: onClose, className: 'font-bold text-slate-400 cursor-pointer', disabled: isLoading }, '✕')
+      ),
+
+      // Preview of Auto-generated Employee ID
+      e('div', { className: 'p-3 bg-blue-50/80 border border-blue-200 rounded-2xl flex items-center justify-between text-xs font-mono' },
+        e('span', { className: 'text-slate-600 font-bold' }, 'Employee ID (NIK):'),
+        e('span', { className: 'font-extrabold text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-blue-200 shadow-3xs' }, previewId)
       ),
 
       errorMsg && e('div', { className: 'p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-[11px] leading-relaxed' },
@@ -3470,11 +4075,11 @@ function CreateUserModal({ apiUrl, onClose, onCreateSuccess }) {
       e('form', { onSubmit: handleSubmit, className: 'space-y-3 text-xs' },
         e('div', null,
           e('label', { className: 'font-semibold block mb-1' }, 'Full Name'),
-          e('input', { required: true, type: 'text', disabled: isLoading, value: name, onChange: ev => setName(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
+          e('input', { required: true, type: 'text', disabled: isLoading, placeholder: 'contoh: Budi Santoso', value: name, onChange: ev => setName(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
         ),
         e('div', null,
           e('label', { className: 'font-semibold block mb-1' }, 'Work Email Address'),
-          e('input', { required: true, type: 'email', disabled: isLoading, placeholder: 'user@javelo360.com', value: email, onChange: ev => setEmail(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
+          e('input', { required: true, type: 'email', disabled: isLoading, placeholder: 'user@javeloterralestari.com', value: email, onChange: ev => setEmail(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
         ),
         e('div', null,
           e('label', { className: 'font-semibold block mb-1' }, 'Account Password'),
@@ -3499,8 +4104,31 @@ function CreateUserModal({ apiUrl, onClose, onCreateSuccess }) {
           )
         ),
         e('div', null,
-          e('label', { className: 'font-semibold block mb-1' }, 'Department / Division'),
-          e('input', { type: 'text', disabled: isLoading, value: dept, onChange: ev => setDept(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
+          e('div', { className: 'flex justify-between items-center mb-1' },
+            e('label', { className: 'font-semibold block' }, 'Department / Division'),
+            onOpenDivisionManager && e('button', {
+              type: 'button',
+              onClick: onOpenDivisionManager,
+              className: 'text-[11px] text-blue-600 font-bold hover:underline cursor-pointer'
+            }, '⚙️ Kelola Divisi')
+          ),
+          role === 'admin' ? 
+            e('input', { type: 'text', disabled: true, value: 'C-Level Executive', className: 'w-full px-3 py-2 border rounded-xl bg-slate-100 text-slate-500 font-bold' }) :
+            e('select', {
+              value: dept,
+              disabled: isLoading,
+              onChange: ev => {
+                if (ev.target.value === '__add_new__') {
+                  if (onOpenDivisionManager) onOpenDivisionManager();
+                } else {
+                  setDept(ev.target.value);
+                }
+              },
+              className: 'w-full px-3 py-2 border rounded-xl bg-white font-bold text-slate-800'
+            },
+              nonCLevelDivisions.map(d => e('option', { key: d.code, value: d.name }, `[${d.code}] ${d.name}`)),
+              e('option', { value: '__add_new__', className: 'text-blue-600 font-bold' }, '+ Tambah Divisi Baru...')
+            )
         ),
         e('div', { className: 'flex justify-end gap-2 pt-3 border-t' },
           e('button', { type: 'button', onClick: onClose, disabled: isLoading, className: 'font-semibold px-3 cursor-pointer' }, 'Cancel'),
@@ -3541,24 +4169,109 @@ function ActiveStaffModal({ users, onClose }) {
 }
 
 // --- BROADCAST ANNOUNCEMENT MODAL ---
-function BroadcastAnnouncementModal({ currentUser, users, tickets, onClose }) {
+// --- BROADCAST ANNOUNCEMENT MODAL ---
+function BroadcastAnnouncementModal({ currentUser, users, companyInfo, onClose, onSendAnnouncement, language, t }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [targetDivision, setTargetDivision] = useState("All");
+  const [popupMode, setPopupMode] = useState("3min");
   const [sent, setSent] = useState(false);
 
+  const divisions = getCompanyDivisions(companyInfo, users);
+  const isEn = language === 'en';
+
+  const handleSend = () => {
+    if (!title.trim() || !content.trim()) return;
+    if (onSendAnnouncement) {
+      onSendAnnouncement({
+        id: "ann-" + Date.now(),
+        title: title.trim(),
+        content: content.trim(),
+        targetDivision,
+        popupMode,
+        authorName: currentUser?.name || 'Management',
+        authorRole: currentUser?.role || 'admin',
+        createdAt: new Date().toISOString()
+      });
+    }
+    setSent(true);
+    setTimeout(() => {
+      onClose();
+    }, 1200);
+  };
+
   return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
-    e('div', { className: 'bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4' },
-      e('div', { className: 'flex justify-between border-b pb-3' },
-        e('h3', { className: 'font-bold text-slate-900' }, 'Broadcast Company Announcement'),
-        e('button', { onClick: onClose, className: 'font-bold text-slate-400 cursor-pointer' }, '✕')
+    e('div', { className: 'bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4' },
+      e('div', { className: 'flex justify-between items-center border-b pb-3' },
+        e('div', null,
+          e('h3', { className: 'font-extrabold text-slate-900 text-base flex items-center gap-1.5' },
+            e('span', null, '📢'),
+            isEn ? 'Broadcast Company Announcement' : 'Siarkan Pengumuman Perusahaan'
+          ),
+          e('p', { className: 'text-[11px] text-slate-400 mt-0.5' },
+            isEn ? 'Send pop-up alert & notification to employee devices' : 'Kirim pop-up dan notifikasi ke device seluruh karyawan'
+          )
+        ),
+        e('button', { onClick: onClose, className: 'font-bold text-slate-400 cursor-pointer w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200' }, '✕')
       ),
-      sent ? e('div', { className: 'p-4 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-semibold text-center' }, '✅ Broadcast sent live to all employee channels!') :
-      e('div', { className: 'space-y-3 text-xs' },
-        e('input', { type: 'text', placeholder: 'Title...', value: title, onChange: ev => setTitle(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' }),
-        e('textarea', { rows: 3, placeholder: 'Message...', value: content, onChange: ev => setContent(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' }),
-        e('div', { className: 'flex justify-end gap-2 pt-2' },
-          e('button', { onClick: onClose, className: 'font-semibold px-3 cursor-pointer' }, 'Cancel'),
-          e('button', { onClick: () => setSent(true), className: 'px-4 py-2 bg-purple-600 text-white rounded-xl font-bold shadow cursor-pointer' }, 'Send Broadcast')
+      sent ? e('div', { className: 'p-6 bg-emerald-50 text-emerald-800 rounded-2xl text-xs font-bold text-center space-y-1' },
+        e('div', { className: 'text-2xl' }, '✅'),
+        e('div', null, isEn ? 'Broadcast sent live to employee channels!' : 'Pengumuman berhasil disiarkan ke semua karyawan!')
+      ) :
+      e('div', { className: 'space-y-3.5 text-xs' },
+        e('div', null,
+          e('label', { className: 'font-semibold block mb-1 text-slate-700' }, isEn ? 'Announcement Title' : 'Judul Pengumuman'),
+          e('input', {
+            type: 'text',
+            required: true,
+            placeholder: isEn ? 'e.g. Townhall Meeting at 2 PM' : 'contoh: Rapat Evaluasi Bulanan & Kebijakan Baru',
+            value: title,
+            onChange: ev => setTitle(ev.target.value),
+            className: 'w-full px-3 py-2 border rounded-xl font-medium'
+          })
+        ),
+        e('div', null,
+          e('label', { className: 'font-semibold block mb-1 text-slate-700' }, isEn ? 'Announcement Message' : 'Isi Pesan Pengumuman'),
+          e('textarea', {
+            rows: 4,
+            required: true,
+            placeholder: isEn ? 'Write detailed announcement message here...' : 'Tulis pesan pengumuman lengkap di sini...',
+            value: content,
+            onChange: ev => setContent(ev.target.value),
+            className: 'w-full px-3 py-2 border rounded-xl font-sans leading-relaxed'
+          })
+        ),
+        e('div', { className: 'grid grid-cols-2 gap-2' },
+          e('div', null,
+            e('label', { className: 'font-semibold block mb-1 text-slate-700' }, isEn ? 'Target Division' : 'Target Divisi'),
+            e('select', {
+              value: targetDivision,
+              onChange: ev => setTargetDivision(ev.target.value),
+              className: 'w-full px-3 py-2 border rounded-xl bg-white font-semibold'
+            },
+              e('option', { value: 'All' }, isEn ? 'All Divisions (Semua)' : 'Semua Divisi'),
+              divisions.filter(d => d.name !== 'C-Level Executive').map(d => e('option', { key: d.code, value: d.name }, d.name))
+            )
+          ),
+          e('div', null,
+            e('label', { className: 'font-semibold block mb-1 text-slate-700' }, isEn ? 'Pop-up Trigger' : 'Waktu Pop-up'),
+            e('select', {
+              value: popupMode,
+              onChange: ev => setPopupMode(ev.target.value),
+              className: 'w-full px-3 py-2 border rounded-xl bg-white font-semibold text-purple-700'
+            },
+              e('option', { value: '3min' }, isEn ? '3 Mins after Login' : '3 Menit setelah Login'),
+              e('option', { value: 'instant' }, isEn ? 'Instant Pop-up' : 'Seketika (Instant)'),
+              e('option', { value: 'notif_only' }, isEn ? 'Notification Only' : 'Hanya Notifikasi')
+            )
+          )
+        ),
+        e('div', { className: 'flex justify-end gap-2 pt-2 border-t' },
+          e('button', { onClick: onClose, className: 'font-semibold px-4 py-2 cursor-pointer text-slate-500 hover:text-slate-700' }, isEn ? 'Cancel' : 'Batal'),
+          e('button', {
+            onClick: handleSend,
+            className: 'px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold shadow-md cursor-pointer transition flex items-center gap-1.5'
+          }, isEn ? '📢 Publish Broadcast' : '📢 Siarkan Pengumuman')
         )
       )
     )
@@ -3566,10 +4279,12 @@ function BroadcastAnnouncementModal({ currentUser, users, tickets, onClose }) {
 }
 
 // --- C-LEVEL DASHBOARD WITH EMPLOYEE MONITOR DRILL-DOWN ---
-function CLevelDashboard({ users, tickets, anomalies, schedules, onResolveAnomaly, onOpenCreateUser, onOpenAnnouncement, onOpenCreateTicket, onOpenActiveStaff, onInspectEmployee, onDeleteUser, isSupabaseReady, serverUrl, language, t }) {
+function CLevelDashboard({ users, tickets, anomalies, schedules, currentUser, companyInfo, onResolveAnomaly, onOpenCreateUser, onOpenAnnouncement, onOpenDivisionManager, onOpenCreateTicket, onOpenActiveStaff, onInspectEmployee, onDeleteUser, isSupabaseReady, serverUrl, language, t }) {
   const safeUsers = users || [];
   const safeTickets = tickets || [];
   const safeAnomalies = anomalies || [];
+  const isHR = isHRUser(currentUser) && currentUser?.role !== 'admin';
+  const divisions = getCompanyDivisions(companyInfo, safeUsers);
 
   const employeePerformance = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -3644,11 +4359,15 @@ function CLevelDashboard({ users, tickets, anomalies, schedules, onResolveAnomal
       )
     ),
 
-    e('div', { className: 'flex items-center justify-between' },
-      e('h2', { className: 'text-2xl font-bold text-slate-900' }, t('executiveDashboard', language)),
-      e('div', { className: 'flex gap-2' },
-        e('button', { onClick: onOpenAnnouncement, className: 'px-3.5 py-2 bg-purple-600 text-white rounded-lg text-xs font-semibold cursor-pointer' }, t('broadcast', language)),
-        e('button', { onClick: onOpenCreateUser, className: 'px-3.5 py-2 bg-slate-900 text-white rounded-lg text-xs font-semibold cursor-pointer' }, t('createUser', language))
+    e('div', { className: 'flex flex-wrap items-center justify-between gap-3' },
+      e('div', null,
+        e('h2', { className: 'text-2xl font-bold text-slate-900' }, isHR ? (language === 'en' ? 'HR Personnel & Performance Review Portal' : 'Portal Manajemen & Kinerja HR') : t('executiveDashboard', language)),
+        e('p', { className: 'text-xs text-slate-500 mt-0.5' }, isHR ? 'Akses manajemen personel HR, evaluasi kinerja tim, dan direktori akun karyawan.' : 'Akses master level C untuk monitoring menyeluruh, geofence, dan kredensial.')
+      ),
+      e('div', { className: 'flex flex-wrap gap-2' },
+        e('button', { onClick: onOpenDivisionManager, className: 'px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-semibold cursor-pointer border border-slate-200 shadow-3xs flex items-center gap-1' }, '🏢 ' + (language === 'en' ? 'Divisions' : 'Kelola Divisi')),
+        e('button', { onClick: onOpenAnnouncement, className: 'px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-semibold cursor-pointer shadow-xs flex items-center gap-1' }, '📢 ' + t('broadcast', language)),
+        e('button', { onClick: onOpenCreateUser, className: 'px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold cursor-pointer shadow-xs flex items-center gap-1' }, '+ ' + t('createUser', language))
       )
     ),
 
@@ -3762,7 +4481,7 @@ function CLevelDashboard({ users, tickets, anomalies, schedules, onResolveAnomal
           e('thead', { className: 'text-[11px] text-slate-400 uppercase bg-slate-50' },
             e('tr', null,
               e('th', { className: 'px-4 py-3' }, 'Staff Name'),
-              e('th', { className: 'px-4 py-3' }, 'Employee ID'),
+              e('th', { className: 'px-4 py-3' }, 'Employee ID (NIK)'),
               e('th', { className: 'px-4 py-3' }, 'Email Address'),
               e('th', { className: 'px-4 py-3' }, 'Password / PIN'),
               e('th', { className: 'px-4 py-3' }, 'Role'),
@@ -3770,22 +4489,34 @@ function CLevelDashboard({ users, tickets, anomalies, schedules, onResolveAnomal
             )
           ),
           e('tbody', { className: 'divide-y' },
-            safeUsers.map(u => e('tr', { key: u.id, className: 'hover:bg-slate-50/50' },
-              e('td', { className: 'px-4 py-3 font-semibold text-slate-900 flex items-center gap-2' },
-                e('img', { src: u.avatar, className: 'w-7 h-7 rounded-full object-cover border' }),
-                e('span', null, u.name)
-              ),
-              e('td', { className: 'px-4 py-3 font-mono text-[11px]' }, u.id),
-              e('td', { className: 'px-4 py-3 font-mono text-[11px]' }, u.email),
-              e('td', { className: 'px-4 py-3 font-mono text-purple-600 font-bold bg-purple-50/30' }, u.password || "12345678"),
-              e('td', { className: 'px-4 py-3 font-semibold' }, u.role),
-              e('td', { className: 'px-4 py-3 text-right' },
-                e('button', {
-                  onClick: () => { if(confirm(`Are you sure you want to delete ${u.name}?`)) onDeleteUser(u.id); },
-                  className: 'px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 font-bold rounded-lg transition-all cursor-pointer'
-                }, '🗑️ Delete')
-              )
-            ))
+            safeUsers.map(u => {
+              const userIsCLevel = isCLevelUser(u);
+              const hidePasswordFromHR = userIsCLevel && isHR;
+              const formattedNik = formatEmployeeId(u, companyInfo, safeUsers, divisions);
+
+              return e('tr', { key: u.id, className: 'hover:bg-slate-50/50' },
+                e('td', { className: 'px-4 py-3 font-semibold text-slate-900 flex items-center gap-2 whitespace-nowrap' },
+                  e('img', { src: u.avatar, className: 'w-7 h-7 rounded-full object-cover border' }),
+                  e('span', null, u.name)
+                ),
+                e('td', { className: 'px-4 py-3 font-mono text-[11px] font-bold text-slate-700 whitespace-nowrap' },
+                  e('span', { className: 'px-2 py-0.5 bg-slate-100 rounded border border-slate-200 shadow-3xs' }, formattedNik)
+                ),
+                e('td', { className: 'px-4 py-3 font-mono text-[11px]' }, u.email),
+                e('td', { className: `px-4 py-3 font-mono text-[11px] ${hidePasswordFromHR ? 'text-slate-400 italic bg-slate-50' : 'text-purple-600 font-bold bg-purple-50/30'}` },
+                  hidePasswordFromHR ? '•••••••• [Protected Level C]' : (u.password || "12345678")
+                ),
+                e('td', { className: 'px-4 py-3 font-semibold' }, u.role === 'admin' ? 'C-Level' : u.role),
+                e('td', { className: 'px-4 py-3 text-right whitespace-nowrap' },
+                  hidePasswordFromHR ?
+                    e('span', { className: 'px-2.5 py-1 bg-slate-100 text-slate-400 text-[10px] font-bold rounded-lg select-none' }, '🔒 Protected') :
+                    e('button', {
+                      onClick: () => { if(confirm(`Are you sure you want to delete ${u.name}?`)) onDeleteUser(u.id); },
+                      className: 'px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 font-bold rounded-lg transition-all cursor-pointer'
+                    }, '🗑️ Delete')
+                )
+              );
+            })
           )
         )
       )
@@ -4120,7 +4851,7 @@ function ChatEcosystem({ users, currentUser, tickets, chatMessages, setChatMessa
           autocompleteType && e('div', { className: 'tag-autocomplete-overlay' },
             autocompleteType === '@' && safeUsers.map(u => e('div', { key: u.id, onClick: () => insertChatTag(`@${u.name}`), className: 'tag-autocomplete-item' }, e('span', { className: 'font-bold text-blue-600' }, `@${u.name}`), e('span', { className: 'text-[10px] text-slate-400' }, u.department))),
             autocompleteType === '#' && safeTickets.map(t => e('div', { key: t.code, onClick: () => insertChatTag(`#${t.code}`), className: 'tag-autocomplete-item' }, e('span', { className: 'font-bold text-purple-600' }, `#${t.code}`))),
-            autocompleteType === '/' && ["Engineering", "Operations", "Product", "Quality Control", "Finance", "HR"].map(d => e('div', { key: d, onClick: () => insertChatTag(`/${d}`), className: 'tag-autocomplete-item' }, e('span', { className: 'font-bold text-emerald-600' }, `/${d}`)))
+            autocompleteType === '/' && getCompanyDivisions(companyInfo, safeUsers).map(d => d.name).filter(d => d !== 'C-Level Executive').map(d => e('div', { key: d, onClick: () => insertChatTag(`/${d}`), className: 'tag-autocomplete-item' }, e('span', { className: 'font-bold text-emerald-600' }, `/${d}`)))
           ),
 
           e('button', {
