@@ -1,13 +1,13 @@
-// Progressive Web App Service Worker for Javelo360 ERP (v33 Release)
-const CACHE_NAME = 'javelo360-erp-v33';
+// Progressive Web App Service Worker for Javelo360 ERP (v34 Release)
+const CACHE_NAME = 'javelo360-erp-v34';
 const ASSETS_TO_CACHE = [
   './',
-  './manifest.json?v=33',
-  './styles.css?v=33',
-  './app.js?v=33',
-  './react.production.min.js?v=33',
-  './react-dom.production.min.js?v=33',
-  './confetti.browser.min.js?v=33'
+  './manifest.json?v=34',
+  './styles.css?v=34',
+  './app.js?v=34',
+  './react.production.min.js?v=34',
+  './react-dom.production.min.js?v=34',
+  './confetti.browser.min.js?v=34'
 ];
 
 self.addEventListener('install', (event) => {
@@ -39,6 +39,23 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request).catch(() => {
       return caches.match(event.request);
+    })
+  );
+});
+
+// PWA Device Notification Click Handler
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow('./');
+      }
     })
   );
 });

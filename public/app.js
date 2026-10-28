@@ -239,6 +239,150 @@ function IconCrown(props) {
   );
 }
 
+function IconBuilding(props) {
+  return e('svg', { className: props.className || 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+    e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4m-4 0H7m6 0v10m-4-10v10' })
+  );
+}
+
+function IconMegaphone(props) {
+  return e('svg', { className: props.className || 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+    e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z' })
+  );
+}
+
+function IconUserPlus(props) {
+  return e('svg', { className: props.className || 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+    e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z' })
+  );
+}
+
+function IconWhatsApp(props) {
+  return e('svg', { className: props.className || 'w-4 h-4', fill: 'currentColor', viewBox: '0 0 24 24' },
+    e('path', { d: 'M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z' })
+  );
+}
+
+function IconExternalLink(props) {
+  return e('svg', { className: props.className || 'w-3.5 h-3.5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+    e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14' })
+  );
+}
+
+function IconArrowUp(props) {
+  return e('svg', { className: props.className || 'w-3.5 h-3.5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+    e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M5 15l7-7 7 7' })
+  );
+}
+
+function IconArrowDown(props) {
+  return e('svg', { className: props.className || 'w-3.5 h-3.5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+    e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M19 9l-7 7-7-7' })
+  );
+}
+
+function IconSun(props) {
+  return e('svg', { className: props.className || 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+    e('circle', { cx: '12', cy: '12', r: '5', strokeWidth: '2' }),
+    e('path', { strokeLinecap: 'round', strokeWidth: '2', d: 'M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42' })
+  );
+}
+
+function IconZoom(props) {
+  return e('svg', { className: props.className || 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+    e('circle', { cx: '11', cy: '11', r: '8', strokeWidth: '2' }),
+    e('path', { strokeLinecap: 'round', strokeWidth: '2', d: 'M21 21l-4.35-4.35M11 8v6M8 11h6' })
+  );
+}
+
+function IconCheck(props) {
+  return e('svg', { className: props.className || 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+    e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2.5', d: 'M5 13l4 4L19 7' })
+  );
+}
+
+// --- COMPONENT: LINKIFIED TEXT (CLICKABLE URLS & ZERO OVERFLOW) ---
+function LinkifiedText({ text, className = "text-xs text-slate-600 leading-relaxed" }) {
+  if (!text) return null;
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = String(text).split(urlRegex);
+
+  return e('div', { className: `${className} break-words break-all [overflow-wrap:anywhere] overflow-hidden` },
+    parts.map((part, index) => {
+      if (part.match(urlRegex)) {
+        return e('a', {
+          key: index,
+          href: part,
+          target: '_blank',
+          rel: 'noopener noreferrer',
+          onClick: (ev) => ev.stopPropagation(),
+          className: 'text-blue-600 font-bold underline hover:text-blue-800 break-all inline-flex items-center gap-1 mx-0.5 cursor-pointer bg-blue-50/60 px-1 py-0.5 rounded border border-blue-200/60'
+        },
+          part,
+          e(IconExternalLink, { className: 'w-3 h-3 flex-shrink-0 text-blue-500' })
+        );
+      }
+      return e('span', { key: index }, part);
+    })
+  );
+}
+
+// --- HELPER: WHATSAPP FORMAT & DISPATCHER ---
+function formatWhatsAppNumber(phone) {
+  if (!phone) return "";
+  let clean = String(phone).replace(/[^0-9]/g, '');
+  if (clean.startsWith('0')) {
+    clean = '62' + clean.slice(1);
+  } else if (!clean.startsWith('62') && clean.length >= 8) {
+    clean = '62' + clean;
+  }
+  return clean;
+}
+
+function openWhatsAppChat(phone, message) {
+  const formatted = formatWhatsAppNumber(phone);
+  if (!formatted) {
+    alert("Nomor WhatsApp belum terdaftar untuk pengguna ini.");
+    return false;
+  }
+  const url = `https://wa.me/${formatted}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
+  return true;
+}
+
+// --- HELPER: WEB & SERVICE WORKER DEVICE NOTIFICATIONS ---
+function sendDeviceNotification(title, options = {}) {
+  if (typeof window === 'undefined' || !('Notification' in window)) return;
+  if (Notification.permission === 'granted') {
+    if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+      navigator.serviceWorker.ready.then(reg => {
+        reg.showNotification(title, {
+          icon: './icons/icon-192.png',
+          badge: './icons/icon-192.png',
+          vibrate: [200, 100, 200],
+          ...options
+        });
+      }).catch(() => {
+        try { new Notification(title, options); } catch(e) {}
+      });
+    } else {
+      try { new Notification(title, options); } catch(e) {}
+    }
+  }
+}
+
+function requestDeviceNotificationPermission(onGranted) {
+  if (typeof window === 'undefined' || !('Notification' in window)) return;
+  Notification.requestPermission().then(permission => {
+    if (permission === 'granted') {
+      sendDeviceNotification('Javelo360 ERP', {
+        body: 'Notifikasi perangkat telah aktif untuk akun Anda!'
+      });
+      if (onGranted) onGranted();
+    }
+  });
+}
+
 // --- DEMO MOCK PERSONAS ---
 const DEMO_PERSONAS = [];
 
@@ -310,11 +454,11 @@ const TRANSLATIONS = {
     excellent: "Sangat Produktif",
     good: "Cukup Produktif",
     needsFocus: "Perlu Perhatian",
-    createUser: "+ Tambah Akun",
-    broadcast: "📢 Pengumuman",
+    createUser: "Tambah Akun",
+    broadcast: "Pengumuman",
     chatEcosystem: "Obrolan Tim Real-Time",
     chatSubtitle: "Chat Personal 1-on-1, Grup Divisi, & Autocomplete (@, #, /)",
-    createGroup: "+ Buat Grup Chat",
+    createGroup: "Buat Grup Chat",
     chatGroups: "Grup Chat",
     personalDms: "Pesan Pribadi (1-on-1)",
     typeMessage: "Ketik pesan... (@ user, # tiket, / divisi)",
@@ -342,17 +486,17 @@ const TRANSLATIONS = {
     markAllRead: "Mark all as read",
     noNotif: "No new notifications.",
     ticketsHeader: "Tickets & Task Management",
-    generateTicket: "+ Generate Ticket",
+    generateTicket: "Generate Ticket",
     searchTicket: "Search Ticket Code # or Subject...",
-    myTasks: "🎯 My Tasks",
+    myTasks: "My Tasks",
     allDivisions: "All",
     activeTickets: "Active / In-Progress Tickets",
-    allResolved: "🎉 All Active Tickets Resolved!",
+    allResolved: "All Active Tickets Resolved!",
     checkCompleted: "Check the archive below to see past records.",
     archiveCompleted: "Archived Done Tickets",
     tapToShow: "Click to inspect completed ticket history",
     tapToHide: "Click to collapse archive",
-    viewHistory: "📜 History",
+    viewHistory: "History",
     comments: "Comments",
     overdueDeadline: "OVERDUE DEADLINE",
     daysOverdue: "Days Overdue",
@@ -375,8 +519,8 @@ const TRANSLATIONS = {
     excellent: "High Productivity",
     good: "Good Progress",
     needsFocus: "Needs Attention",
-    createUser: "+ Create User",
-    broadcast: "📢 Broadcast",
+    createUser: "Create User",
+    broadcast: "Broadcast",
     chatEcosystem: "Realtime Team Chat",
     chatSubtitle: "Personal 1-on-1 DMs, Division Groups, & Autocomplete (@, #, /)",
     createGroup: "+ Create Chat Group",
@@ -838,6 +982,7 @@ function App() {
   const [showActiveStaffModal, setShowActiveStaffModal] = useState(false);
   const [showPhotoCropModal, setShowPhotoCropModal] = useState(false);
   const [showDivisionModal, setShowDivisionModal] = useState(false);
+  const [createdTicketForWA, setCreatedTicketForWA] = useState(null);
   const [activeAnnouncementPopup, setActiveAnnouncementPopup] = useState(null);
   const [loginTimestamp] = useState(() => Date.now());
   const [cLevelInspectedUser, setCLevelInspectedUser] = useState(null);
@@ -1140,13 +1285,13 @@ function App() {
                   }
                 }
                 if (Array.isArray(data.tickets)) {
-                  setTickets(prev => JSON.stringify(prev) !== JSON.stringify(data.tickets) ? data.tickets : prev);
+                  setTickets(prev => unionMergeById(prev, data.tickets));
                 }
                 if (Array.isArray(data.schedules)) {
-                  setSchedules(prev => JSON.stringify(prev) !== JSON.stringify(data.schedules) ? data.schedules : prev);
+                  setSchedules(prev => unionMergeById(prev, data.schedules));
                 }
                 if (Array.isArray(data.customTasks)) {
-                  setCustomTasks(prev => JSON.stringify(prev) !== JSON.stringify(data.customTasks) ? data.customTasks : prev);
+                  setCustomTasks(prev => unionMergeById(prev, data.customTasks));
                 }
               }
             }
@@ -1593,15 +1738,15 @@ function App() {
     });
   }
 
-  return e('div', { className: `min-h-screen flex flex-col ${isDarkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-50 text-slate-900'}` },
-    geofenceMessage && e('div', { className: `px-4 py-2 text-xs font-medium flex items-center justify-between ${geofenceMessage.type === 'error' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}` },
+  return e('div', { className: `h-screen h-[100dvh] flex flex-col overflow-hidden ${isDarkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-50 text-slate-900'}` },
+    geofenceMessage && e('div', { className: `flex-shrink-0 px-4 py-2 text-xs font-medium flex items-center justify-between ${geofenceMessage.type === 'error' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}` },
       e('span', null, geofenceMessage.text),
       e('button', { onClick: () => setGeofenceMessage(null), className: 'hover:opacity-75 font-bold cursor-pointer' }, '✕')
     ),
 
-    e(WorkModeInspectorBanner, { currentUser, companyInfo, userLocation }),
+    e('div', { className: 'flex-shrink-0' }, e(WorkModeInspectorBanner, { currentUser, companyInfo, userLocation })),
 
-    e('div', { className: 'flex-1 flex flex-col md:flex-row overflow-hidden' },
+    e('div', { className: 'flex-1 flex flex-col md:flex-row overflow-hidden min-h-0' },
       e(Sidebar, {
         activeTab,
         setActiveTab,
@@ -1615,7 +1760,7 @@ function App() {
         language,
         t
       }),
-      e('div', { className: 'flex-1 flex flex-col overflow-y-auto' },
+      e('div', { className: 'flex-1 flex flex-col h-full overflow-y-auto min-h-0' },
         e(Header, {
           currentUser,
           timerFormatted,
@@ -1633,7 +1778,7 @@ function App() {
           t
         }),
         e('div', { className: 'p-3 sm:p-4 md:p-6 pb-24 md:pb-6 flex-1' },
-          activeTab === 'todo' && e(PersonalToDoManager, { currentUser, tickets: tickets || [], setTickets, customTasks: customTasks || [], setCustomTasks, language, t }),
+          activeTab === 'todo' && e(PersonalToDoManager, { currentUser, tickets: tickets || [], setTickets, customTasks: customTasks || [], setCustomTasks, syncCloudDB, companyInfo, users: users || [], language, t }),
           activeTab === 'schedules' && e(ScheduleGrid, { users: users || [], schedules: schedules || [], currentUser, onOpenPlanner: () => setShowShiftPlannerModal(true), onInspectUserCalendar: (u) => setCLevelInspectedUser(u) }),
           activeTab === 'tickets' && e(TicketBoard, { tickets: tickets || [], users: users || [], currentUser, companyInfo, onOpenCreateTicket: () => setShowCreateTicketModal(true), onOpenDivisionManager: () => setShowDivisionModal(true), onEditTicket: setEditingTicket, onOpenComments: setCommentingTicket, onOpenHistory: setHistoryTicket, onDeleteTicket: handleDeleteTicket, onSendReminder: handleSendReminderAlert, language, t }),
           activeTab === 'virtual-office' && e(SkyOffice2DPixelMap, { users: users || [], tickets: tickets || [] }),
@@ -1740,6 +1885,7 @@ function App() {
         const updatedNotifs = [...newNotifList, ...(notifications || [])];
         setNotifications(updatedNotifs);
         setShowCreateTicketModal(false);
+        setCreatedTicketForWA(newTicket);
 
         // Sync both tickets and notifications to cloud database so other devices immediately receive it
         syncCloudDB({
@@ -1756,6 +1902,15 @@ function App() {
           text: `✅ Tiket ${newTicket.code} berhasil dibuat & notifikasi terkirim ke device karyawan!`
         });
       }
+    }),
+
+    createdTicketForWA && e(WhatsAppReminderModal, {
+      ticket: createdTicketForWA,
+      assignee: (users || []).find(u => u.id === createdTicketForWA.assignedTo),
+      currentUser,
+      isCreationPrompt: true,
+      onClose: () => setCreatedTicketForWA(null),
+      onConfirmReminder: () => setCreatedTicketForWA(null)
     }),
 
     editingTicket && e(UpdateTicketModal, {
@@ -1882,15 +2037,25 @@ function App() {
 
     showPhotoCropModal && e(ProfilePhotoCropModal, {
       currentAvatar: currentUser?.avatar,
+      currentUser,
       language,
       t,
       onClose: () => setShowPhotoCropModal(false),
-      onSaveAvatar: (newAvatarDataUrl) => {
-        if (!newAvatarDataUrl || !currentUser) return;
-        const updatedCurrentUser = { ...currentUser, avatar: newAvatarDataUrl };
+      onSaveAvatar: (newAvatarDataUrl, newPhone) => {
+        if (!currentUser) return;
+        const formattedPhone = formatWhatsAppNumber(newPhone);
+        const updatedCurrentUser = {
+          ...currentUser,
+          ...(newAvatarDataUrl ? { avatar: newAvatarDataUrl } : {}),
+          ...(formattedPhone ? { phone: formattedPhone } : {})
+        };
         const updatedUsersList = (users || []).map(u => 
           (u.id === currentUser.id || (u.email && currentUser.email && u.email.toLowerCase() === currentUser.email.toLowerCase()))
-            ? { ...u, avatar: newAvatarDataUrl }
+            ? {
+                ...u,
+                ...(newAvatarDataUrl ? { avatar: newAvatarDataUrl } : {}),
+                ...(formattedPhone ? { phone: formattedPhone } : {})
+              }
             : u
         );
 
@@ -2168,7 +2333,9 @@ function TicketHistoryDrawerModal({ ticket, users, onClose }) {
       e('div', { className: 'space-y-4 text-xs' },
         e('div', { className: 'p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2' },
           e('div', { className: 'font-bold text-sm text-slate-900' }, ticket.subject),
-          e('p', { className: 'text-slate-600 text-xs' }, ticket.details),
+          e('div', { className: 'text-slate-600 text-xs break-words break-all [overflow-wrap:anywhere]' },
+            e(LinkifiedText, { text: ticket.details || '-' })
+          ),
           e('div', { className: 'flex flex-wrap gap-2 pt-1 font-mono text-[10px]' },
             e('span', { className: 'px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold' }, `Division: ${Array.isArray(ticket.division) ? ticket.division.join(', ') : (ticket.division || 'General')}`),
             e('span', { className: 'px-2 py-0.5 rounded bg-purple-100 text-purple-800 font-bold' }, `Priority: ${ticket.priority}`),
@@ -2187,12 +2354,12 @@ function TicketHistoryDrawerModal({ ticket, users, onClose }) {
           )
         ),
 
-        ticket.proofLink && e('div', { className: 'p-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-900 font-mono text-xs' },
+        ticket.proofLink && e('div', { className: 'p-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-900 font-mono text-xs break-words break-all [overflow-wrap:anywhere]' },
           e('strong', null, 'Proof Link / Attachment: '),
-          e('a', { href: ticket.proofLink, target: '_blank', rel: 'noreferrer', className: 'hover:underline text-blue-600 font-bold' }, ticket.proofLink)
+          e('a', { href: ticket.proofLink.startsWith('http') ? ticket.proofLink : ('https://' + ticket.proofLink), target: '_blank', rel: 'noreferrer', className: 'hover:underline text-blue-600 font-bold' }, ticket.proofLink)
         ),
 
-        ticket.notes && e('div', { className: 'p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs' },
+        ticket.notes && e('div', { className: 'p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs break-words break-all [overflow-wrap:anywhere]' },
           e('strong', null, 'Resolution Notes: '),
           ticket.notes
         ),
@@ -2202,7 +2369,7 @@ function TicketHistoryDrawerModal({ ticket, users, onClose }) {
           comments.length === 0 ? e('p', { className: 'text-slate-400 italic text-[11px]' }, 'No comments logged in history.') :
           comments.map(c => e('div', { key: c.id, className: 'p-3 bg-slate-50 rounded-xl border text-xs space-y-1' },
             e('div', { className: 'flex justify-between font-bold text-blue-600' }, e('span', null, c.author), e('span', { className: 'text-[10px] text-slate-400 font-mono' }, c.time)),
-            e('p', { className: 'text-slate-700' }, c.text)
+            e('div', { className: 'text-slate-700 break-words break-all [overflow-wrap:anywhere]' }, e(LinkifiedText, { text: c.text }))
           ))
         )
       )
@@ -2293,25 +2460,17 @@ function CLevelEmployeeInspectorModal({ inspectedUser, tickets, schedules, users
   );
 }
 
-// --- PROFILE PHOTO ATTACH, CROP & BRIGHTNESS STUDIO MODAL ---
-function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar, language, t }) {
+// --- PROFILE PHOTO ATTACH, CROP & BRIGHTNESS STUDIO MODAL (NON-GEPENG 1:1 SQUARE) ---
+function ProfilePhotoCropModal({ currentAvatar, currentUser, onClose, onSaveAvatar, language, t }) {
   const [imageSrc, setImageSrc] = useState(currentAvatar || "");
   const [zoom, setZoom] = useState(100);
   const [brightness, setBrightness] = useState(100);
   const [customUrl, setCustomUrl] = useState("");
+  const [phone, setPhone] = useState(currentUser?.phone || "");
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef(null);
   const imgRef = useRef(null);
   const lang = language || 'id';
-
-  const PRESET_AVATARS = [
-    { label: 'Executive 1', url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=240&auto=format&fit=crop&q=80' },
-    { label: 'Executive 2', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240&auto=format&fit=crop&q=80' },
-    { label: 'Engineer 1', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&auto=format&fit=crop&q=80' },
-    { label: 'Engineer 2', url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=240&auto=format&fit=crop&q=80' },
-    { label: 'Manager 1', url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=240&auto=format&fit=crop&q=80' },
-    { label: 'Manager 2', url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=240&auto=format&fit=crop&q=80' }
-  ];
 
   const handleFileSelect = (ev) => {
     const file = ev.target.files && ev.target.files[0];
@@ -2323,22 +2482,23 @@ function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar, language,
       const reader = new FileReader();
       reader.onload = (e) => {
         setImageSrc(e.target.result);
+        setZoom(100);
+        setBrightness(100);
       };
       reader.readAsDataURL(file);
     }
   };
 
   const handleSaveCroppedImage = () => {
-    if (!imageSrc) return;
     setIsSaving(true);
 
     try {
-      const isDataUrl = imageSrc.startsWith('data:');
+      const isDataUrl = imageSrc && imageSrc.startsWith('data:');
       const img = imgRef.current;
 
-      // If user selected a preset or remote URL and didn't touch sliders, apply directly
-      if (!isDataUrl && zoom === 100 && brightness === 100) {
-        onSaveAvatar(imageSrc);
+      // If remote URL and didn't touch crop sliders, save directly
+      if (!isDataUrl && imageSrc && zoom === 100 && brightness === 100) {
+        onSaveAvatar(imageSrc, phone);
         onClose();
         return;
       }
@@ -2354,14 +2514,15 @@ function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar, language,
             const scale = (zoom || 100) / 100;
             const nw = img.naturalWidth;
             const nh = img.naturalHeight;
-            const sw = nw / scale;
-            const sh = nh / scale;
-            const sx = Math.max(0, (nw - sw) / 2);
-            const sy = Math.max(0, (nh - sh) / 2);
+            // 100% Anti-Gepeng: Crop to a 1:1 square centered on the shortest dimension
+            const minDim = Math.min(nw, nh);
+            const cropDim = minDim / scale;
+            const sx = Math.max(0, (nw - cropDim) / 2);
+            const sy = Math.max(0, (nh - cropDim) / 2);
 
-            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 240, 240);
-            const cropped = canvas.toDataURL('image/jpeg', 0.85);
-            onSaveAvatar(cropped);
+            ctx.drawImage(img, sx, sy, cropDim, cropDim, 0, 0, 240, 240);
+            const cropped = canvas.toDataURL('image/jpeg', 0.88);
+            onSaveAvatar(cropped, phone);
             onClose();
             return;
           }
@@ -2370,11 +2531,11 @@ function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar, language,
         }
       }
 
-      onSaveAvatar(imageSrc);
+      onSaveAvatar(imageSrc, phone);
       onClose();
     } catch (err) {
       console.warn("Save avatar error:", err);
-      onSaveAvatar(imageSrc);
+      onSaveAvatar(imageSrc, phone);
       onClose();
     } finally {
       setIsSaving(false);
@@ -2385,7 +2546,8 @@ function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar, language,
     e('div', { className: 'bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 border border-slate-100 my-auto' },
       e('div', { className: 'flex justify-between items-center border-b pb-3' },
         e('h3', { className: 'font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2' },
-          '📸 ' + (lang === 'en' ? 'Profile Photo Studio & Avatar' : 'Studio Foto Profil & Avatar')
+          e(IconOffice, { className: 'w-5 h-5 text-blue-600' }),
+          lang === 'en' ? 'Profile & Contact Studio' : 'Studio Profil & Kontak Karyawan'
         ),
         e('button', { onClick: onClose, className: 'font-bold text-slate-400 hover:text-slate-600 cursor-pointer p-1 text-sm' }, '✕')
       ),
@@ -2405,24 +2567,9 @@ function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar, language,
           type: 'button',
           onClick: () => fileInputRef.current && fileInputRef.current.click(),
           className: 'w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-md transition'
-        }, '📁 ' + (lang === 'en' ? 'Upload Photo from Device / Gallery' : 'Pilih Foto dari Galeri / Komputer')),
-
-        // Quick Preset Avatars
-        e('div', { className: 'bg-slate-50 p-3 rounded-2xl border border-slate-200/80 space-y-2' },
-          e('div', { className: 'font-bold text-[11px] text-slate-600 flex justify-between items-center' },
-            e('span', null, lang === 'en' ? 'Or pick a professional preset:' : 'Atau pilih avatar siap pakai:'),
-            e('span', { className: 'text-[10px] text-slate-400' }, '1-Tap')
-          ),
-          e('div', { className: 'grid grid-cols-6 gap-2' },
-            PRESET_AVATARS.map((p, idx) => e('button', {
-              key: idx,
-              type: 'button',
-              onClick: () => { setImageSrc(p.url); setZoom(100); setBrightness(100); },
-              className: `relative rounded-full p-0.5 border-2 transition cursor-pointer hover:scale-110 ${imageSrc === p.url ? 'border-blue-600 ring-2 ring-blue-300' : 'border-transparent hover:border-slate-300'}`
-            },
-              e('img', { src: p.url, className: 'w-10 h-10 rounded-full object-cover shadow-xs' })
-            ))
-          )
+        },
+          e(IconSparkles, { className: 'w-4 h-4 text-white' }),
+          lang === 'en' ? 'Upload Photo from Device / Gallery' : 'Pilih Foto dari Galeri / Komputer'
         ),
 
         // Paste URL option
@@ -2447,9 +2594,27 @@ function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar, language,
           }, lang === 'en' ? 'Use' : 'Terapkan')
         ),
 
+        // WhatsApp Phone Number Field
+        e('div', { className: 'bg-emerald-50/60 p-3.5 rounded-2xl border border-emerald-200/80 space-y-1.5' },
+          e('label', { className: 'font-bold text-[11px] text-emerald-900 flex items-center gap-1.5' },
+            e(IconWhatsApp, { className: 'w-4 h-4 text-emerald-600' }),
+            lang === 'en' ? 'WhatsApp Phone Number' : 'Nomor WhatsApp Pribadi'
+          ),
+          e('input', {
+            type: 'tel',
+            placeholder: 'Contoh: 08123456789 atau 628123456789',
+            value: phone,
+            onChange: ev => setPhone(ev.target.value),
+            className: 'w-full px-3 py-2 border border-emerald-300 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-slate-800'
+          }),
+          e('span', { className: 'text-[10px] text-emerald-700 block' },
+            lang === 'en' ? 'Used for instant task reminders via WhatsApp.' : 'Digunakan untuk pengingat tiket otomatis & konfirmasi tugas via WhatsApp.'
+          )
+        ),
+
         // Photo Preview and Adjustment Controls
         imageSrc && e('div', { className: 'space-y-4 pt-1' },
-          e('div', { className: 'relative w-36 h-36 sm:w-40 sm:h-40 mx-auto rounded-full overflow-hidden border-4 border-blue-600 shadow-xl bg-slate-900 flex items-center justify-center' },
+          e('div', { className: 'relative w-36 h-36 sm:w-40 sm:h-40 mx-auto rounded-full overflow-hidden border-4 border-blue-600 shadow-xl bg-slate-900 flex items-center justify-center flex-shrink-0 aspect-square' },
             e('img', {
               ref: imgRef,
               src: imageSrc,
@@ -2457,18 +2622,19 @@ function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar, language,
               style: {
                 filter: `brightness(${brightness}%)`,
                 transform: `scale(${zoom / 100})`,
-                transition: 'filter 0.05s ease, transform 0.05s ease',
-                maxHeight: '100%',
-                maxWidth: '100%',
-                objectFit: 'cover'
-              }
+                transition: 'filter 0.05s ease, transform 0.05s ease'
+              },
+              className: 'w-full h-full object-cover aspect-square'
             })
           ),
 
           e('div', { className: 'space-y-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200' },
             e('div', null,
               e('div', { className: 'flex justify-between font-bold mb-1 text-slate-700 text-[11px]' },
-                e('span', null, '☀️ ' + (lang === 'en' ? 'Brightness' : 'Kecerahan')),
+                e('span', { className: 'flex items-center gap-1.5' },
+                  e(IconSun, { className: 'w-3.5 h-3.5 text-amber-500' }),
+                  lang === 'en' ? 'Brightness' : 'Kecerahan'
+                ),
                 e('span', { className: 'font-mono text-blue-600' }, `${brightness}%`)
               ),
               e('input', {
@@ -2483,7 +2649,10 @@ function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar, language,
 
             e('div', null,
               e('div', { className: 'flex justify-between font-bold mb-1 text-slate-700 text-[11px]' },
-                e('span', null, '🔍 ' + (lang === 'en' ? 'Zoom & Crop' : 'Zoom & Skala')),
+                e('span', { className: 'flex items-center gap-1.5' },
+                  e(IconZoom, { className: 'w-3.5 h-3.5 text-purple-600' }),
+                  lang === 'en' ? 'Zoom & Crop' : 'Zoom & Skala'
+                ),
                 e('span', { className: 'font-mono text-purple-600' }, `${zoom}%`)
               ),
               e('input', {
@@ -2508,11 +2677,11 @@ function ProfilePhotoCropModal({ currentAvatar, onClose, onSaveAvatar, language,
           e('button', {
             type: 'button',
             onClick: handleSaveCroppedImage,
-            disabled: !imageSrc || isSaving,
+            disabled: isSaving,
             className: 'px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl font-bold shadow-md cursor-pointer transition flex items-center gap-1.5'
           },
-            e('span', null, isSaving ? '⏳' : '✓'),
-            lang === 'en' ? 'Save & Apply Avatar' : 'Simpan & Terapkan Foto'
+            e(IconCheck, { className: 'w-4 h-4 text-white' }),
+            lang === 'en' ? 'Save Profile & Contact' : 'Simpan Profil & Kontak'
           )
         )
       )
@@ -2735,7 +2904,7 @@ function Sidebar({ activeTab, setActiveTab, currentUser, users, companyInfo, ano
     { id: "settings", label: t('settingsTab', language), Icon: IconSettings },
   ];
 
-  return e('aside', { className: 'hidden md:flex w-64 bg-white border-r border-slate-200 flex-col justify-between flex-shrink-0 select-none' },
+  return e('aside', { className: 'hidden md:flex w-64 h-full bg-white border-r border-slate-200 flex-col justify-between flex-shrink-0 select-none overflow-y-auto' },
     e('div', { className: 'flex flex-col items-stretch justify-between w-full' },
       e('div', { className: 'flex p-5 items-center gap-3 border-b border-slate-100' },
         e('div', { className: 'w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-extrabold text-lg shadow-md' }, 'J'),
@@ -2958,8 +3127,8 @@ function Header({ currentUser, timerFormatted, isTimerRunning, notifications, on
   );
 }
 
-// --- PERSONAL TO-DO MANAGER ---
-function PersonalToDoManager({ currentUser, tickets, setTickets, customTasks, setCustomTasks }) {
+// --- PERSONAL TO-DO MANAGER (ZERO GLITCH, PERSISTENT, AUTO-SORT DONE TO BOTTOM & PRIORITY REORDER) ---
+function PersonalToDoManager({ currentUser, tickets, setTickets, customTasks, setCustomTasks, syncCloudDB, companyInfo, users, language, t }) {
   const [toDoCategory, setToDoCategory] = useState("My Day");
   const [newTaskTitle, setNewTaskTitle] = useState("");
 
@@ -2979,34 +3148,79 @@ function PersonalToDoManager({ currentUser, tickets, setTickets, customTasks, se
     return safeTickets.filter(t => t.assignedTo === currentUser?.id || (t.mentionedUsers && t.mentionedUsers.includes(currentUser?.id)));
   }, [safeTickets, currentUser]);
 
+  const saveTasks = (newCustomList) => {
+    if (setCustomTasks) {
+      setCustomTasks(newCustomList);
+    }
+    try {
+      const userTasksOnly = newCustomList.filter(t => t.userId === currentUser?.id);
+      localStorage.setItem(`javelo_custom_tasks_${currentUser?.id}`, JSON.stringify(userTasksOnly));
+    } catch(e) {}
+    if (typeof syncCloudDB === 'function') {
+      syncCloudDB({
+        companyInfo,
+        users,
+        tickets: safeTickets,
+        customTasks: newCustomList
+      });
+    }
+  };
+
   const handleAddTask = (ev) => {
     ev.preventDefault();
     if (!newTaskTitle.trim()) return;
     const newTaskObj = {
-      id: "todo-" + Date.now(),
+      id: "todo-" + Date.now() + "-" + Math.random().toString(36).substr(2, 4),
       userId: currentUser?.id,
-      title: newTaskTitle,
+      title: newTaskTitle.trim(),
       category: toDoCategory,
       done: false,
       important: false,
       date: new Date().toISOString().split('T')[0]
     };
-    if (setCustomTasks) {
-      setCustomTasks(prev => [newTaskObj, ...(prev || [])]);
-    }
+    const updated = [newTaskObj, ...safeCustomTasks];
+    saveTasks(updated);
     setNewTaskTitle("");
   };
 
   const toggleTaskDone = (id) => {
-    if (setCustomTasks) {
-      setCustomTasks(prev => (prev || []).map(t => t.id === id ? { ...t, done: !t.done } : t));
-    }
+    const updated = safeCustomTasks.map(t => t.id === id ? { ...t, done: !t.done, completedAt: !t.done ? Date.now() : null } : t);
+    saveTasks(updated);
   };
 
   const toggleTaskImportant = (id) => {
-    if (setCustomTasks) {
-      setCustomTasks(prev => (prev || []).map(t => t.id === id ? { ...t, important: !t.important } : t));
-    }
+    const updated = safeCustomTasks.map(t => t.id === id ? { ...t, important: !t.important } : t);
+    saveTasks(updated);
+  };
+
+  const handleDeleteTask = (id) => {
+    const updated = safeCustomTasks.filter(t => t.id !== id);
+    saveTasks(updated);
+  };
+
+  const handleMovePriority = (taskId, direction) => {
+    // direction: -1 (move up) or 1 (move down)
+    const matchingActiveTasks = userCustomTasks.filter(t => {
+      if (toDoCategory === 'Important') return t.important;
+      if (toDoCategory === 'My Day') return t.category === 'My Day' || !t.category;
+      return true;
+    }).filter(t => !t.done);
+
+    const currIdx = matchingActiveTasks.findIndex(t => t.id === taskId);
+    if (currIdx === -1) return;
+    const targetIdx = currIdx + direction;
+    if (targetIdx < 0 || targetIdx >= matchingActiveTasks.length) return;
+
+    const itemA = matchingActiveTasks[currIdx];
+    const itemB = matchingActiveTasks[targetIdx];
+    const newActive = [...matchingActiveTasks];
+    newActive[currIdx] = itemB;
+    newActive[targetIdx] = itemA;
+
+    // Merge reordered active tasks back with completed tasks and other users' tasks
+    const otherTasks = safeCustomTasks.filter(t => !matchingActiveTasks.some(m => m.id === t.id));
+    const mergedList = [...newActive, ...otherTasks];
+    saveTasks(mergedList);
   };
 
   const handleGenerateReport = () => {
@@ -3024,6 +3238,15 @@ function PersonalToDoManager({ currentUser, tickets, setTickets, customTasks, se
     });
   };
 
+  // Filter tasks for current category, split into active and completed
+  const categoryTasks = userCustomTasks.filter(t => {
+    if (toDoCategory === 'Important') return t.important;
+    if (toDoCategory === 'My Day') return t.category === 'My Day' || !t.category;
+    return true;
+  });
+  const activeTasks = categoryTasks.filter(t => !t.done);
+  const completedTasks = categoryTasks.filter(t => t.done);
+
   return e('div', { className: 'space-y-6' },
     e('div', { className: 'flex flex-wrap items-center justify-between gap-4' },
       e('div', null,
@@ -3031,12 +3254,12 @@ function PersonalToDoManager({ currentUser, tickets, setTickets, customTasks, se
           e(IconCheckList, { className: 'w-7 h-7 text-blue-600' }),
           `Personal To-Do List (${currentUser?.name || 'Staff'})`
         ),
-        e('p', { className: 'text-xs text-slate-500 mt-0.5' }, 'Personal tasks & assigned ticket milestones synced automatically')
+        e('p', { className: 'text-xs text-slate-500 mt-0.5' }, 'Tugas pribadi tersimpan permanen, pindah otomatis saat selesai, & prioritas dapat diatur.')
       ),
       e('button', {
         onClick: () => setShowReportModal(true),
         className: 'px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-xs font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer'
-      }, e(IconCalendar, { className: 'w-4 h-4' }), '📅 Generate Date Activity Report')
+      }, e(IconCalendar, { className: 'w-4 h-4' }), '📅 Rekap Aktivitas Kerja')
     ),
 
     e('div', { className: 'grid grid-cols-1 md:grid-cols-4 gap-6' },
@@ -3058,16 +3281,16 @@ function PersonalToDoManager({ currentUser, tickets, setTickets, customTasks, se
             type: 'text',
             value: newTaskTitle,
             onChange: ev => setNewTaskTitle(ev.target.value),
-            placeholder: `+ Add a task to "${toDoCategory}"...`,
+            placeholder: `+ Tambah tugas baru ke "${toDoCategory}"...`,
             className: 'flex-1 px-4 py-3 text-xs border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-xs'
           }),
-          e('button', { type: 'submit', className: 'px-5 py-3 bg-blue-600 text-white rounded-xl font-bold text-xs shadow cursor-pointer' }, 'Add Task')
+          e('button', { type: 'submit', className: 'px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow cursor-pointer transition' }, 'Tambah Tugas')
         ),
 
-        e('div', { className: 'space-y-2' },
+        e('div', { className: 'space-y-3' },
           toDoCategory === 'Assigned Tickets' ? (
-            assignedTickets.length === 0 ? e('div', { className: 'p-8 text-center text-slate-400 text-xs bg-white rounded-2xl border' }, 'No tickets assigned to you yet.') :
-            assignedTickets.map(t => e('div', { key: t.id, className: 'todo-card flex items-center justify-between' },
+            assignedTickets.length === 0 ? e('div', { className: 'p-8 text-center text-slate-400 text-xs bg-white rounded-2xl border' }, 'Belum ada tiket yang ditugaskan ke Anda.') :
+            assignedTickets.map(t => e('div', { key: t.id, className: 'todo-card flex items-center justify-between p-3.5 bg-white rounded-xl border border-slate-200 shadow-xs' },
               e('div', { className: 'flex items-center gap-3' },
                 e('span', { className: `px-2 py-0.5 rounded text-[10px] font-bold ${t.status === 'Done' ? 'bg-emerald-100 text-emerald-800' : t.status === 'Pending Review' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}` }, t.status),
                 e('div', null,
@@ -3075,25 +3298,85 @@ function PersonalToDoManager({ currentUser, tickets, setTickets, customTasks, se
                   e('div', { className: 'font-semibold text-slate-900 text-xs' }, t.subject)
                 )
               ),
-              e('span', { className: 'text-[11px] text-slate-400' }, `Deadline: ${t.deadline}`)
+              e('span', { className: 'text-[11px] text-slate-400 font-mono' }, `Deadline: ${t.deadline || '-'}`)
             ))
           ) : (
-            userCustomTasks.filter(t => toDoCategory === 'Important' ? t.important : toDoCategory === 'My Day' ? (t.category === 'My Day' || !t.category) : true).length === 0 ? e('div', { className: 'p-8 text-center text-slate-400 text-xs bg-white rounded-2xl border' }, `No tasks in "${toDoCategory}". Add a new task above!`) :
-            userCustomTasks.filter(t => toDoCategory === 'Important' ? t.important : toDoCategory === 'My Day' ? (t.category === 'My Day' || !t.category) : true).map(t => e('div', { key: t.id, className: 'todo-card flex items-center justify-between' },
-              e('div', { className: 'flex items-center gap-3' },
-                e('button', {
-                  type: 'button',
-                  onClick: () => toggleTaskDone(t.id),
-                  className: `todo-checkbox ${t.done ? 'checked' : ''}`
-                }, t.done ? '✓' : ''),
-                e('span', { className: `text-xs font-semibold ${t.done ? 'line-through text-slate-400' : 'text-slate-800'}` }, t.title)
+            e('div', { className: 'space-y-4' },
+              // 1. ACTIVE TASKS (WITH REORDER UP/DOWN & DELETE)
+              activeTasks.length === 0 && completedTasks.length === 0 ? e('div', { className: 'p-8 text-center text-slate-400 text-xs bg-white rounded-2xl border' }, `Belum ada tugas di "${toDoCategory}". Tambahkan tugas baru di atas!`) : null,
+
+              activeTasks.length > 0 && e('div', { className: 'space-y-2' },
+                e('div', { className: 'text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2' },
+                  e('span', { className: 'w-2 h-2 rounded-full bg-blue-600' }),
+                  `Tugas Berjalan (${activeTasks.length})`
+                ),
+                activeTasks.map((t, idx) => e('div', { key: t.id, className: 'todo-card flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200 shadow-xs hover:border-blue-300 transition' },
+                  e('div', { className: 'flex items-center gap-3 flex-1 overflow-hidden' },
+                    e('button', {
+                      type: 'button',
+                      onClick: () => toggleTaskDone(t.id),
+                      className: 'w-5 h-5 rounded-md border-2 border-slate-300 hover:border-blue-600 flex items-center justify-center transition cursor-pointer flex-shrink-0'
+                    }),
+                    e('span', { className: 'text-xs font-semibold text-slate-800 break-words flex-1' }, t.title)
+                  ),
+                  e('div', { className: 'flex items-center gap-1.5 flex-shrink-0 ml-2' },
+                    // Reorder UP button
+                    e('button', {
+                      type: 'button',
+                      disabled: idx === 0,
+                      onClick: () => handleMovePriority(t.id, -1),
+                      title: 'Pindahkan ke atas (Prioritas lebih tinggi)',
+                      className: `p-1 rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 cursor-pointer ${idx === 0 ? 'opacity-30 cursor-not-allowed' : ''}`
+                    }, e(IconArrowUp, { className: 'w-3.5 h-3.5' })),
+                    // Reorder DOWN button
+                    e('button', {
+                      type: 'button',
+                      disabled: idx === activeTasks.length - 1,
+                      onClick: () => handleMovePriority(t.id, 1),
+                      title: 'Pindahkan ke bawah',
+                      className: `p-1 rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 cursor-pointer ${idx === activeTasks.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}`
+                    }, e(IconArrowDown, { className: 'w-3.5 h-3.5' })),
+                    // Important Star
+                    e('button', {
+                      type: 'button',
+                      onClick: () => toggleTaskImportant(t.id),
+                      className: `p-1 cursor-pointer ${t.important ? 'text-amber-500' : 'text-slate-300 hover:text-amber-400'}`
+                    }, e(IconStar, { filled: t.important })),
+                    // Delete Button
+                    e('button', {
+                      type: 'button',
+                      onClick: () => handleDeleteTask(t.id),
+                      title: 'Hapus Tugas',
+                      className: 'p-1 text-slate-300 hover:text-rose-600 transition cursor-pointer'
+                    }, e(IconTrash, { className: 'w-3.5 h-3.5' }))
+                  )
+                ))
               ),
-              e('button', {
-                type: 'button',
-                onClick: () => toggleTaskImportant(t.id),
-                className: `p-1 cursor-pointer ${t.important ? 'text-amber-500' : 'text-slate-300 hover:text-amber-400'}`
-              }, e(IconStar, { filled: t.important }))
-            ))
+
+              // 2. COMPLETED TASKS (AUTO-SORTED TO BOTTOM, STRIKETHROUGH)
+              completedTasks.length > 0 && e('div', { className: 'pt-2 space-y-2' },
+                e('div', { className: 'text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2 border-t pt-3' },
+                  e('span', { className: 'w-2 h-2 rounded-full bg-emerald-500' }),
+                  `Selesai (${completedTasks.length})`
+                ),
+                completedTasks.map(t => e('div', { key: t.id, className: 'todo-card flex items-center justify-between p-3 bg-slate-50/80 rounded-xl border border-slate-200/80 opacity-80' },
+                  e('div', { className: 'flex items-center gap-3 flex-1 overflow-hidden' },
+                    e('button', {
+                      type: 'button',
+                      onClick: () => toggleTaskDone(t.id),
+                      className: 'w-5 h-5 rounded-md bg-emerald-600 border border-emerald-600 text-white flex items-center justify-center transition cursor-pointer flex-shrink-0'
+                    }, e(IconCheck, { className: 'w-3.5 h-3.5 text-white' })),
+                    e('span', { className: 'text-xs font-semibold line-through text-slate-400 break-words flex-1' }, t.title)
+                  ),
+                  e('button', {
+                    type: 'button',
+                    onClick: () => handleDeleteTask(t.id),
+                    title: 'Hapus Tugas',
+                    className: 'p-1 text-slate-300 hover:text-rose-600 transition cursor-pointer flex-shrink-0 ml-2'
+                  }, e(IconTrash, { className: 'w-3.5 h-3.5' }))
+                ))
+              )
+            )
           )
         )
       )
@@ -3289,11 +3572,123 @@ function SkyOffice2DPixelMap({ users, tickets }) {
   );
 }
 
-// --- TICKET BOARD WITH COMPACT COMPLETED TICKETS ARCHIVE ---
+// --- MODAL: WHATSAPP REMINDER FOR TICKETS (NORMAL VS OVERDUE VS CREATION PROMPT) ---
+function WhatsAppReminderModal({ ticket, assignee, currentUser, isCreationPrompt, onClose, onConfirmReminder }) {
+  const [phone, setPhone] = useState(assignee?.phone || "");
+  const todayStr = new Date().toISOString().split('T')[0];
+  const isOverdue = !isCreationPrompt && ticket?.deadline && ticket.deadline < todayStr && ticket.status !== 'Done';
+  const daysOverdue = isOverdue ? Math.max(1, Math.ceil((new Date(todayStr) - new Date(ticket.deadline)) / (1000 * 60 * 60 * 24))) : 0;
+  const divStr = Array.isArray(ticket?.division) ? ticket.division.join(', ') : (ticket?.division || 'General');
+
+  const waMessage = isCreationPrompt ?
+`Hi ${assignee?.name || 'Rekan'}, kindly cek tiket baru ini ya:
+📌 *${ticket?.code}* - ${ticket?.subject}
+🏢 *Divisi:* ${divStr}
+📅 *Deadline:* ${ticket?.deadline || '-'}
+${ticket?.details ? `📝 *Detail:* ${ticket.details.length > 120 ? ticket.details.slice(0, 120) + '...' : ticket.details}\n` : ''}🔗 *Buka Aplikasi:* https://penpauchalb.github.io/javelo360ERP/
+Semangat & terima kasih!`
+  : isOverdue ?
+`⚠️ *PEMBERITAHUAN TIKET OVERDUE*
+Halo ${assignee?.name || 'Rekan'}, tiket berikut telah MELEWATI BATAS WAKTU (OVERDUE):
+📌 *${ticket?.code}* - ${ticket?.subject}
+🚨 *Deadline:* ${ticket?.deadline} (Terlambat ${daysOverdue} hari!)
+🏢 *Divisi:* ${divStr}
+⏳ Mohon segera menyelesaikan dan memperbarui status tiket ini di aplikasi.
+🔗 *Buka Aplikasi:* https://penpauchalb.github.io/javelo360ERP/
+Terima kasih!`
+  :
+`Halo ${assignee?.name || 'Rekan'}, mengingatkan untuk progres tiket berikut:
+📌 *${ticket?.code}* - ${ticket?.subject}
+📅 *Deadline:* ${ticket?.deadline || '-'}
+🏢 *Divisi:* ${divStr}
+⏳ Mohon segera diselesaikan sebelum batas waktu.
+🔗 *Buka Aplikasi:* https://penpauchalb.github.io/javelo360ERP/
+Terima kasih!`;
+
+  const handleSendWhatsApp = () => {
+    openWhatsAppChat(phone, waMessage);
+    if (onConfirmReminder) onConfirmReminder(ticket, assignee, phone);
+    onClose();
+  };
+
+  const handleSendAppOnly = () => {
+    if (onConfirmReminder) onConfirmReminder(ticket, assignee, phone);
+    onClose();
+  };
+
+  return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
+    e('div', { className: 'bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl space-y-4 border border-slate-100 text-xs' },
+      e('div', { className: 'flex justify-between items-center border-b pb-3' },
+        e('div', null,
+          e('h3', { className: 'font-bold text-slate-900 text-base flex items-center gap-2' },
+            isCreationPrompt ? e(IconWhatsApp, { className: 'w-5 h-5 text-emerald-600' }) : e(IconBell, { className: 'w-5 h-5 text-amber-500' }),
+            isCreationPrompt ? 'Ingatkan lewat WhatsApp?' : (isOverdue ? 'Kirim Pengingat Overdue' : 'Kirim Pengingat Tiket')
+          ),
+          e('span', { className: 'text-[11px] font-mono text-blue-600 font-bold' }, ticket?.code)
+        ),
+        e('button', { onClick: onClose, className: 'font-bold text-slate-400 hover:text-slate-600 cursor-pointer p-1 text-sm' }, '✕')
+      ),
+
+      isCreationPrompt ? e('div', { className: 'p-3 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl font-medium text-xs leading-relaxed flex items-center gap-2' },
+        e('span', { className: 'text-lg' }, '💬'),
+        e('span', null, 'Tiket berhasil dibuat! Ingin langsung menginformasikan tugas ini ke WhatsApp karyawan terkait?')
+      ) : isOverdue ? e('div', { className: 'p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl font-bold flex items-center justify-between text-xs' },
+        e('span', null, `⚠️ Tiket sudah lewat deadline!`),
+        e('span', { className: 'bg-rose-600 text-white px-2 py-0.5 rounded text-[10px] font-mono font-extrabold' }, `${daysOverdue} Hari Terlewat`)
+      ) : e('div', { className: 'p-2.5 bg-blue-50 border border-blue-200 text-blue-800 rounded-xl font-semibold text-xs' },
+        `Deadline: ${ticket?.deadline || 'Tidak ada deadline'}`
+      ),
+
+      e('div', { className: 'space-y-1' },
+        e('label', { className: 'font-bold text-[11px] text-slate-700 flex items-center gap-1.5' },
+          e(IconWhatsApp, { className: 'w-3.5 h-3.5 text-emerald-600' }),
+          `Nomor WhatsApp ${assignee?.name || 'Assignee'}:`
+        ),
+        e('input', {
+          type: 'tel',
+          placeholder: 'Contoh: 08123456789 atau 628123456789',
+          value: phone,
+          onChange: ev => setPhone(ev.target.value),
+          className: 'w-full px-3 py-2 border rounded-xl text-xs bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-slate-800'
+        })
+      ),
+
+      e('div', { className: 'space-y-1' },
+        e('label', { className: 'font-bold text-[11px] text-slate-700' }, 'Pratinjau Pesan:'),
+        e('div', { className: 'p-3 bg-slate-50 rounded-xl border border-slate-200 font-mono text-[10px] whitespace-pre-line text-slate-700 max-h-36 overflow-y-auto leading-relaxed' },
+          waMessage
+        )
+      ),
+
+      e('div', { className: 'flex flex-col sm:flex-row justify-end gap-2 pt-3 border-t' },
+        isCreationPrompt ? e('button', {
+          type: 'button',
+          onClick: onClose,
+          className: 'px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-semibold cursor-pointer text-center'
+        }, 'Lewati / Nanti Saja') : e('button', {
+          type: 'button',
+          onClick: handleSendAppOnly,
+          className: 'px-3.5 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-semibold cursor-pointer text-center'
+        }, 'Notifikasi Aplikasi Saja'),
+        e('button', {
+          type: 'button',
+          onClick: handleSendWhatsApp,
+          className: 'px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-md cursor-pointer flex items-center justify-center gap-1.5 transition'
+        },
+          e(IconWhatsApp, { className: 'w-4 h-4 text-white' }),
+          isCreationPrompt ? 'Yes, Kirim WhatsApp' : 'Kirim via WhatsApp'
+        )
+      )
+    )
+  );
+}
+
+// --- TICKET BOARD WITH STICKY FILTERS & COMPACT COMPLETED TICKETS ARCHIVE ---
 function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTicket, onOpenDivisionManager, onEditTicket, onOpenComments, onOpenHistory, onDeleteTicket, onSendReminder, language, t }) {
   const [filterDivision, setFilterDivision] = useState("All");
   const [searchCode, setSearchCode] = useState("");
   const [showArchive, setShowArchive] = useState(false);
+  const [reminderModalData, setReminderModalData] = useState(null);
   const myTasksLabel = t('myTasks', language);
 
   const companyDivisions = getCompanyDivisions(companyInfo, users);
@@ -3308,7 +3703,7 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
   const filteredTickets = useMemo(() => {
     return safeTickets.filter(t => {
       let matchDiv = true;
-      if (filterDivision === myTasksLabel || filterDivision === "🎯 Tugas Saya" || filterDivision === "🎯 My Tasks") {
+      if (filterDivision === myTasksLabel || filterDivision === "🎯 Tugas Saya" || filterDivision === "🎯 My Tasks" || filterDivision === "Tugas Saya" || filterDivision === "My Tasks") {
         matchDiv = t.assignedTo === currentUser?.id || (t.mentionedUsers && t.mentionedUsers.includes(currentUser?.id));
       } else if (filterDivision !== "All") {
         matchDiv = Array.isArray(t.division) ? t.division.includes(filterDivision) : t.division === filterDivision;
@@ -3332,34 +3727,46 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
         canManage && e('button', {
           onClick: onOpenDivisionManager,
           className: 'px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold border border-slate-200 shadow-xs flex items-center gap-1.5 cursor-pointer transition'
-        }, '⚙️ ' + (language === 'en' ? 'Divisions' : 'Atur Divisi')),
-        e('button', { onClick: onOpenCreateTicket, className: 'px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5 cursor-pointer' }, t('generateTicket', language))
+        },
+          e(IconSettings, { className: 'w-3.5 h-3.5 text-slate-500' }),
+          language === 'en' ? 'Divisions' : 'Atur Divisi'
+        ),
+        e('button', {
+          onClick: onOpenCreateTicket,
+          className: 'px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5 cursor-pointer transition'
+        },
+          e(IconPlus, { className: 'w-4 h-4 text-white' }),
+          t('generateTicket', language)
+        )
       )
     ),
 
-    // TICKET CODE SEARCH TRACKER BAR
-    e('div', { className: 'p-4 bg-white rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3' },
-      e(IconSearch, { className: 'w-5 h-5 text-slate-400' }),
-      e('input', {
-        type: 'text',
-        value: searchCode,
-        onChange: ev => setSearchCode(ev.target.value),
-        placeholder: t('searchTicket', language),
-        className: 'flex-1 border-none focus:outline-none text-xs font-mono bg-transparent'
-      }),
-      searchCode && e('button', { onClick: () => setSearchCode(""), className: 'text-slate-400 font-bold hover:text-slate-600 cursor-pointer text-xs' }, 'Clear')
-    ),
+    // STICKY FILTER & SEARCH TOOLBAR (PINNED DURING SCROLL)
+    e('div', { className: 'sticky top-0 z-20 bg-slate-50/95 backdrop-blur-md pt-2 pb-3 -mx-2 px-2 space-y-3' },
+      // TICKET CODE SEARCH TRACKER BAR
+      e('div', { className: 'p-3 bg-white rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3' },
+        e(IconSearch, { className: 'w-5 h-5 text-slate-400' }),
+        e('input', {
+          type: 'text',
+          value: searchCode,
+          onChange: ev => setSearchCode(ev.target.value),
+          placeholder: t('searchTicket', language),
+          className: 'flex-1 border-none focus:outline-none text-xs font-mono bg-transparent'
+        }),
+        searchCode && e('button', { onClick: () => setSearchCode(""), className: 'text-slate-400 font-bold hover:text-slate-600 cursor-pointer text-xs' }, 'Clear')
+      ),
 
-    e('div', { className: 'flex items-center gap-2 border-b border-slate-200 pb-3 overflow-x-auto' },
-      divisions.map(d => e('button', {
-        key: d,
-        onClick: () => setFilterDivision(d),
-        className: `px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex-shrink-0 ${filterDivision === d ? 'bg-blue-600 text-white shadow' : 'bg-white border text-slate-600 hover:bg-slate-50'}`
-      }, d)),
-      canManage && e('button', {
-        onClick: onOpenDivisionManager,
-        className: 'px-3 py-1.5 rounded-lg text-xs font-bold border border-dashed border-blue-300 text-blue-700 hover:bg-blue-50 transition-all cursor-pointer whitespace-nowrap flex-shrink-0 flex items-center gap-1'
-      }, '+ ' + (language === 'en' ? 'New Division' : 'Divisi Baru'))
+      e('div', { className: 'flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto' },
+        divisions.map(d => e('button', {
+          key: d,
+          onClick: () => setFilterDivision(d),
+          className: `px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex-shrink-0 ${filterDivision === d ? 'bg-blue-600 text-white shadow' : 'bg-white border text-slate-600 hover:bg-slate-50'}`
+        }, d)),
+        canManage && e('button', {
+          onClick: onOpenDivisionManager,
+          className: 'px-3 py-1.5 rounded-lg text-xs font-bold border border-dashed border-blue-300 text-blue-700 hover:bg-blue-50 transition-all cursor-pointer whitespace-nowrap flex-shrink-0 flex items-center gap-1'
+        }, '+ ' + (language === 'en' ? 'New Division' : 'Divisi Baru'))
+      )
     ),
 
     // 1. ACTIVE TICKETS SECTION
@@ -3393,46 +3800,58 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
           return e('div', {
             key: tkt.id,
             onClick: () => onEditTicket(tkt),
-            className: `${cardBorderClass} p-5 rounded-2xl shadow-xs space-y-3 relative hover:shadow-md transition-all cursor-pointer`
+            className: `${cardBorderClass} p-5 rounded-2xl shadow-xs space-y-3 relative hover:shadow-md transition-all cursor-pointer overflow-hidden break-words break-all [overflow-wrap:anywhere]`
           },
             isOverdue && e('div', { className: 'p-2 bg-rose-600 text-white rounded-xl text-[10px] font-extrabold flex items-center justify-between shadow-xs animate-pulse' },
-              e('span', null, `⏰ ${t('overdueDeadline', language)}`),
+              e('span', { className: 'flex items-center gap-1.5' },
+                e(IconBell, { className: 'w-3.5 h-3.5 text-white' }),
+                t('overdueDeadline', language)
+              ),
               e('span', { className: 'font-mono text-[9px] bg-white/25 px-2 py-0.5 rounded font-bold' }, `${daysOverdue} ${t('daysOverdue', language)}`)
             ),
 
             isCLevelCreator && e('div', { className: 'p-2 bg-gradient-to-r from-blue-700 to-indigo-800 text-white rounded-xl text-[10px] font-extrabold flex items-center justify-between shadow-xs' },
               e('span', { className: 'flex items-center gap-1.5' },
-                '🏛️ ' + t('directiveBadge', language)
+                e(IconOffice, { className: 'w-3.5 h-3.5 text-white' }),
+                t('directiveBadge', language)
               ),
               e('span', { className: 'font-mono text-[9px] bg-white/20 px-1.5 py-0.5 rounded' }, creator ? creator.name : 'C-Level')
             ),
 
             e('div', { className: 'flex items-start justify-between gap-2' },
-              e('div', { className: 'flex-1' },
+              e('div', { className: 'flex-1 overflow-hidden' },
                 e('div', { className: 'flex items-center gap-2 flex-wrap' },
                   e('span', { className: 'font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200' }, tkt.code),
                   e('span', { className: `text-[10px] font-extrabold px-2 py-0.5 rounded-full ${isUrgent ? 'bg-rose-600 text-white animate-pulse' : isHigh ? 'bg-amber-500 text-white' : 'bg-blue-600 text-white'}` }, tkt.priority || 'Normal'),
-                  tkt.deadline && e('span', { className: `text-[10px] font-mono font-bold px-2 py-0.5 rounded ${isOverdue ? 'bg-rose-100 text-rose-800 font-extrabold' : 'bg-slate-100 text-slate-600'}` }, `📅 Deadline: ${tkt.deadline}`)
+                  tkt.deadline && e('span', { className: `text-[10px] font-mono font-bold px-2 py-0.5 rounded ${isOverdue ? 'bg-rose-100 text-rose-800 font-extrabold' : 'bg-slate-100 text-slate-600'}` }, `Deadline: ${tkt.deadline}`)
                 ),
-                e('h3', { className: 'font-bold text-slate-900 text-sm mt-1.5 hover:text-blue-600 transition-colors' }, tkt.subject)
+                e('h3', { className: 'font-bold text-slate-900 text-sm mt-1.5 hover:text-blue-600 transition-colors break-words' }, tkt.subject)
               ),
-              e('div', { className: 'flex items-center gap-1.5' },
+              e('div', { className: 'flex items-center gap-1.5 flex-shrink-0' },
                 isAdmin && e('button', {
                   onClick: (ev) => { ev.stopPropagation(); onDeleteTicket(tkt.id); },
-                  className: 'p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-xs font-bold cursor-pointer'
+                  className: 'p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-xs font-bold cursor-pointer transition'
                 }, e(IconTrash, { className: 'w-4 h-4' })),
                 e('button', {
-                  onClick: (ev) => { ev.stopPropagation(); onSendReminder(assignee, tkt); },
-                  className: 'px-2 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 rounded text-[10px] font-extrabold flex items-center gap-1 cursor-pointer'
-                }, '🔔 Remind'),
+                  onClick: (ev) => {
+                    ev.stopPropagation();
+                    setReminderModalData({ ticket: tkt, assignee });
+                  },
+                  className: 'px-2 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 rounded text-[10px] font-extrabold flex items-center gap-1 cursor-pointer transition'
+                },
+                  e(IconBell, { className: 'w-3 h-3 text-amber-600' }),
+                  'Remind'
+                ),
                 e('span', { className: `text-[10px] font-bold px-2.5 py-1 rounded-full ${tkt.status === 'Pending Review' ? 'bg-amber-100 text-amber-900 animate-pulse' : 'bg-blue-100 text-blue-800'}` }, tkt.status === 'Todo' ? 'To do' : tkt.status)
               )
             ),
-            e('p', { className: 'text-xs text-slate-600 leading-relaxed' }, tkt.details),
+
+            // LINKIFIED DETAILS WITH ZERO OVERFLOW
+            e(LinkifiedText, { text: tkt.details, className: 'text-xs text-slate-600 leading-relaxed font-normal' }),
             
-            tkt.proofLink && e('div', { className: 'p-2 bg-slate-50 border border-slate-200 rounded-lg text-[11px] flex items-center gap-1.5 text-blue-600 font-mono font-semibold' },
-              e(IconLink, { className: 'w-3.5 h-3.5' }),
-              e('a', { href: tkt.proofLink, target: '_blank', rel: 'noreferrer', onClick: (ev) => ev.stopPropagation(), className: 'hover:underline truncate' }, `Proof: ${tkt.proofLink}`)
+            tkt.proofLink && e('div', { className: 'p-2 bg-slate-50 border border-slate-200 rounded-lg text-[11px] flex items-center gap-1.5 text-blue-600 font-mono font-semibold overflow-hidden' },
+              e(IconLink, { className: 'w-3.5 h-3.5 flex-shrink-0' }),
+              e('a', { href: tkt.proofLink, target: '_blank', rel: 'noreferrer', onClick: (ev) => ev.stopPropagation(), className: 'hover:underline truncate text-blue-600' }, `Proof: ${tkt.proofLink}`)
             ),
 
             e('div', { className: 'flex items-center justify-between pt-3 border-t text-xs' },
@@ -3442,7 +3861,7 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
                 e('button', {
                   onClick: (ev) => { ev.stopPropagation(); onOpenComments(tkt); },
                   className: 'px-2.5 py-1 bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-800 rounded-lg text-[10px] font-bold flex items-center gap-1 cursor-pointer'
-                }, e(IconComment, { className: 'w-3.5 h-3.5 text-purple-600' }), `💬 ${t('comments', language)} (${commentCount})`)
+                }, e(IconComment, { className: 'w-3.5 h-3.5 text-purple-600' }), `${t('comments', language)} (${commentCount})`)
               ),
               e('button', {
                 onClick: (ev) => { ev.stopPropagation(); onOpenHistory(tkt); },
@@ -3453,6 +3872,20 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
         })
       )
     ),
+
+    // WHATSAPP REMINDER POPUP MODAL
+    reminderModalData && e(WhatsAppReminderModal, {
+      ticket: reminderModalData.ticket,
+      assignee: reminderModalData.assignee,
+      currentUser,
+      onClose: () => setReminderModalData(null),
+      onConfirmReminder: (ticket, assignee, phone) => {
+        onSendReminder(assignee, ticket);
+        sendDeviceNotification(`Pengingat Tiket: ${ticket.code}`, {
+          body: `${ticket.subject} (Deadline: ${ticket.deadline || '-'})`
+        });
+      }
+    }),
 
     // 2. COMPLETED & ARCHIVED TICKETS SECTION (ACCORDION TOGGLE)
     completedTickets.length > 0 && e('div', { className: 'pt-6 border-t border-slate-200' },
@@ -3698,8 +4131,22 @@ function UpdateTicketModal({ ticket, users, tickets, currentUser, onClose, onDel
           e('label', { className: 'font-semibold block mb-1 text-slate-400' }, 'Subject (Locked - Cannot be changed)'),
           e('input', { disabled: true, type: 'text', value: subject, className: 'w-full px-3 py-2 border rounded-xl bg-slate-100 text-slate-500 cursor-not-allowed font-medium' })
         ),
+        e('div', { className: 'space-y-1' },
+          e('label', { className: 'font-semibold block text-slate-500' }, 'Detail Tiket / Instruksi:'),
+          e('div', { className: 'p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-700 max-h-36 overflow-y-auto leading-relaxed break-words break-all [overflow-wrap:anywhere]' },
+            e(LinkifiedText, { text: details || '-' })
+          )
+        ),
         e('div', null,
-          e('label', { className: 'font-semibold block mb-1' }, 'Submission Evidence / Proof Link'),
+          e('div', { className: 'flex justify-between items-center mb-1' },
+            e('label', { className: 'font-semibold block' }, 'Submission Evidence / Proof Link'),
+            proofLink && e('a', {
+              href: proofLink.startsWith('http') ? proofLink : ('https://' + proofLink),
+              target: '_blank',
+              rel: 'noreferrer',
+              className: 'text-[11px] text-blue-600 font-bold hover:underline flex items-center gap-1'
+            }, e(IconExternalLink, { className: 'w-3 h-3' }), 'Buka Link Preview')
+          ),
           e('input', { type: 'url', placeholder: 'https://...', value: proofLink, onChange: ev => setProofLink(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl font-mono text-blue-600' })
         ),
         e('div', null,
@@ -3759,7 +4206,9 @@ function TicketCommentsModal({ ticket, currentUser, users, onClose, onPostCommen
       e('div', { className: 'space-y-3 text-xs' },
         e('div', { className: 'p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1' },
           e('div', { className: 'font-bold text-slate-800' }, ticket.subject),
-          e('p', { className: 'text-slate-600 text-[11px]' }, ticket.details)
+          e('div', { className: 'text-slate-600 text-[11px] break-words break-all [overflow-wrap:anywhere]' },
+            e(LinkifiedText, { text: ticket.details || '-' })
+          )
         ),
 
         e('div', { className: 'space-y-2 max-h-60 overflow-y-auto pr-1' },
@@ -3769,7 +4218,9 @@ function TicketCommentsModal({ ticket, currentUser, users, onClose, onPostCommen
               e('span', { className: 'text-blue-600' }, c.author),
               e('span', { className: 'text-slate-400 font-mono text-[10px]' }, c.time)
             ),
-            e('p', { className: 'text-slate-700 text-xs leading-relaxed' }, c.text)
+            e('div', { className: 'text-slate-700 text-xs leading-relaxed break-words break-all [overflow-wrap:anywhere]' },
+              e(LinkifiedText, { text: c.text })
+            )
           ))
         ),
 
@@ -3978,6 +4429,7 @@ function CreateUserModal({ apiUrl, companyInfo, users, onOpenDivisionManager, on
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("employee");
   const [mode, setMode] = useState("Full WFH");
@@ -3996,9 +4448,11 @@ function CreateUserModal({ apiUrl, companyInfo, users, onOpenDivisionManager, on
     setIsLoading(true);
     setErrorMsg("");
 
+    const formattedPhone = formatWhatsAppNumber(phone);
     const payload = {
       name,
       email: email.trim(),
+      phone: formattedPhone,
       password,
       role,
       mode,
@@ -4041,6 +4495,7 @@ function CreateUserModal({ apiUrl, companyInfo, users, onOpenDivisionManager, on
       employeeId: previewId,
       name: payload.name,
       email: payload.email,
+      phone: payload.phone,
       password: payload.password,
       role: payload.role,
       mode: payload.mode,
@@ -4080,6 +4535,20 @@ function CreateUserModal({ apiUrl, companyInfo, users, onOpenDivisionManager, on
         e('div', null,
           e('label', { className: 'font-semibold block mb-1' }, 'Work Email Address'),
           e('input', { required: true, type: 'email', disabled: isLoading, placeholder: 'user@javeloterralestari.com', value: email, onChange: ev => setEmail(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl' })
+        ),
+        e('div', null,
+          e('label', { className: 'font-semibold block mb-1 flex items-center gap-1.5 text-slate-700' },
+            e(IconWhatsApp, { className: 'w-3.5 h-3.5 text-emerald-600' }),
+            'WhatsApp Phone Number (Opsional)'
+          ),
+          e('input', {
+            type: 'tel',
+            disabled: isLoading,
+            placeholder: 'contoh: 08123456789 atau 628123456789',
+            value: phone,
+            onChange: ev => setPhone(ev.target.value),
+            className: 'w-full px-3 py-2 border rounded-xl font-mono'
+          })
         ),
         e('div', null,
           e('label', { className: 'font-semibold block mb-1' }, 'Account Password'),
@@ -4365,9 +4834,18 @@ function CLevelDashboard({ users, tickets, anomalies, schedules, currentUser, co
         e('p', { className: 'text-xs text-slate-500 mt-0.5' }, isHR ? 'Akses manajemen personel HR, evaluasi kinerja tim, dan direktori akun karyawan.' : 'Akses master level C untuk monitoring menyeluruh, geofence, dan kredensial.')
       ),
       e('div', { className: 'flex flex-wrap gap-2' },
-        e('button', { onClick: onOpenDivisionManager, className: 'px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-semibold cursor-pointer border border-slate-200 shadow-3xs flex items-center gap-1' }, '🏢 ' + (language === 'en' ? 'Divisions' : 'Kelola Divisi')),
-        e('button', { onClick: onOpenAnnouncement, className: 'px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-semibold cursor-pointer shadow-xs flex items-center gap-1' }, '📢 ' + t('broadcast', language)),
-        e('button', { onClick: onOpenCreateUser, className: 'px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold cursor-pointer shadow-xs flex items-center gap-1' }, '+ ' + t('createUser', language))
+        e('button', { onClick: onOpenDivisionManager, className: 'px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-semibold cursor-pointer border border-slate-200 shadow-3xs flex items-center gap-1.5' },
+          e(IconBuilding, { className: 'w-4 h-4 text-slate-600' }),
+          language === 'en' ? 'Divisions' : 'Kelola Divisi'
+        ),
+        e('button', { onClick: onOpenAnnouncement, className: 'px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-semibold cursor-pointer shadow-xs flex items-center gap-1.5' },
+          e(IconMegaphone, { className: 'w-4 h-4 text-white' }),
+          t('broadcast', language)
+        ),
+        e('button', { onClick: onOpenCreateUser, className: 'px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold cursor-pointer shadow-xs flex items-center gap-1.5' },
+          e(IconUserPlus, { className: 'w-4 h-4 text-white' }),
+          t('createUser', language)
+        )
       )
     ),
 
@@ -4483,6 +4961,7 @@ function CLevelDashboard({ users, tickets, anomalies, schedules, currentUser, co
               e('th', { className: 'px-4 py-3' }, 'Staff Name'),
               e('th', { className: 'px-4 py-3' }, 'Employee ID (NIK)'),
               e('th', { className: 'px-4 py-3' }, 'Email Address'),
+              e('th', { className: 'px-4 py-3' }, 'WhatsApp'),
               e('th', { className: 'px-4 py-3' }, 'Password / PIN'),
               e('th', { className: 'px-4 py-3' }, 'Role'),
               e('th', { className: 'px-4 py-3 text-right' }, 'Actions')
@@ -4503,6 +4982,15 @@ function CLevelDashboard({ users, tickets, anomalies, schedules, currentUser, co
                   e('span', { className: 'px-2 py-0.5 bg-slate-100 rounded border border-slate-200 shadow-3xs' }, formattedNik)
                 ),
                 e('td', { className: 'px-4 py-3 font-mono text-[11px]' }, u.email),
+                e('td', { className: 'px-4 py-3 whitespace-nowrap' },
+                  u.phone ? e('button', {
+                    onClick: () => openWhatsAppChat(u.phone, `Halo ${u.name}, salam dari HR & Manajemen Javelo360 ERP.`),
+                    className: 'px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg text-[10px] font-bold flex items-center gap-1 cursor-pointer transition'
+                  },
+                    e(IconWhatsApp, { className: 'w-3.5 h-3.5 text-emerald-600' }),
+                    u.phone
+                  ) : e('span', { className: 'text-slate-400 italic text-[10px]' }, '-')
+                ),
                 e('td', { className: `px-4 py-3 font-mono text-[11px] ${hidePasswordFromHR ? 'text-slate-400 italic bg-slate-50' : 'text-purple-600 font-bold bg-purple-50/30'}` },
                   hidePasswordFromHR ? '•••••••• [Protected Level C]' : (u.password || "12345678")
                 ),
@@ -4566,6 +5054,14 @@ function ChatEcosystem({ users, currentUser, tickets, chatMessages, setChatMessa
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
   const [autocompleteType, setAutocompleteType] = useState(null);
   const [showMobileChat, setShowMobileChat] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  // Auto-scroll to latest message when conversation or active recipient updates
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [msgs, activeRecipient]);
 
   // Auto-select if activeRecipient was null or deleted
   useEffect(() => {
@@ -4832,10 +5328,13 @@ function ChatEcosystem({ users, currentUser, tickets, chatMessages, setChatMessa
                   e('span', { className: 'font-bold' }, isMe ? (lang === 'en' ? 'You' : 'Anda') : (m.senderName || m.sender || 'Staff')),
                   e('span', null, m.time || '')
                 ),
-                e('p', { className: `leading-relaxed whitespace-pre-wrap break-words ${isMe ? 'text-white' : 'text-slate-800'}` }, m.text)
+                e('div', { className: `leading-relaxed whitespace-pre-wrap break-words break-all [overflow-wrap:anywhere] ${isMe ? 'text-white' : 'text-slate-800'}` },
+                  e(LinkifiedText, { text: m.text })
+                )
               )
             );
-          })
+          }),
+          e('div', { ref: messagesEndRef })
         ),
 
         // Message Input Form
