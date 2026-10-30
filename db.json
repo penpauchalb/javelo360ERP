@@ -6,7 +6,19 @@
       "lng": 109.1352,
       "name": "PT Javelo Terra Lestari Factory (Banyumas)",
       "radiusMeters": 500
-    }
+    },
+    "announcements": [
+      {
+        "id": "ann-1793349844829",
+        "title": "Penambahan Fitur Reminder Via Whatsapp",
+        "content": "Hi All\nAda fitur baru yang ditambahkan, yaitu bisa remind tiket ke orang terkait langsung via WA tinggal tap button \"reminder\" saja\n\nTolong bantu masukan nomor whatsapp teman teman via \"Profile\" ya",
+        "targetDivision": "All",
+        "popupMode": "instant",
+        "authorName": "Cahaya",
+        "authorRole": "admin",
+        "createdAt": "2026-10-30T08:44:04.829Z"
+      }
+    ]
   },
   "users": [
     {
@@ -376,304 +388,85 @@
   ],
   "notifications": [
     {
-      "id": "notif-1793349657266-5gmu6",
-      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
-      "userEmail": "vivi@javeloterralestari.com",
-      "title": "💬 Komentar Tiket: JTL-2026-109",
-      "text": "Cahaya: \"Good to go VI!\"",
-      "time": "03:40 PM",
+      "id": "notif-ann-1793349844830",
+      "title": "📢 Penambahan Fitur Reminder Via Whatsapp",
+      "text": "Hi All\nAda fitur baru yang ditambahkan, yaitu bisa remind tiket ke orang terkait langsung via WA tinggal tap button \"reminder\" saja\n\nTolong bantu masukan nomor whatsapp teman teman via \"Profile\" ya",
+      "time": "03:44 PM",
       "date": "2026-10-30",
+      "timestamp": 1793349844830,
       "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "10757996-4731-43f4-9e4d-f4b2a9071425"
+      "readBy": [],
+      "type": "announcement",
+      "targetDivision": "All"
     },
     {
-      "id": "notif-1793263553860-xvmqb",
-      "userId": "c0000000-0000-4000-8000-000000000001",
-      "userEmail": "cahaya@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-113 [Medium]",
-      "text": "Vivi menugaskan tiket: \"review artikel coconut sugar vs brown sugar \"",
-      "time": "03:45 PM",
-      "date": "2026-10-29",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "0afec856-d512-472d-a350-7321f4a2f1b0"
-    },
-    {
-      "id": "notif-1793159642744-9zpcw",
-      "userId": "2789cc9d-7bd0-48ac-ab16-a8d03ea1bd69",
-      "userEmail": "didan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-108 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Test\"",
-      "time": "10:54 AM",
-      "date": "2026-10-28",
-      "read": true,
-      "targetTab": "tickets",
-      "targetTicketId": "0639c95a-cb1a-461a-8e55-b4294113e283",
-      "readBy": [
-        "2789cc9d-7bd0-48ac-ab16-a8d03ea1bd69"
-      ]
-    },
-    {
-      "id": "notif-1793159417076-ke7ae",
-      "userId": "c0000000-0000-4000-8000-000000000001",
-      "userEmail": "cahaya@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-107 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Test Ticket\"",
-      "time": "10:50 AM",
-      "date": "2026-10-28",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "ba0cd18c-ceff-45ac-8434-365150cff2e4",
-      "readBy": [
-        "c0000000-0000-4000-8000-000000000001"
-      ]
-    },
-    {
-      "id": "notif-1792844269099-7t9hu",
+      "id": "notif-1793155187780-hd0qv",
       "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
       "userEmail": "ukan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-101 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Moodboard / Brand Guideline Javelo\"",
-      "time": "07:17 PM",
-      "date": "2026-10-24",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "703c6e88-6d3b-4801-944e-2167e6bf6379"
-    },
-    {
-      "id": "notif-1792844310598-xnriq",
-      "userId": "c0000000-0000-4000-8000-000000000001",
-      "userEmail": "cahaya@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-101 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"tes\"",
-      "time": "07:18 PM",
-      "date": "2026-10-24",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "447d847a-c7d3-478e-8902-615ea6427fef",
-      "readBy": [
-        "c0000000-0000-4000-8000-000000000001"
-      ]
-    },
-    {
-      "id": "notif-1792844372370-pwg3x",
-      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
-      "userEmail": "ukan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-101 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Membuat moodboard / brand guideline Javelo\"",
-      "time": "07:19 PM",
-      "date": "2026-10-24",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "58b3d6b0-8872-461a-9660-170115595d93"
-    },
-    {
-      "id": "notif-1792844495150-cnr9a",
-      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
-      "userEmail": "ukan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-102 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Membuat moodboard / Brand guideline Javeco\"",
-      "time": "07:21 PM",
-      "date": "2026-10-24",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "26f0095d-74a5-4114-af16-d7665545608a"
-    },
-    {
-      "id": "notif-1792844962103-lgu1d",
-      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
-      "userEmail": "vivi@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-103 [Normal]",
-      "text": "Cahaya menugaskan tiket: \"Pembuatan Artikel LOI with Libyan's Company\"",
-      "time": "07:29 PM",
-      "date": "2026-10-24",
-      "read": true,
-      "targetTab": "tickets",
-      "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb"
-    },
-    {
-      "id": "notif-1792845132508-8vheq",
-      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
-      "userEmail": "ukan@javeloterralestari.com",
-      "title": "💬 Komentar Tiket: JTL-2026-101",
-      "text": "Cahaya: \"Test comment\"",
-      "time": "07:32 PM",
-      "date": "2026-10-24",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "58b3d6b0-8872-461a-9660-170115595d93"
-    },
-    {
-      "id": "notif-1792979606021-uop18",
-      "userId": "c0000000-0000-4000-8000-000000000001",
-      "userEmail": "cahaya@javeloterralestari.com",
-      "title": "💬 Komentar Tiket: JTL-2026-103",
-      "text": "Vivi: \"oke mas aku butuh beberapa tambahan info: isi kesepakatan in general, produknya apa, nama perusahaan dari libya, foto dokumentasi, adakah alasan khusus kenapa mereka memutuskan kerjasama dengan javelo\"",
-      "time": "08:53 AM",
-      "date": "2026-10-26",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb",
-      "readBy": [
-        "c0000000-0000-4000-8000-000000000001"
-      ]
-    },
-    {
-      "id": "notif-1792987205790-9uhtm",
-      "userId": "2c69959a-30da-4d40-be33-cbacabf9525a",
-      "userEmail": "juni@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-104 [Normal]",
-      "text": "Cahaya menugaskan tiket: \"Pembuatan & Pengiriman Slip Gaji\"",
-      "time": "11:00 AM",
-      "date": "2026-10-26",
-      "read": true,
-      "targetTab": "tickets",
-      "targetTicketId": "120522f8-5c72-440c-be53-1d9ced4e5687"
-    },
-    {
-      "id": "notif-1792987585182-lfzem",
-      "userId": "c0000000-0000-4000-8000-000000000001",
-      "userEmail": "cahaya@javeloterralestari.com",
-      "title": "💬 Komentar Tiket: JTL-2026-104",
-      "text": "Juni Nanda Prasetyo: \"Dikirim kemana mas?\"",
-      "time": "11.06",
-      "date": "2026-10-26",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "120522f8-5c72-440c-be53-1d9ced4e5687",
-      "readBy": [
-        "c0000000-0000-4000-8000-000000000001"
-      ]
-    },
-    {
-      "id": "notif-1792990358641-pfweh",
-      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
-      "userEmail": "vivi@javeloterralestari.com",
-      "title": "💬 Komentar Tiket: JTL-2026-103",
-      "text": "Cahaya: \"Dalam LOI tersebut salah satu dari perusahaan Libya menyatakan surat ketertarikan untuk bekerja sama hubungan bisnis  dengan Javelo Terra Lestari untuk produk Kokoa yang under Javeco dan kemungkinan juga potensial produk gula kelapa, ketertarikan khusus yaitu karena kita direct manufaktur sehingga bisa mendapatkan kualitas yang bagus dan mendapatkan harga yang kompotitif\"",
-      "time": "11:52 AM",
-      "date": "2026-10-26",
-      "read": true,
-      "targetTab": "tickets",
-      "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb"
-    },
-    {
-      "id": "notif-1792990492773-xgqm1",
-      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
-      "userEmail": "vivi@javeloterralestari.com",
-      "title": "💬 Komentar Tiket: JTL-2026-103",
-      "text": "Cahaya: \"https://drive.google.com/drive/folders/1jhCHzEGuxLR3vj1iJsiElikzjjwD4Uay?usp=sharing\"",
-      "time": "11:54 AM",
-      "date": "2026-10-26",
-      "read": true,
-      "targetTab": "tickets",
-      "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb"
-    },
-    {
-      "id": "notif-1792990536389-vi57d",
-      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
-      "userEmail": "vivi@javeloterralestari.com",
-      "title": "💬 Komentar Tiket: JTL-2026-103",
-      "text": "Cahaya: \"*from image 0450\"",
-      "time": "11:55 AM",
-      "date": "2026-10-26",
-      "read": true,
-      "targetTab": "tickets",
-      "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb"
-    },
-    {
-      "id": "notif-1792996898725-i95pf",
-      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
-      "userEmail": "ukan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-105 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Pembuatan Konten Tanggal 28\"",
-      "time": "01:41 PM",
-      "date": "2026-10-26",
+      "title": "🔔 Reminder dari Cahaya",
+      "text": "Pengingat untuk JTL-2026-105: Pembuatan Konten Tanggal 28",
+      "time": "09:39 AM",
       "read": false,
       "targetTab": "tickets",
       "targetTicketId": "0803f1c5-8a88-4c91-bdbe-a02bb9190d0e"
     },
     {
-      "id": "notif-1792996948707-9z5pe",
-      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
-      "userEmail": "ukan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-106 [Normal]",
-      "text": "Cahaya menugaskan tiket: \"Pembuatan Konten Tanggal 30\"",
-      "time": "01:42 PM",
-      "date": "2026-10-26",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "0448122c-093a-460d-936b-fa0822587383"
-    },
-    {
-      "id": "notif-1793159662910-hvf68",
-      "userId": "c0000000-0000-4000-8000-000000000001",
-      "userEmail": "cahaya@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-109 [Medium]",
-      "text": "Tajdidan Rizy menugaskan tiket: \"Testing\"",
-      "time": "10:54 AM",
+      "id": "notif-1793154927105-aznng",
+      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
+      "userEmail": "vivi@javeloterralestari.com",
+      "title": "💬 Komentar Tiket: JTL-2026-109",
+      "text": "Cahaya: \"Ada satu komen yang saya drop di google docs ya\"",
+      "time": "09:35 AM",
       "date": "2026-10-28",
-      "read": false,
+      "read": true,
       "targetTab": "tickets",
-      "targetTicketId": "c92e3a32-e6cf-4ce8-b185-a72e2de3c49a",
+      "targetTicketId": "10757996-4731-43f4-9e4d-f4b2a9071425",
       "readBy": [
-        "c0000000-0000-4000-8000-000000000001"
+        "43ca5695-9e88-4b5f-8d9d-476b6641bb10"
       ]
     },
     {
-      "id": "notif-1793159662938-hxiav",
-      "userId": "c0000000-0000-4000-8000-000000000001",
-      "userEmail": "cahaya@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-109 [Medium]",
-      "text": "Tajdidan Rizy menugaskan tiket: \"Testing\"",
-      "time": "10:54 AM",
-      "date": "2026-10-28",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "c92e3a32-e6cf-4ce8-b185-a72e2de3c49a",
-      "readBy": [
-        "c0000000-0000-4000-8000-000000000001"
-      ]
-    },
-    {
-      "id": "notif-1793086521719-tnqd3",
-      "userId": "c0000000-0000-4000-8000-000000000001",
-      "userEmail": "cahaya@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-109 [High]",
-      "text": "Vivi menugaskan tiket: \"Review artikel coconut sugar mesh size \"",
-      "time": "02:35 PM",
-      "date": "2026-10-27",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "10757996-4731-43f4-9e4d-f4b2a9071425"
-    },
-    {
-      "id": "notif-1793002813445-qze4d",
-      "userId": "c0000000-0000-4000-8000-000000000001",
-      "userEmail": "cahaya@javeloterralestari.com",
+      "id": "notif-1793082890331-3xlkv",
+      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
+      "userEmail": "vivi@javeloterralestari.com",
       "title": "💬 Komentar Tiket: JTL-2026-103",
-      "text": "Vivi: \"minta tolong untuk review ya mas https://docs.google.com/document/d/17cISHb6wvAnXQi-0CKpOeRwCcpTqNmcvwd9HXlMtFX0/edit?tab=t.0\"",
-      "time": "03:20 PM",
-      "date": "2026-10-26",
-      "read": false,
+      "text": "Cahaya: \"good to go ya\"",
+      "time": "13:34",
+      "date": "2026-10-27",
+      "read": true,
       "targetTab": "tickets",
       "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb",
       "readBy": [
-        "c0000000-0000-4000-8000-000000000001"
+        "43ca5695-9e88-4b5f-8d9d-476b6641bb10"
       ]
     },
     {
-      "id": "notif-1793002426298-lfsjk",
+      "id": "notif-1793002294907-s7tyn",
       "userId": "be97b7f0-0080-48e8-88bf-8547b5c534fb",
       "userEmail": "didan@javeloterralestari.com",
-      "title": "💬 Komentar Tiket: JTL-2026-108",
-      "text": "Juni Nanda Prasetyo: \"Garap dan\"",
-      "time": "15.13",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-108 [Medium]",
+      "text": "Mustolih menugaskan tiket: \"Didan Kloter tolong ovenkan gula 1 ton\"",
+      "time": "15.11",
       "date": "2026-10-26",
       "read": true,
       "targetTab": "tickets",
       "targetTicketId": "d5e3de0d-05bf-42bf-b218-998cd53d8b9c",
+      "readBy": [
+        "be97b7f0-0080-48e8-88bf-8547b5c534fb",
+        "2789cc9d-7bd0-48ac-ab16-a8d03ea1bd69"
+      ]
+    },
+    {
+      "id": "notif-1793001833962-kupcj",
+      "userId": "be97b7f0-0080-48e8-88bf-8547b5c534fb",
+      "userEmail": "didan@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-107 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Persiapan Sample Untuk India\"",
+      "time": "03:03 PM",
+      "date": "2026-10-26",
+      "read": true,
+      "targetTab": "tickets",
+      "targetTicketId": "d08f8459-2462-4ada-a9df-3194b2eaf589",
       "readBy": [
         "be97b7f0-0080-48e8-88bf-8547b5c534fb",
         "2789cc9d-7bd0-48ac-ab16-a8d03ea1bd69"
@@ -695,28 +488,12 @@
       ]
     },
     {
-      "id": "notif-1793001833962-kupcj",
+      "id": "notif-1793002426298-lfsjk",
       "userId": "be97b7f0-0080-48e8-88bf-8547b5c534fb",
       "userEmail": "didan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-107 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Persiapan Sample Untuk India\"",
-      "time": "03:03 PM",
-      "date": "2026-10-26",
-      "read": true,
-      "targetTab": "tickets",
-      "targetTicketId": "d08f8459-2462-4ada-a9df-3194b2eaf589",
-      "readBy": [
-        "be97b7f0-0080-48e8-88bf-8547b5c534fb",
-        "2789cc9d-7bd0-48ac-ab16-a8d03ea1bd69"
-      ]
-    },
-    {
-      "id": "notif-1793002294907-s7tyn",
-      "userId": "be97b7f0-0080-48e8-88bf-8547b5c534fb",
-      "userEmail": "didan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-108 [Medium]",
-      "text": "Mustolih menugaskan tiket: \"Didan Kloter tolong ovenkan gula 1 ton\"",
-      "time": "15.11",
+      "title": "💬 Komentar Tiket: JTL-2026-108",
+      "text": "Juni Nanda Prasetyo: \"Garap dan\"",
+      "time": "15.13",
       "date": "2026-10-26",
       "read": true,
       "targetTab": "tickets",
@@ -727,45 +504,292 @@
       ]
     },
     {
-      "id": "notif-1793082890331-3xlkv",
-      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
-      "userEmail": "vivi@javeloterralestari.com",
+      "id": "notif-1793002813445-qze4d",
+      "userId": "c0000000-0000-4000-8000-000000000001",
+      "userEmail": "cahaya@javeloterralestari.com",
       "title": "💬 Komentar Tiket: JTL-2026-103",
-      "text": "Cahaya: \"good to go ya\"",
-      "time": "13:34",
-      "date": "2026-10-27",
-      "read": true,
+      "text": "Vivi: \"minta tolong untuk review ya mas https://docs.google.com/document/d/17cISHb6wvAnXQi-0CKpOeRwCcpTqNmcvwd9HXlMtFX0/edit?tab=t.0\"",
+      "time": "03:20 PM",
+      "date": "2026-10-26",
+      "read": false,
       "targetTab": "tickets",
       "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb",
       "readBy": [
-        "43ca5695-9e88-4b5f-8d9d-476b6641bb10"
+        "c0000000-0000-4000-8000-000000000001"
       ]
     },
     {
-      "id": "notif-1793154927105-aznng",
-      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
-      "userEmail": "vivi@javeloterralestari.com",
-      "title": "💬 Komentar Tiket: JTL-2026-109",
-      "text": "Cahaya: \"Ada satu komen yang saya drop di google docs ya\"",
-      "time": "09:35 AM",
-      "date": "2026-10-28",
-      "read": true,
+      "id": "notif-1793086521719-tnqd3",
+      "userId": "c0000000-0000-4000-8000-000000000001",
+      "userEmail": "cahaya@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-109 [High]",
+      "text": "Vivi menugaskan tiket: \"Review artikel coconut sugar mesh size \"",
+      "time": "02:35 PM",
+      "date": "2026-10-27",
+      "read": false,
       "targetTab": "tickets",
-      "targetTicketId": "10757996-4731-43f4-9e4d-f4b2a9071425",
+      "targetTicketId": "10757996-4731-43f4-9e4d-f4b2a9071425"
+    },
+    {
+      "id": "notif-1793159662938-hxiav",
+      "userId": "c0000000-0000-4000-8000-000000000001",
+      "userEmail": "cahaya@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-109 [Medium]",
+      "text": "Tajdidan Rizy menugaskan tiket: \"Testing\"",
+      "time": "10:54 AM",
+      "date": "2026-10-28",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "c92e3a32-e6cf-4ce8-b185-a72e2de3c49a",
       "readBy": [
-        "43ca5695-9e88-4b5f-8d9d-476b6641bb10"
+        "c0000000-0000-4000-8000-000000000001"
       ]
     },
     {
-      "id": "notif-1793155187780-hd0qv",
+      "id": "notif-1793159662910-hvf68",
+      "userId": "c0000000-0000-4000-8000-000000000001",
+      "userEmail": "cahaya@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-109 [Medium]",
+      "text": "Tajdidan Rizy menugaskan tiket: \"Testing\"",
+      "time": "10:54 AM",
+      "date": "2026-10-28",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "c92e3a32-e6cf-4ce8-b185-a72e2de3c49a",
+      "readBy": [
+        "c0000000-0000-4000-8000-000000000001"
+      ]
+    },
+    {
+      "id": "notif-1792996948707-9z5pe",
       "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
       "userEmail": "ukan@javeloterralestari.com",
-      "title": "🔔 Reminder dari Cahaya",
-      "text": "Pengingat untuk JTL-2026-105: Pembuatan Konten Tanggal 28",
-      "time": "09:39 AM",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-106 [Normal]",
+      "text": "Cahaya menugaskan tiket: \"Pembuatan Konten Tanggal 30\"",
+      "time": "01:42 PM",
+      "date": "2026-10-26",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "0448122c-093a-460d-936b-fa0822587383"
+    },
+    {
+      "id": "notif-1792996898725-i95pf",
+      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
+      "userEmail": "ukan@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-105 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Pembuatan Konten Tanggal 28\"",
+      "time": "01:41 PM",
+      "date": "2026-10-26",
       "read": false,
       "targetTab": "tickets",
       "targetTicketId": "0803f1c5-8a88-4c91-bdbe-a02bb9190d0e"
+    },
+    {
+      "id": "notif-1792990536389-vi57d",
+      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
+      "userEmail": "vivi@javeloterralestari.com",
+      "title": "💬 Komentar Tiket: JTL-2026-103",
+      "text": "Cahaya: \"*from image 0450\"",
+      "time": "11:55 AM",
+      "date": "2026-10-26",
+      "read": true,
+      "targetTab": "tickets",
+      "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb"
+    },
+    {
+      "id": "notif-1792990492773-xgqm1",
+      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
+      "userEmail": "vivi@javeloterralestari.com",
+      "title": "💬 Komentar Tiket: JTL-2026-103",
+      "text": "Cahaya: \"https://drive.google.com/drive/folders/1jhCHzEGuxLR3vj1iJsiElikzjjwD4Uay?usp=sharing\"",
+      "time": "11:54 AM",
+      "date": "2026-10-26",
+      "read": true,
+      "targetTab": "tickets",
+      "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb"
+    },
+    {
+      "id": "notif-1792990358641-pfweh",
+      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
+      "userEmail": "vivi@javeloterralestari.com",
+      "title": "💬 Komentar Tiket: JTL-2026-103",
+      "text": "Cahaya: \"Dalam LOI tersebut salah satu dari perusahaan Libya menyatakan surat ketertarikan untuk bekerja sama hubungan bisnis  dengan Javelo Terra Lestari untuk produk Kokoa yang under Javeco dan kemungkinan juga potensial produk gula kelapa, ketertarikan khusus yaitu karena kita direct manufaktur sehingga bisa mendapatkan kualitas yang bagus dan mendapatkan harga yang kompotitif\"",
+      "time": "11:52 AM",
+      "date": "2026-10-26",
+      "read": true,
+      "targetTab": "tickets",
+      "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb"
+    },
+    {
+      "id": "notif-1792987585182-lfzem",
+      "userId": "c0000000-0000-4000-8000-000000000001",
+      "userEmail": "cahaya@javeloterralestari.com",
+      "title": "💬 Komentar Tiket: JTL-2026-104",
+      "text": "Juni Nanda Prasetyo: \"Dikirim kemana mas?\"",
+      "time": "11.06",
+      "date": "2026-10-26",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "120522f8-5c72-440c-be53-1d9ced4e5687",
+      "readBy": [
+        "c0000000-0000-4000-8000-000000000001"
+      ]
+    },
+    {
+      "id": "notif-1792987205790-9uhtm",
+      "userId": "2c69959a-30da-4d40-be33-cbacabf9525a",
+      "userEmail": "juni@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-104 [Normal]",
+      "text": "Cahaya menugaskan tiket: \"Pembuatan & Pengiriman Slip Gaji\"",
+      "time": "11:00 AM",
+      "date": "2026-10-26",
+      "read": true,
+      "targetTab": "tickets",
+      "targetTicketId": "120522f8-5c72-440c-be53-1d9ced4e5687"
+    },
+    {
+      "id": "notif-1792979606021-uop18",
+      "userId": "c0000000-0000-4000-8000-000000000001",
+      "userEmail": "cahaya@javeloterralestari.com",
+      "title": "💬 Komentar Tiket: JTL-2026-103",
+      "text": "Vivi: \"oke mas aku butuh beberapa tambahan info: isi kesepakatan in general, produknya apa, nama perusahaan dari libya, foto dokumentasi, adakah alasan khusus kenapa mereka memutuskan kerjasama dengan javelo\"",
+      "time": "08:53 AM",
+      "date": "2026-10-26",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb",
+      "readBy": [
+        "c0000000-0000-4000-8000-000000000001"
+      ]
+    },
+    {
+      "id": "notif-1792845132508-8vheq",
+      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
+      "userEmail": "ukan@javeloterralestari.com",
+      "title": "💬 Komentar Tiket: JTL-2026-101",
+      "text": "Cahaya: \"Test comment\"",
+      "time": "07:32 PM",
+      "date": "2026-10-24",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "58b3d6b0-8872-461a-9660-170115595d93"
+    },
+    {
+      "id": "notif-1792844962103-lgu1d",
+      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
+      "userEmail": "vivi@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-103 [Normal]",
+      "text": "Cahaya menugaskan tiket: \"Pembuatan Artikel LOI with Libyan's Company\"",
+      "time": "07:29 PM",
+      "date": "2026-10-24",
+      "read": true,
+      "targetTab": "tickets",
+      "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb"
+    },
+    {
+      "id": "notif-1792844495150-cnr9a",
+      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
+      "userEmail": "ukan@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-102 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Membuat moodboard / Brand guideline Javeco\"",
+      "time": "07:21 PM",
+      "date": "2026-10-24",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "26f0095d-74a5-4114-af16-d7665545608a"
+    },
+    {
+      "id": "notif-1792844372370-pwg3x",
+      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
+      "userEmail": "ukan@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-101 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Membuat moodboard / brand guideline Javelo\"",
+      "time": "07:19 PM",
+      "date": "2026-10-24",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "58b3d6b0-8872-461a-9660-170115595d93"
+    },
+    {
+      "id": "notif-1792844310598-xnriq",
+      "userId": "c0000000-0000-4000-8000-000000000001",
+      "userEmail": "cahaya@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-101 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"tes\"",
+      "time": "07:18 PM",
+      "date": "2026-10-24",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "447d847a-c7d3-478e-8902-615ea6427fef",
+      "readBy": [
+        "c0000000-0000-4000-8000-000000000001"
+      ]
+    },
+    {
+      "id": "notif-1792844269099-7t9hu",
+      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
+      "userEmail": "ukan@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-101 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Moodboard / Brand Guideline Javelo\"",
+      "time": "07:17 PM",
+      "date": "2026-10-24",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "703c6e88-6d3b-4801-944e-2167e6bf6379"
+    },
+    {
+      "id": "notif-1793159417076-ke7ae",
+      "userId": "c0000000-0000-4000-8000-000000000001",
+      "userEmail": "cahaya@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-107 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Test Ticket\"",
+      "time": "10:50 AM",
+      "date": "2026-10-28",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "ba0cd18c-ceff-45ac-8434-365150cff2e4",
+      "readBy": [
+        "c0000000-0000-4000-8000-000000000001"
+      ]
+    },
+    {
+      "id": "notif-1793159642744-9zpcw",
+      "userId": "2789cc9d-7bd0-48ac-ab16-a8d03ea1bd69",
+      "userEmail": "didan@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-108 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Test\"",
+      "time": "10:54 AM",
+      "date": "2026-10-28",
+      "read": true,
+      "targetTab": "tickets",
+      "targetTicketId": "0639c95a-cb1a-461a-8e55-b4294113e283",
+      "readBy": [
+        "2789cc9d-7bd0-48ac-ab16-a8d03ea1bd69"
+      ]
+    },
+    {
+      "id": "notif-1793263553860-xvmqb",
+      "userId": "c0000000-0000-4000-8000-000000000001",
+      "userEmail": "cahaya@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-113 [Medium]",
+      "text": "Vivi menugaskan tiket: \"review artikel coconut sugar vs brown sugar \"",
+      "time": "03:45 PM",
+      "date": "2026-10-29",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "0afec856-d512-472d-a350-7321f4a2f1b0"
+    },
+    {
+      "id": "notif-1793349657266-5gmu6",
+      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
+      "userEmail": "vivi@javeloterralestari.com",
+      "title": "💬 Komentar Tiket: JTL-2026-109",
+      "text": "Cahaya: \"Good to go VI!\"",
+      "time": "03:40 PM",
+      "date": "2026-10-30",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "10757996-4731-43f4-9e4d-f4b2a9071425"
     }
   ],
   "chatMessages": [
