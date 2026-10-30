@@ -58,8 +58,8 @@
       "mode": "Full WFH",
       "department": "Marketing",
       "avatar": "data:image/jpeg;base64,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",
-      "status": "Online",
-      "checkedIn": true,
+      "status": "Offline",
+      "checkedIn": false,
       "checkInTime": "08:10 AM",
       "phone": "6288973787498"
     },
@@ -238,7 +238,7 @@
       "code": "JTL-2026-101",
       "subject": "Membuat moodboard / brand guideline Javelo",
       "details": "Buatbrand guideline untuk penggunaan aktivitas marketing Javelo",
-      "status": "Done",
+      "status": "Pending Review",
       "priority": "Medium",
       "assignedTo": "f241d692-875f-4bda-a1ee-a356751182a5",
       "assignedBy": "c0000000-0000-4000-8000-000000000001",
@@ -279,7 +279,7 @@
       "code": "JTL-2026-108",
       "subject": "Test",
       "details": "Test ticket",
-      "status": "Done",
+      "status": "To do",
       "priority": "Medium",
       "assignedTo": "2789cc9d-7bd0-48ac-ab16-a8d03ea1bd69",
       "assignedBy": "c0000000-0000-4000-8000-000000000001",
@@ -361,14 +361,7 @@
       ],
       "deadline": "2026-10-27",
       "mentionedUsers": [],
-      "comments": [
-        {
-          "id": "c-1793349657239",
-          "author": "Cahaya",
-          "text": "Good to go VI!",
-          "time": "03:40 PM"
-        }
-      ]
+      "comments": []
     },
     {
       "id": "0afec856-d512-472d-a350-7321f4a2f1b0",
@@ -384,20 +377,7 @@
       ],
       "deadline": "2026-10-30",
       "mentionedUsers": [],
-      "comments": [
-        {
-          "id": "c-1793350640365",
-          "author": "Cahaya",
-          "text": "Reviewed, kindly check i putted a couple comments on it",
-          "time": "03:57 PM"
-        },
-        {
-          "id": "c-1793350642107",
-          "author": "Cahaya",
-          "text": "Thank's",
-          "time": "03:57 PM"
-        }
-      ]
+      "comments": []
     }
   ],
   "notifications": [
@@ -416,11 +396,11 @@
       "targetDivision": "All"
     },
     {
-      "id": "notif-1793350642108-2jtfc",
+      "id": "notif-1793350640365-r3hg3",
       "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
       "userEmail": "vivi@javeloterralestari.com",
       "title": "💬 Komentar Tiket: JTL-2026-113",
-      "text": "Cahaya: \"Thank's\"",
+      "text": "Cahaya: \"Reviewed, kindly check i putted a couple comments on it\"",
       "time": "03:57 PM",
       "date": "2026-10-30",
       "read": true,
@@ -431,24 +411,13 @@
       ]
     },
     {
-      "id": "notif-1793155187780-hd0qv",
-      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
-      "userEmail": "ukan@javeloterralestari.com",
-      "title": "🔔 Reminder dari Cahaya",
-      "text": "Pengingat untuk JTL-2026-105: Pembuatan Konten Tanggal 28",
-      "time": "09:39 AM",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "0803f1c5-8a88-4c91-bdbe-a02bb9190d0e"
-    },
-    {
-      "id": "notif-1793154927105-aznng",
+      "id": "notif-1793349657266-5gmu6",
       "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
       "userEmail": "vivi@javeloterralestari.com",
       "title": "💬 Komentar Tiket: JTL-2026-109",
-      "text": "Cahaya: \"Ada satu komen yang saya drop di google docs ya\"",
-      "time": "09:35 AM",
-      "date": "2026-10-28",
+      "text": "Cahaya: \"Good to go VI!\"",
+      "time": "03:40 PM",
+      "date": "2026-10-30",
       "read": true,
       "targetTab": "tickets",
       "targetTicketId": "10757996-4731-43f4-9e4d-f4b2a9071425",
@@ -457,13 +426,106 @@
       ]
     },
     {
-      "id": "notif-1793082890331-3xlkv",
+      "id": "notif-1793263553860-xvmqb",
+      "userId": "c0000000-0000-4000-8000-000000000001",
+      "userEmail": "cahaya@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-113 [Medium]",
+      "text": "Vivi menugaskan tiket: \"review artikel coconut sugar vs brown sugar \"",
+      "time": "03:45 PM",
+      "date": "2026-10-29",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "0afec856-d512-472d-a350-7321f4a2f1b0"
+    },
+    {
+      "id": "notif-1793159642744-9zpcw",
+      "userId": "2789cc9d-7bd0-48ac-ab16-a8d03ea1bd69",
+      "userEmail": "didan@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-108 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Test\"",
+      "time": "10:54 AM",
+      "date": "2026-10-28",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "0639c95a-cb1a-461a-8e55-b4294113e283",
+      "readBy": [
+        "2789cc9d-7bd0-48ac-ab16-a8d03ea1bd69"
+      ]
+    },
+    {
+      "id": "notif-1793159417076-ke7ae",
+      "userId": "c0000000-0000-4000-8000-000000000001",
+      "userEmail": "cahaya@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-107 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Test Ticket\"",
+      "time": "10:50 AM",
+      "date": "2026-10-28",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "ba0cd18c-ceff-45ac-8434-365150cff2e4",
+      "readBy": [
+        "c0000000-0000-4000-8000-000000000001"
+      ]
+    },
+    {
+      "id": "notif-1792844269099-7t9hu",
+      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
+      "userEmail": "ukan@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-101 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Moodboard / Brand Guideline Javelo\"",
+      "time": "07:17 PM",
+      "date": "2026-10-24",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "703c6e88-6d3b-4801-944e-2167e6bf6379"
+    },
+    {
+      "id": "notif-1792844310598-xnriq",
+      "userId": "c0000000-0000-4000-8000-000000000001",
+      "userEmail": "cahaya@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-101 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"tes\"",
+      "time": "07:18 PM",
+      "date": "2026-10-24",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "447d847a-c7d3-478e-8902-615ea6427fef",
+      "readBy": [
+        "c0000000-0000-4000-8000-000000000001"
+      ]
+    },
+    {
+      "id": "notif-1792844372370-pwg3x",
+      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
+      "userEmail": "ukan@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-101 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Membuat moodboard / brand guideline Javelo\"",
+      "time": "07:19 PM",
+      "date": "2026-10-24",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "58b3d6b0-8872-461a-9660-170115595d93"
+    },
+    {
+      "id": "notif-1792844495150-cnr9a",
+      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
+      "userEmail": "ukan@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-102 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Membuat moodboard / Brand guideline Javeco\"",
+      "time": "07:21 PM",
+      "date": "2026-10-24",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "26f0095d-74a5-4114-af16-d7665545608a"
+    },
+    {
+      "id": "notif-1792844962103-lgu1d",
       "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
       "userEmail": "vivi@javeloterralestari.com",
-      "title": "💬 Komentar Tiket: JTL-2026-103",
-      "text": "Cahaya: \"good to go ya\"",
-      "time": "13:34",
-      "date": "2026-10-27",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-103 [Normal]",
+      "text": "Cahaya menugaskan tiket: \"Pembuatan Artikel LOI with Libyan's Company\"",
+      "time": "07:29 PM",
+      "date": "2026-10-24",
       "read": true,
       "targetTab": "tickets",
       "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb",
@@ -472,72 +534,24 @@
       ]
     },
     {
-      "id": "notif-1793002294907-s7tyn",
-      "userId": "be97b7f0-0080-48e8-88bf-8547b5c534fb",
-      "userEmail": "didan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-108 [Medium]",
-      "text": "Mustolih menugaskan tiket: \"Didan Kloter tolong ovenkan gula 1 ton\"",
-      "time": "15.11",
-      "date": "2026-10-26",
-      "read": true,
-      "targetTab": "tickets",
-      "targetTicketId": "d5e3de0d-05bf-42bf-b218-998cd53d8b9c",
-      "readBy": [
-        "be97b7f0-0080-48e8-88bf-8547b5c534fb"
-      ]
-    },
-    {
-      "id": "notif-1793001833962-kupcj",
-      "userId": "be97b7f0-0080-48e8-88bf-8547b5c534fb",
-      "userEmail": "didan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-107 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Persiapan Sample Untuk India\"",
-      "time": "03:03 PM",
-      "date": "2026-10-26",
-      "read": true,
-      "targetTab": "tickets",
-      "targetTicketId": "d08f8459-2462-4ada-a9df-3194b2eaf589",
-      "readBy": [
-        "be97b7f0-0080-48e8-88bf-8547b5c534fb"
-      ]
-    },
-    {
-      "id": "notif-1793001833962-ws4tu",
-      "userId": "9191bd42-f233-4cbc-a299-919f667c54f8",
-      "userEmail": "mustolih@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-107 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Persiapan Sample Untuk India\"",
-      "time": "03:03 PM",
-      "date": "2026-10-26",
+      "id": "notif-1792845132508-8vheq",
+      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
+      "userEmail": "ukan@javeloterralestari.com",
+      "title": "💬 Komentar Tiket: JTL-2026-101",
+      "text": "Cahaya: \"Test comment\"",
+      "time": "07:32 PM",
+      "date": "2026-10-24",
       "read": false,
       "targetTab": "tickets",
-      "targetTicketId": "d08f8459-2462-4ada-a9df-3194b2eaf589",
-      "readBy": [
-        "9191bd42-f233-4cbc-a299-919f667c54f8"
-      ]
+      "targetTicketId": "58b3d6b0-8872-461a-9660-170115595d93"
     },
     {
-      "id": "notif-1793002426298-lfsjk",
-      "userId": "be97b7f0-0080-48e8-88bf-8547b5c534fb",
-      "userEmail": "didan@javeloterralestari.com",
-      "title": "💬 Komentar Tiket: JTL-2026-108",
-      "text": "Juni Nanda Prasetyo: \"Garap dan\"",
-      "time": "15.13",
-      "date": "2026-10-26",
-      "read": true,
-      "targetTab": "tickets",
-      "targetTicketId": "d5e3de0d-05bf-42bf-b218-998cd53d8b9c",
-      "readBy": [
-        "be97b7f0-0080-48e8-88bf-8547b5c534fb"
-      ]
-    },
-    {
-      "id": "notif-1793002813445-qze4d",
+      "id": "notif-1792979606021-uop18",
       "userId": "c0000000-0000-4000-8000-000000000001",
       "userEmail": "cahaya@javeloterralestari.com",
       "title": "💬 Komentar Tiket: JTL-2026-103",
-      "text": "Vivi: \"minta tolong untuk review ya mas https://docs.google.com/document/d/17cISHb6wvAnXQi-0CKpOeRwCcpTqNmcvwd9HXlMtFX0/edit?tab=t.0\"",
-      "time": "03:20 PM",
+      "text": "Vivi: \"oke mas aku butuh beberapa tambahan info: isi kesepakatan in general, produknya apa, nama perusahaan dari libya, foto dokumentasi, adakah alasan khusus kenapa mereka memutuskan kerjasama dengan javelo\"",
+      "time": "08:53 AM",
       "date": "2026-10-26",
       "read": false,
       "targetTab": "tickets",
@@ -547,78 +561,39 @@
       ]
     },
     {
-      "id": "notif-1793086521719-tnqd3",
-      "userId": "c0000000-0000-4000-8000-000000000001",
-      "userEmail": "cahaya@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-109 [High]",
-      "text": "Vivi menugaskan tiket: \"Review artikel coconut sugar mesh size \"",
-      "time": "02:35 PM",
-      "date": "2026-10-27",
-      "read": false,
+      "id": "notif-1792987205790-9uhtm",
+      "userId": "2c69959a-30da-4d40-be33-cbacabf9525a",
+      "userEmail": "juni@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-104 [Normal]",
+      "text": "Cahaya menugaskan tiket: \"Pembuatan & Pengiriman Slip Gaji\"",
+      "time": "11:00 AM",
+      "date": "2026-10-26",
+      "read": true,
       "targetTab": "tickets",
-      "targetTicketId": "10757996-4731-43f4-9e4d-f4b2a9071425"
+      "targetTicketId": "120522f8-5c72-440c-be53-1d9ced4e5687"
     },
     {
-      "id": "notif-1793159662938-hxiav",
+      "id": "notif-1792987585182-lfzem",
       "userId": "c0000000-0000-4000-8000-000000000001",
       "userEmail": "cahaya@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-109 [Medium]",
-      "text": "Tajdidan Rizy menugaskan tiket: \"Testing\"",
-      "time": "10:54 AM",
-      "date": "2026-10-28",
+      "title": "💬 Komentar Tiket: JTL-2026-104",
+      "text": "Juni Nanda Prasetyo: \"Dikirim kemana mas?\"",
+      "time": "11.06",
+      "date": "2026-10-26",
       "read": false,
       "targetTab": "tickets",
-      "targetTicketId": "c92e3a32-e6cf-4ce8-b185-a72e2de3c49a",
+      "targetTicketId": "120522f8-5c72-440c-be53-1d9ced4e5687",
       "readBy": [
         "c0000000-0000-4000-8000-000000000001"
       ]
     },
     {
-      "id": "notif-1793159662910-hvf68",
-      "userId": "c0000000-0000-4000-8000-000000000001",
-      "userEmail": "cahaya@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-109 [Medium]",
-      "text": "Tajdidan Rizy menugaskan tiket: \"Testing\"",
-      "time": "10:54 AM",
-      "date": "2026-10-28",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "c92e3a32-e6cf-4ce8-b185-a72e2de3c49a",
-      "readBy": [
-        "c0000000-0000-4000-8000-000000000001"
-      ]
-    },
-    {
-      "id": "notif-1792996948707-9z5pe",
-      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
-      "userEmail": "ukan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-106 [Normal]",
-      "text": "Cahaya menugaskan tiket: \"Pembuatan Konten Tanggal 30\"",
-      "time": "01:42 PM",
-      "date": "2026-10-26",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "0448122c-093a-460d-936b-fa0822587383"
-    },
-    {
-      "id": "notif-1792996898725-i95pf",
-      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
-      "userEmail": "ukan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-105 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Pembuatan Konten Tanggal 28\"",
-      "time": "01:41 PM",
-      "date": "2026-10-26",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "0803f1c5-8a88-4c91-bdbe-a02bb9190d0e"
-    },
-    {
-      "id": "notif-1792990536389-vi57d",
+      "id": "notif-1792990358641-pfweh",
       "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
       "userEmail": "vivi@javeloterralestari.com",
       "title": "💬 Komentar Tiket: JTL-2026-103",
-      "text": "Cahaya: \"*from image 0450\"",
-      "time": "11:55 AM",
+      "text": "Cahaya: \"Dalam LOI tersebut salah satu dari perusahaan Libya menyatakan surat ketertarikan untuk bekerja sama hubungan bisnis  dengan Javelo Terra Lestari untuk produk Kokoa yang under Javeco dan kemungkinan juga potensial produk gula kelapa, ketertarikan khusus yaitu karena kita direct manufaktur sehingga bisa mendapatkan kualitas yang bagus dan mendapatkan harga yang kompotitif\"",
+      "time": "11:52 AM",
       "date": "2026-10-26",
       "read": true,
       "targetTab": "tickets",
@@ -643,12 +618,12 @@
       ]
     },
     {
-      "id": "notif-1792990358641-pfweh",
+      "id": "notif-1792990536389-vi57d",
       "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
       "userEmail": "vivi@javeloterralestari.com",
       "title": "💬 Komentar Tiket: JTL-2026-103",
-      "text": "Cahaya: \"Dalam LOI tersebut salah satu dari perusahaan Libya menyatakan surat ketertarikan untuk bekerja sama hubungan bisnis  dengan Javelo Terra Lestari untuk produk Kokoa yang under Javeco dan kemungkinan juga potensial produk gula kelapa, ketertarikan khusus yaitu karena kita direct manufaktur sehingga bisa mendapatkan kualitas yang bagus dan mendapatkan harga yang kompotitif\"",
-      "time": "11:52 AM",
+      "text": "Cahaya: \"*from image 0450\"",
+      "time": "11:55 AM",
       "date": "2026-10-26",
       "read": true,
       "targetTab": "tickets",
@@ -658,175 +633,169 @@
       ]
     },
     {
-      "id": "notif-1792987585182-lfzem",
-      "userId": "c0000000-0000-4000-8000-000000000001",
-      "userEmail": "cahaya@javeloterralestari.com",
-      "title": "💬 Komentar Tiket: JTL-2026-104",
-      "text": "Juni Nanda Prasetyo: \"Dikirim kemana mas?\"",
-      "time": "11.06",
+      "id": "notif-1792996898725-i95pf",
+      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
+      "userEmail": "ukan@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-105 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Pembuatan Konten Tanggal 28\"",
+      "time": "01:41 PM",
       "date": "2026-10-26",
       "read": false,
       "targetTab": "tickets",
-      "targetTicketId": "120522f8-5c72-440c-be53-1d9ced4e5687",
-      "readBy": [
-        "c0000000-0000-4000-8000-000000000001"
-      ]
+      "targetTicketId": "0803f1c5-8a88-4c91-bdbe-a02bb9190d0e"
     },
     {
-      "id": "notif-1792987205790-9uhtm",
-      "userId": "2c69959a-30da-4d40-be33-cbacabf9525a",
-      "userEmail": "juni@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-104 [Normal]",
-      "text": "Cahaya menugaskan tiket: \"Pembuatan & Pengiriman Slip Gaji\"",
-      "time": "11:00 AM",
-      "date": "2026-10-26",
-      "read": true,
-      "targetTab": "tickets",
-      "targetTicketId": "120522f8-5c72-440c-be53-1d9ced4e5687"
-    },
-    {
-      "id": "notif-1792979606021-uop18",
-      "userId": "c0000000-0000-4000-8000-000000000001",
-      "userEmail": "cahaya@javeloterralestari.com",
-      "title": "💬 Komentar Tiket: JTL-2026-103",
-      "text": "Vivi: \"oke mas aku butuh beberapa tambahan info: isi kesepakatan in general, produknya apa, nama perusahaan dari libya, foto dokumentasi, adakah alasan khusus kenapa mereka memutuskan kerjasama dengan javelo\"",
-      "time": "08:53 AM",
+      "id": "notif-1792996948707-9z5pe",
+      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
+      "userEmail": "ukan@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-106 [Normal]",
+      "text": "Cahaya menugaskan tiket: \"Pembuatan Konten Tanggal 30\"",
+      "time": "01:42 PM",
       "date": "2026-10-26",
       "read": false,
       "targetTab": "tickets",
-      "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb",
-      "readBy": [
-        "c0000000-0000-4000-8000-000000000001"
-      ]
+      "targetTicketId": "0448122c-093a-460d-936b-fa0822587383"
     },
     {
-      "id": "notif-1792845132508-8vheq",
-      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
-      "userEmail": "ukan@javeloterralestari.com",
-      "title": "💬 Komentar Tiket: JTL-2026-101",
-      "text": "Cahaya: \"Test comment\"",
-      "time": "07:32 PM",
-      "date": "2026-10-24",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "58b3d6b0-8872-461a-9660-170115595d93"
-    },
-    {
-      "id": "notif-1792844962103-lgu1d",
-      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
-      "userEmail": "vivi@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-103 [Normal]",
-      "text": "Cahaya menugaskan tiket: \"Pembuatan Artikel LOI with Libyan's Company\"",
-      "time": "07:29 PM",
-      "date": "2026-10-24",
-      "read": true,
-      "targetTab": "tickets",
-      "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb",
-      "readBy": [
-        "43ca5695-9e88-4b5f-8d9d-476b6641bb10"
-      ]
-    },
-    {
-      "id": "notif-1792844495150-cnr9a",
-      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
-      "userEmail": "ukan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-102 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Membuat moodboard / Brand guideline Javeco\"",
-      "time": "07:21 PM",
-      "date": "2026-10-24",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "26f0095d-74a5-4114-af16-d7665545608a"
-    },
-    {
-      "id": "notif-1792844372370-pwg3x",
-      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
-      "userEmail": "ukan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-101 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Membuat moodboard / brand guideline Javelo\"",
-      "time": "07:19 PM",
-      "date": "2026-10-24",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "58b3d6b0-8872-461a-9660-170115595d93"
-    },
-    {
-      "id": "notif-1792844310598-xnriq",
+      "id": "notif-1793159662910-hvf68",
       "userId": "c0000000-0000-4000-8000-000000000001",
       "userEmail": "cahaya@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-101 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"tes\"",
-      "time": "07:18 PM",
-      "date": "2026-10-24",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "447d847a-c7d3-478e-8902-615ea6427fef",
-      "readBy": [
-        "c0000000-0000-4000-8000-000000000001"
-      ]
-    },
-    {
-      "id": "notif-1792844269099-7t9hu",
-      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
-      "userEmail": "ukan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-101 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Moodboard / Brand Guideline Javelo\"",
-      "time": "07:17 PM",
-      "date": "2026-10-24",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "703c6e88-6d3b-4801-944e-2167e6bf6379"
-    },
-    {
-      "id": "notif-1793159417076-ke7ae",
-      "userId": "c0000000-0000-4000-8000-000000000001",
-      "userEmail": "cahaya@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-107 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Test Ticket\"",
-      "time": "10:50 AM",
-      "date": "2026-10-28",
-      "read": false,
-      "targetTab": "tickets",
-      "targetTicketId": "ba0cd18c-ceff-45ac-8434-365150cff2e4",
-      "readBy": [
-        "c0000000-0000-4000-8000-000000000001"
-      ]
-    },
-    {
-      "id": "notif-1793159642744-9zpcw",
-      "userId": "2789cc9d-7bd0-48ac-ab16-a8d03ea1bd69",
-      "userEmail": "didan@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-108 [Medium]",
-      "text": "Cahaya menugaskan tiket: \"Test\"",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-109 [Medium]",
+      "text": "Tajdidan Rizy menugaskan tiket: \"Testing\"",
       "time": "10:54 AM",
       "date": "2026-10-28",
       "read": false,
       "targetTab": "tickets",
-      "targetTicketId": "0639c95a-cb1a-461a-8e55-b4294113e283",
+      "targetTicketId": "c92e3a32-e6cf-4ce8-b185-a72e2de3c49a",
       "readBy": [
-        "2789cc9d-7bd0-48ac-ab16-a8d03ea1bd69"
+        "c0000000-0000-4000-8000-000000000001"
       ]
     },
     {
-      "id": "notif-1793263553860-xvmqb",
+      "id": "notif-1793159662938-hxiav",
       "userId": "c0000000-0000-4000-8000-000000000001",
       "userEmail": "cahaya@javeloterralestari.com",
-      "title": "🎫 Tiket Tugas Baru: JTL-2026-113 [Medium]",
-      "text": "Vivi menugaskan tiket: \"review artikel coconut sugar vs brown sugar \"",
-      "time": "03:45 PM",
-      "date": "2026-10-29",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-109 [Medium]",
+      "text": "Tajdidan Rizy menugaskan tiket: \"Testing\"",
+      "time": "10:54 AM",
+      "date": "2026-10-28",
       "read": false,
       "targetTab": "tickets",
-      "targetTicketId": "0afec856-d512-472d-a350-7321f4a2f1b0"
+      "targetTicketId": "c92e3a32-e6cf-4ce8-b185-a72e2de3c49a",
+      "readBy": [
+        "c0000000-0000-4000-8000-000000000001"
+      ]
     },
     {
-      "id": "notif-1793349657266-5gmu6",
+      "id": "notif-1793086521719-tnqd3",
+      "userId": "c0000000-0000-4000-8000-000000000001",
+      "userEmail": "cahaya@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-109 [High]",
+      "text": "Vivi menugaskan tiket: \"Review artikel coconut sugar mesh size \"",
+      "time": "02:35 PM",
+      "date": "2026-10-27",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "10757996-4731-43f4-9e4d-f4b2a9071425"
+    },
+    {
+      "id": "notif-1793002813445-qze4d",
+      "userId": "c0000000-0000-4000-8000-000000000001",
+      "userEmail": "cahaya@javeloterralestari.com",
+      "title": "💬 Komentar Tiket: JTL-2026-103",
+      "text": "Vivi: \"minta tolong untuk review ya mas https://docs.google.com/document/d/17cISHb6wvAnXQi-0CKpOeRwCcpTqNmcvwd9HXlMtFX0/edit?tab=t.0\"",
+      "time": "03:20 PM",
+      "date": "2026-10-26",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb",
+      "readBy": [
+        "c0000000-0000-4000-8000-000000000001"
+      ]
+    },
+    {
+      "id": "notif-1793002426298-lfsjk",
+      "userId": "be97b7f0-0080-48e8-88bf-8547b5c534fb",
+      "userEmail": "didan@javeloterralestari.com",
+      "title": "💬 Komentar Tiket: JTL-2026-108",
+      "text": "Juni Nanda Prasetyo: \"Garap dan\"",
+      "time": "15.13",
+      "date": "2026-10-26",
+      "read": true,
+      "targetTab": "tickets",
+      "targetTicketId": "d5e3de0d-05bf-42bf-b218-998cd53d8b9c",
+      "readBy": [
+        "be97b7f0-0080-48e8-88bf-8547b5c534fb"
+      ]
+    },
+    {
+      "id": "notif-1793001833962-ws4tu",
+      "userId": "9191bd42-f233-4cbc-a299-919f667c54f8",
+      "userEmail": "mustolih@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-107 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Persiapan Sample Untuk India\"",
+      "time": "03:03 PM",
+      "date": "2026-10-26",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "d08f8459-2462-4ada-a9df-3194b2eaf589",
+      "readBy": [
+        "9191bd42-f233-4cbc-a299-919f667c54f8"
+      ]
+    },
+    {
+      "id": "notif-1793001833962-kupcj",
+      "userId": "be97b7f0-0080-48e8-88bf-8547b5c534fb",
+      "userEmail": "didan@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-107 [Medium]",
+      "text": "Cahaya menugaskan tiket: \"Persiapan Sample Untuk India\"",
+      "time": "03:03 PM",
+      "date": "2026-10-26",
+      "read": true,
+      "targetTab": "tickets",
+      "targetTicketId": "d08f8459-2462-4ada-a9df-3194b2eaf589",
+      "readBy": [
+        "be97b7f0-0080-48e8-88bf-8547b5c534fb"
+      ]
+    },
+    {
+      "id": "notif-1793002294907-s7tyn",
+      "userId": "be97b7f0-0080-48e8-88bf-8547b5c534fb",
+      "userEmail": "didan@javeloterralestari.com",
+      "title": "🎫 Tiket Tugas Baru: JTL-2026-108 [Medium]",
+      "text": "Mustolih menugaskan tiket: \"Didan Kloter tolong ovenkan gula 1 ton\"",
+      "time": "15.11",
+      "date": "2026-10-26",
+      "read": true,
+      "targetTab": "tickets",
+      "targetTicketId": "d5e3de0d-05bf-42bf-b218-998cd53d8b9c",
+      "readBy": [
+        "be97b7f0-0080-48e8-88bf-8547b5c534fb"
+      ]
+    },
+    {
+      "id": "notif-1793082890331-3xlkv",
+      "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
+      "userEmail": "vivi@javeloterralestari.com",
+      "title": "💬 Komentar Tiket: JTL-2026-103",
+      "text": "Cahaya: \"good to go ya\"",
+      "time": "13:34",
+      "date": "2026-10-27",
+      "read": true,
+      "targetTab": "tickets",
+      "targetTicketId": "d0b9af21-a3a0-4fce-ac31-02429436fabb",
+      "readBy": [
+        "43ca5695-9e88-4b5f-8d9d-476b6641bb10"
+      ]
+    },
+    {
+      "id": "notif-1793154927105-aznng",
       "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
       "userEmail": "vivi@javeloterralestari.com",
       "title": "💬 Komentar Tiket: JTL-2026-109",
-      "text": "Cahaya: \"Good to go VI!\"",
-      "time": "03:40 PM",
-      "date": "2026-10-30",
+      "text": "Cahaya: \"Ada satu komen yang saya drop di google docs ya\"",
+      "time": "09:35 AM",
+      "date": "2026-10-28",
       "read": true,
       "targetTab": "tickets",
       "targetTicketId": "10757996-4731-43f4-9e4d-f4b2a9071425",
@@ -835,11 +804,22 @@
       ]
     },
     {
-      "id": "notif-1793350640365-r3hg3",
+      "id": "notif-1793155187780-hd0qv",
+      "userId": "f241d692-875f-4bda-a1ee-a356751182a5",
+      "userEmail": "ukan@javeloterralestari.com",
+      "title": "🔔 Reminder dari Cahaya",
+      "text": "Pengingat untuk JTL-2026-105: Pembuatan Konten Tanggal 28",
+      "time": "09:39 AM",
+      "read": false,
+      "targetTab": "tickets",
+      "targetTicketId": "0803f1c5-8a88-4c91-bdbe-a02bb9190d0e"
+    },
+    {
+      "id": "notif-1793350642108-2jtfc",
       "userId": "43ca5695-9e88-4b5f-8d9d-476b6641bb10",
       "userEmail": "vivi@javeloterralestari.com",
       "title": "💬 Komentar Tiket: JTL-2026-113",
-      "text": "Cahaya: \"Reviewed, kindly check i putted a couple comments on it\"",
+      "text": "Cahaya: \"Thank's\"",
       "time": "03:57 PM",
       "date": "2026-10-30",
       "read": true,
