@@ -549,12 +549,19 @@ let pendingCloudPayload = null;
 function mergePayloads(p1, p2) {
   if (!p1) return p2;
   if (!p2) return p1;
+  const mergedDeletedTicketIds = Array.from(new Set([
+    ...(p1.deletedTicketIds || []),
+    ...(p2.deletedTicketIds || []),
+    ...(p1.deletedTicketId ? [p1.deletedTicketId] : []),
+    ...(p2.deletedTicketId ? [p2.deletedTicketId] : [])
+  ]));
   return {
     companyInfo: p2.companyInfo ? { ...(p1.companyInfo || {}), ...p2.companyInfo } : p1.companyInfo,
     users: p2.users || p1.users,
     deletedUserId: p2.deletedUserId || p1.deletedUserId,
     tickets: p2.tickets || p1.tickets,
     deletedTicketId: p2.deletedTicketId || p1.deletedTicketId,
+    deletedTicketIds: mergedDeletedTicketIds,
     notifications: p2.notifications || p1.notifications,
     chatMessages: p2.chatMessages || p1.chatMessages,
     chatGroups: p2.chatGroups || p1.chatGroups,
@@ -625,11 +632,16 @@ async function pushToCloudDatabase(payload) {
           // Union-merge chat messages so concurrent sends never drop messages
           const mergedChatMessages = unionMergeById(baseData.chatMessages || [], current.chatMessages || [], 'timestamp', false);
           
-          // Union-merge tickets so concurrent updates/creations never drop tickets
-          let mergedTickets = unionMergeById(baseData.tickets || [], current.tickets || []);
-          if (current.deletedTicketId) {
-            mergedTickets = mergedTickets.filter(t => t.id !== current.deletedTicketId);
-          }
+          // Track all deleted ticket IDs permanently
+          const allDeletedTicketIds = Array.from(new Set([
+            ...(baseData.deletedTicketIds || []),
+            ...(current.deletedTicketIds || []),
+            ...(current.deletedTicketId ? [current.deletedTicketId] : [])
+          ]));
+
+          // Union-merge tickets so concurrent updates/creations never drop tickets, while permanently excluding deleted tickets
+          let mergedTickets = unionMergeById(baseData.tickets || [], current.tickets || [])
+            .filter(t => t && t.id && !allDeletedTicketIds.includes(t.id));
 
           // Merge users safely preserving existing accounts
           let mergedUsers = unionMergeById(baseData.users || DEFAULT_ROSTER, current.users || []);
@@ -657,6 +669,7 @@ async function pushToCloudDatabase(payload) {
             companyInfo: mergedCompanyInfo,
             users: mergedUsers,
             tickets: mergedTickets,
+            deletedTicketIds: allDeletedTicketIds,
             notifications: mergedNotifications,
             chatMessages: mergedChatMessages,
             chatGroups: mergedChatGroups,
@@ -944,7 +957,19 @@ function App() {
   });
 
   const [schedules, setSchedules] = useState([]);
-  const [tickets, setTickets] = useState([]);
+  const [tickets, setTickets] = useState(() => {
+    try {
+      const saved = localStorage.getItem('javelo_tickets');
+      const deletedIds = JSON.parse(localStorage.getItem('javelo_deleted_tickets') || '[]');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.filter(t => t && t.id && !deletedIds.includes(t.id));
+        }
+      }
+      return [];
+    } catch(e) { return []; }
+  });
   const [anomalies, setAnomalies] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [customTasks, setCustomTasks] = useState([]);
@@ -1114,8 +1139,18 @@ function App() {
               }
             }
             if (Array.isArray(cloudData.tickets)) {
+              let localDeletedIds = [];
+              try { localDeletedIds = JSON.parse(localStorage.getItem('javelo_deleted_tickets') || '[]'); } catch(e){}
+              const activeDeletedSet = new Set([
+                ...(cloudData.deletedTicketIds || []),
+                ...(cloudData.companyInfo?.deletedTicketIds || []),
+                ...localDeletedIds
+              ]);
+              try { localStorage.setItem('javelo_deleted_tickets', JSON.stringify(Array.from(activeDeletedSet))); } catch(e){}
+
               setTickets(prev => {
-                const merged = unionMergeById(cloudData.tickets, prev);
+                const merged = unionMergeById(cloudData.tickets, prev)
+                  .filter(t => t && t.id && !activeDeletedSet.has(t.id));
                 if (JSON.stringify(prev) !== JSON.stringify(merged)) {
                   try { localStorage.setItem('javelo_tickets', JSON.stringify(merged)); } catch(e){}
                   return merged;
@@ -1285,7 +1320,10 @@ function App() {
                   }
                 }
                 if (Array.isArray(data.tickets)) {
-                  setTickets(prev => unionMergeById(prev, data.tickets));
+                  let localDeletedIds = [];
+                  try { localDeletedIds = JSON.parse(localStorage.getItem('javelo_deleted_tickets') || '[]'); } catch(e){}
+                  const activeDeletedSet = new Set([...(data.deletedTicketIds || []), ...localDeletedIds]);
+                  setTickets(prev => unionMergeById(prev, data.tickets).filter(t => t && t.id && !activeDeletedSet.has(t.id)));
                 }
                 if (Array.isArray(data.schedules)) {
                   setSchedules(prev => unionMergeById(prev, data.schedules));
@@ -1443,13 +1481,37 @@ function App() {
   };
 
   const handleDeleteTicket = (ticketId) => {
-    const updatedTickets = tickets.filter(t => t.id !== ticketId);
+    let localDeletedIds = [];
+    try {
+      localDeletedIds = JSON.parse(localStorage.getItem('javelo_deleted_tickets') || '[]');
+    } catch(e){}
+    if (!localDeletedIds.includes(ticketId)) {
+      localDeletedIds.push(ticketId);
+    }
+    try {
+      localStorage.setItem('javelo_deleted_tickets', JSON.stringify(localDeletedIds));
+    } catch(e){}
+
+    const updatedTickets = (tickets || []).filter(t => t.id !== ticketId);
     setTickets(updatedTickets);
+    try {
+      localStorage.setItem('javelo_tickets', JSON.stringify(updatedTickets));
+    } catch(e){}
+
     setEditingTicket(null);
     setCommentingTicket(null);
     setHistoryTicket(null);
-    syncCloudDB({ companyInfo, users, tickets: updatedTickets, schedules, customTasks });
-    setGeofenceMessage({ type: "error", text: "🗑 Ticket permanently removed by C-Level Admin." });
+
+    syncCloudDB({
+      companyInfo,
+      users,
+      tickets: updatedTickets,
+      deletedTicketId: ticketId,
+      deletedTicketIds: localDeletedIds,
+      schedules,
+      customTasks
+    });
+    setGeofenceMessage({ type: "error", text: "🗑 Tiket berhasil dihapus permanen." });
   };
 
   const handleFinishWizard = (newCompany, founderUser) => {
@@ -1578,6 +1640,24 @@ function App() {
     });
   };
 
+  const handleUpdateAnnouncements = (updatedList) => {
+    const updatedCompanyInfo = {
+      ...companyInfo,
+      announcements: updatedList
+    };
+    setCompanyInfo(updatedCompanyInfo);
+    syncCloudDB({
+      companyInfo: updatedCompanyInfo,
+      users,
+      tickets,
+      notifications,
+      chatMessages,
+      chatGroups,
+      schedules,
+      customTasks
+    });
+  };
+
   const handleUpdateDivisions = (updatedDivisions) => {
     const updatedCompany = {
       ...companyInfo,
@@ -1626,6 +1706,7 @@ function App() {
 
       const unacknowledged = announcements.find(ann => {
         if (!ann || !ann.id) return false;
+        if (ann.active === false || ann.status === 'inactive' || ann.popupMode === 'off') return false;
         if (seenIds.includes(ann.id)) return false;
         if (ann.targetDivision && ann.targetDivision !== 'All') {
           const userDept = (currentUser.department || (currentUser.role === 'admin' ? 'C-Level Executive' : '')).trim().toLowerCase();
@@ -2006,12 +2087,13 @@ function App() {
       }
     }),
 
-    showAnnouncementModal && e(BroadcastAnnouncementModal, {
+    showAnnouncementModal && e(AnnouncementManagerModal, {
       currentUser,
       users: users || [],
       companyInfo,
       onClose: () => setShowAnnouncementModal(false),
       onSendAnnouncement: handleSendAnnouncement,
+      onUpdateAnnouncements: handleUpdateAnnouncements,
       language,
       t
     }),
@@ -3828,8 +3910,12 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
                 e('h3', { className: 'font-bold text-slate-900 text-sm mt-1.5 hover:text-blue-600 transition-colors break-words' }, tkt.subject)
               ),
               e('div', { className: 'flex items-center gap-1.5 flex-shrink-0' },
-                isAdmin && e('button', {
-                  onClick: (ev) => { ev.stopPropagation(); onDeleteTicket(tkt.id); },
+                (isAdmin || tkt.assignedBy === currentUser?.id) && e('button', {
+                  onClick: (ev) => {
+                    ev.stopPropagation();
+                    if (confirm(`Hapus tiket ${tkt.code}?`)) onDeleteTicket(tkt.id);
+                  },
+                  title: 'Hapus Tiket',
                   className: 'p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-xs font-bold cursor-pointer transition'
                 }, e(IconTrash, { className: 'w-4 h-4' })),
                 e('button', {
@@ -3858,6 +3944,7 @@ function TicketBoard({ tickets, users, currentUser, companyInfo, onOpenCreateTic
               e('div', { className: 'flex items-center gap-2 flex-wrap' },
                 e('span', { className: 'text-slate-700 font-bold' }, `Assignee: ${assignee ? assignee.name : 'Unassigned'}`),
                 (assignee && currentUser && assignee.id === currentUser.id) && e('span', { className: 'bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold' }, `👤 ${t('assignedToYou', language)}`),
+                creator && e('span', { className: 'text-slate-400 text-[11px]' }, `• Dibuat: ${creator.id === currentUser?.id ? 'Anda' : creator.name}`),
                 e('button', {
                   onClick: (ev) => { ev.stopPropagation(); onOpenComments(tkt); },
                   className: 'px-2.5 py-1 bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-800 rounded-lg text-[10px] font-bold flex items-center gap-1 cursor-pointer'
@@ -4092,10 +4179,18 @@ function UpdateTicketModal({ ticket, users, tickets, currentUser, onClose, onDel
   const [proofLink, setProofLink] = useState(ticket.proofLink || "");
   const [notes, setNotes] = useState(ticket.notes || "");
 
-  const isAdmin = currentUser?.role === 'admin';
+  const creator = (users || []).find(u => u.id === ticket.assignedBy);
+  const assignee = (users || []).find(u => u.id === ticket.assignedTo);
+
+  const isCreator = ticket.assignedBy === currentUser?.id;
+  const isAssignee = ticket.assignedTo === currentUser?.id || (Array.isArray(ticket.mentionedUsers) && ticket.mentionedUsers.includes(currentUser?.id));
+  const isCLevel = currentUser?.role === 'admin';
+  const canApproveOrDelete = isCreator || isCLevel;
+  const isParticipant = isCreator || isAssignee || isCLevel;
 
   const handleWorkSubmission = (ev) => {
     ev.preventDefault();
+    if (!isAssignee && !canApproveOrDelete) return;
     onSaveTicket({
       ...ticket,
       subject,
@@ -4107,23 +4202,53 @@ function UpdateTicketModal({ ticket, users, tickets, currentUser, onClose, onDel
   };
 
   const handleApproveDone = () => {
+    if (!canApproveOrDelete) return;
     onSaveTicket({ ...ticket, status: "Done" });
+  };
+
+  const handleDelete = () => {
+    if (!canApproveOrDelete) return;
+    if (confirm(`Yakin ingin menghapus tiket ${ticket.code}?`)) {
+      onDeleteTicket(ticket.id);
+    }
   };
 
   return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
     e('div', { className: 'bg-white rounded-3xl max-w-xl w-full p-7 shadow-2xl space-y-4 relative max-h-[85vh] overflow-y-auto' },
-      e('div', { className: 'flex justify-between border-b pb-3' },
+      e('div', { className: 'flex justify-between border-b pb-3 items-center' },
         e('div', null,
           e('h3', { className: 'font-bold text-slate-900 text-base' }, 'Update Ticket & Review Submission'),
           e('span', { className: 'text-xs font-mono font-bold text-blue-600' }, ticket.code)
         ),
         e('div', { className: 'flex items-center gap-2' },
-          isAdmin && e('button', {
-            onClick: () => onDeleteTicket(ticket.id),
-            className: 'px-3 py-1 bg-rose-50 text-rose-600 border border-rose-200 rounded-lg text-xs font-bold cursor-pointer'
+          canApproveOrDelete && e('button', {
+            onClick: handleDelete,
+            className: 'px-3 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-lg text-xs font-bold cursor-pointer transition'
           }, '🗑 Delete'),
-          e('button', { onClick: onClose, className: 'font-bold text-slate-400 cursor-pointer' }, '✕')
+          e('button', { onClick: onClose, className: 'font-bold text-slate-400 hover:text-slate-600 cursor-pointer p-1' }, '✕')
         )
+      ),
+
+      e('div', { className: 'grid grid-cols-2 gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs' },
+        e('div', null,
+          e('span', { className: 'text-slate-400 block text-[10px]' }, 'Dibuat Oleh (Penugas):'),
+          e('div', { className: 'font-bold text-slate-800 truncate flex items-center gap-1 mt-0.5' },
+            creator ? creator.name : 'Management',
+            isCreator && e('span', { className: 'text-[9px] bg-blue-100 text-blue-800 px-1.5 py-0.2 rounded font-bold' }, 'Anda')
+          )
+        ),
+        e('div', null,
+          e('span', { className: 'text-slate-400 block text-[10px]' }, 'Ditugaskan Kepada:'),
+          e('div', { className: 'font-bold text-slate-800 truncate flex items-center gap-1 mt-0.5' },
+            assignee ? assignee.name : 'Unassigned',
+            isAssignee && e('span', { className: 'text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-bold' }, 'Anda')
+          )
+        )
+      ),
+
+      !isParticipant && e('div', { className: 'p-3 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl text-xs flex items-center gap-2' },
+        e('span', { className: 'text-base' }, '👁️'),
+        e('span', null, 'Mode Pratinjau: Anda bukan pembuat atau penerima tiket ini (hanya dapat melihat status dan komentar).')
       ),
 
       e('form', { onSubmit: handleWorkSubmission, className: 'space-y-4 text-xs' },
@@ -4147,23 +4272,47 @@ function UpdateTicketModal({ ticket, users, tickets, currentUser, onClose, onDel
               className: 'text-[11px] text-blue-600 font-bold hover:underline flex items-center gap-1'
             }, e(IconExternalLink, { className: 'w-3 h-3' }), 'Buka Link Preview')
           ),
-          e('input', { type: 'url', placeholder: 'https://...', value: proofLink, onChange: ev => setProofLink(ev.target.value), className: 'w-full px-3 py-2 border rounded-xl font-mono text-blue-600' })
+          e('input', {
+            type: 'url',
+            disabled: !isParticipant,
+            placeholder: !isParticipant ? 'Tidak ada akses untuk mengisi bukti' : 'https://...',
+            value: proofLink,
+            onChange: ev => setProofLink(ev.target.value),
+            className: `w-full px-3 py-2 border rounded-xl font-mono text-blue-600 ${!isParticipant ? 'bg-slate-100 cursor-not-allowed text-slate-400' : 'bg-white'}`
+          })
         ),
         e('div', null,
           e('label', { className: 'font-semibold block mb-1' }, 'Resolution Notes'),
-          e('textarea', { rows: 2, value: notes, onChange: ev => setNotes(ev.target.value), placeholder: 'Add final notes...', className: 'w-full px-3 py-2 border rounded-xl' })
+          e('textarea', {
+            rows: 2,
+            disabled: !isParticipant,
+            value: notes,
+            onChange: ev => setNotes(ev.target.value),
+            placeholder: !isParticipant ? 'Hanya pihak terkait yang dapat mengisi catatan' : 'Add final notes...',
+            className: `w-full px-3 py-2 border rounded-xl ${!isParticipant ? 'bg-slate-100 cursor-not-allowed text-slate-400' : 'bg-white'}`
+          })
         ),
 
         e('div', { className: 'flex items-center justify-between pt-3 border-t' },
-          (ticket.status === 'Pending Review' && (ticket.assignedBy === currentUser?.id || isAdmin)) ? e('button', {
+          (canApproveOrDelete && ticket.status !== 'Done') ? e('button', {
             type: 'button',
             onClick: handleApproveDone,
-            className: 'px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl shadow cursor-pointer'
-          }, '✓ Approve & Mark Done') : e('span', null),
+            className: 'px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow cursor-pointer flex items-center gap-1.5 transition'
+          }, e('span', null, '✓'), 'Approve & Mark Done') : e('span', null),
           
           e('div', { className: 'flex gap-2' },
-            e('button', { type: 'button', onClick: onClose, className: 'font-semibold px-3 cursor-pointer' }, 'Cancel'),
-            e('button', { type: 'submit', className: 'px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow cursor-pointer' }, 'Submit for Review')
+            !isParticipant ? e('button', {
+              type: 'button',
+              onClick: onClose,
+              className: 'px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs cursor-pointer'
+            }, 'Tutup') : [
+              e('button', { key: 'cancel', type: 'button', onClick: onClose, className: 'font-semibold px-3 cursor-pointer text-slate-500 hover:text-slate-700' }, 'Cancel'),
+              (isAssignee || canApproveOrDelete) && e('button', {
+                key: 'submit',
+                type: 'submit',
+                className: 'px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow cursor-pointer transition'
+              }, 'Submit for Review')
+            ]
           )
         )
       )
@@ -4637,19 +4786,54 @@ function ActiveStaffModal({ users, onClose }) {
   );
 }
 
-// --- BROADCAST ANNOUNCEMENT MODAL ---
-// --- BROADCAST ANNOUNCEMENT MODAL ---
-function BroadcastAnnouncementModal({ currentUser, users, companyInfo, onClose, onSendAnnouncement, language, t }) {
+// --- ANNOUNCEMENT MANAGER MODAL (LIST, POPUP SETTINGS & BROADCAST) ---
+function AnnouncementManagerModal({ currentUser, users, companyInfo, onClose, onSendAnnouncement, onUpdateAnnouncements, language, t }) {
+  const [activeTab, setActiveTab] = useState('list'); // 'list' | 'create'
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [targetDivision, setTargetDivision] = useState("All");
   const [popupMode, setPopupMode] = useState("3min");
-  const [sent, setSent] = useState(false);
+  const [feedbackMsg, setFeedbackMsg] = useState("");
 
   const divisions = getCompanyDivisions(companyInfo, users);
   const isEn = language === 'en';
+  const announcements = companyInfo?.announcements || [];
 
-  const handleSend = () => {
+  const handleToggleActive = (annId) => {
+    const updated = announcements.map(a => {
+      if (a.id === annId) {
+        const currentActive = a.active !== false;
+        return { ...a, active: !currentActive };
+      }
+      return a;
+    });
+    if (onUpdateAnnouncements) onUpdateAnnouncements(updated);
+    setFeedbackMsg(isEn ? 'Announcement status toggled!' : 'Status pengumuman berhasil diubah!');
+    setTimeout(() => setFeedbackMsg(""), 2000);
+  };
+
+  const handleUpdateMode = (annId, newMode) => {
+    const updated = announcements.map(a => {
+      if (a.id === annId) {
+        return { ...a, popupMode: newMode, active: newMode !== 'off' };
+      }
+      return a;
+    });
+    if (onUpdateAnnouncements) onUpdateAnnouncements(updated);
+    setFeedbackMsg(isEn ? 'Pop-up settings saved!' : 'Pengaturan pop-up pengumuman berhasil disimpan!');
+    setTimeout(() => setFeedbackMsg(""), 2000);
+  };
+
+  const handleDeleteAnnouncement = (annId) => {
+    if (!confirm(isEn ? 'Delete this announcement permanently?' : 'Hapus pengumuman ini secara permanen?')) return;
+    const updated = announcements.filter(a => a.id !== annId);
+    if (onUpdateAnnouncements) onUpdateAnnouncements(updated);
+    setFeedbackMsg(isEn ? 'Announcement permanently deleted!' : 'Pengumuman berhasil dihapus!');
+    setTimeout(() => setFeedbackMsg(""), 2000);
+  };
+
+  const handleSend = (ev) => {
+    if (ev) ev.preventDefault();
     if (!title.trim() || !content.trim()) return;
     if (onSendAnnouncement) {
       onSendAnnouncement({
@@ -4658,36 +4842,126 @@ function BroadcastAnnouncementModal({ currentUser, users, companyInfo, onClose, 
         content: content.trim(),
         targetDivision,
         popupMode,
+        active: popupMode !== 'off',
         authorName: currentUser?.name || 'Management',
         authorRole: currentUser?.role || 'admin',
         createdAt: new Date().toISOString()
       });
     }
-    setSent(true);
-    setTimeout(() => {
-      onClose();
-    }, 1200);
+    setTitle("");
+    setContent("");
+    setActiveTab('list');
+    setFeedbackMsg(isEn ? 'Broadcast successfully published!' : 'Pengumuman baru berhasil disiarkan!');
+    setTimeout(() => setFeedbackMsg(""), 2500);
   };
 
   return e('div', { className: 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4' },
-    e('div', { className: 'bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4' },
-      e('div', { className: 'flex justify-between items-center border-b pb-3' },
+    e('div', { className: 'bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[88vh] overflow-y-auto flex flex-col' },
+      // Header
+      e('div', { className: 'flex justify-between items-center border-b pb-3 flex-shrink-0' },
         e('div', null,
-          e('h3', { className: 'font-extrabold text-slate-900 text-base flex items-center gap-1.5' },
-            e('span', null, '📢'),
-            isEn ? 'Broadcast Company Announcement' : 'Siarkan Pengumuman Perusahaan'
+          e('h3', { className: 'font-extrabold text-slate-900 text-base flex items-center gap-2' },
+            e(IconMegaphone, { className: 'w-5 h-5 text-purple-600' }),
+            isEn ? 'Company Announcement Hub' : 'Kelola & Siarkan Pengumuman Perusahaan'
           ),
           e('p', { className: 'text-[11px] text-slate-400 mt-0.5' },
-            isEn ? 'Send pop-up alert & notification to employee devices' : 'Kirim pop-up dan notifikasi ke device seluruh karyawan'
+            isEn ? 'Manage broadcasted announcements, toggle pop-up visibility & post updates' : 'Atur daftar pengumuman, aktifkan/matikan pop-up, serta publikasi pengumuman baru'
           )
         ),
         e('button', { onClick: onClose, className: 'font-bold text-slate-400 cursor-pointer w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200' }, '✕')
       ),
-      sent ? e('div', { className: 'p-6 bg-emerald-50 text-emerald-800 rounded-2xl text-xs font-bold text-center space-y-1' },
-        e('div', { className: 'text-2xl' }, '✅'),
-        e('div', null, isEn ? 'Broadcast sent live to employee channels!' : 'Pengumuman berhasil disiarkan ke semua karyawan!')
-      ) :
-      e('div', { className: 'space-y-3.5 text-xs' },
+
+      // Navigation Tabs
+      e('div', { className: 'flex gap-2 border-b border-slate-200 pb-2 flex-shrink-0' },
+        e('button', {
+          onClick: () => setActiveTab('list'),
+          className: `px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition ${activeTab === 'list' ? 'bg-purple-600 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`
+        }, `📋 ${isEn ? 'Announcement List' : 'Daftar Pengumuman'} (${announcements.length})`),
+        e('button', {
+          onClick: () => setActiveTab('create'),
+          className: `px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition ${activeTab === 'create' ? 'bg-purple-600 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`
+        }, `➕ ${isEn ? 'Create Broadcast' : 'Buat Pengumuman Baru'}`)
+      ),
+
+      // Feedback message banner
+      feedbackMsg && e('div', { className: 'p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-bold text-center animate-fade-in flex-shrink-0' },
+        feedbackMsg
+      ),
+
+      // Tab Content: List
+      activeTab === 'list' && e('div', { className: 'space-y-3 flex-1 overflow-y-auto pr-1' },
+        announcements.length === 0 ? e('div', { className: 'p-10 text-center bg-slate-50 border border-dashed rounded-2xl space-y-2' },
+          e('div', { className: 'text-2xl' }, '📢'),
+          e('div', { className: 'text-xs font-bold text-slate-700' }, isEn ? 'No announcements created yet.' : 'Belum ada pengumuman yang disiarkan.'),
+          e('button', {
+            onClick: () => setActiveTab('create'),
+            className: 'px-4 py-2 bg-purple-600 text-white rounded-xl text-xs font-bold shadow cursor-pointer mt-2'
+          }, isEn ? '+ Create First Announcement' : '+ Buat Pengumuman Pertama')
+        ) :
+        announcements.map((ann, idx) => {
+          const isActive = ann.active !== false && ann.popupMode !== 'off';
+          return e('div', {
+            key: ann.id || idx,
+            className: `p-4 rounded-2xl border transition-all space-y-2.5 ${isActive ? 'bg-white border-purple-200 shadow-xs' : 'bg-slate-50 border-slate-200 opacity-75'}`
+          },
+            // Card Top Row
+            e('div', { className: 'flex items-center justify-between gap-2 flex-wrap' },
+              e('div', { className: 'flex items-center gap-2' },
+                e('span', {
+                  className: `px-2.5 py-0.5 rounded-full text-[10px] font-extrabold flex items-center gap-1 ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'}`
+                }, isActive ? '🟢 Aktif' : '⚪ Mati (Non-aktif)'),
+                e('span', { className: 'text-[11px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded' },
+                  ann.targetDivision === 'All' ? (isEn ? 'All Divisions' : 'Semua Divisi') : ann.targetDivision
+                )
+              ),
+              e('div', { className: 'flex items-center gap-2' },
+                e('button', {
+                  type: 'button',
+                  onClick: () => handleToggleActive(ann.id),
+                  className: `px-3 py-1 rounded-lg text-xs font-bold cursor-pointer transition ${isActive ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200'}`
+                }, isActive ? (isEn ? 'Turn Off (Matikan)' : 'Matikan') : (isEn ? 'Turn On (Aktifkan)' : 'Aktifkan')),
+                e('button', {
+                  type: 'button',
+                  onClick: () => handleDeleteAnnouncement(ann.id),
+                  title: isEn ? 'Delete permanently' : 'Hapus pengumuman',
+                  className: 'p-1.5 bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 rounded-lg text-xs font-bold cursor-pointer transition'
+                }, '🗑')
+              )
+            ),
+
+            // Card Title & Content
+            e('div', { className: 'space-y-1' },
+              e('h4', { className: 'font-extrabold text-sm text-slate-900' }, ann.title),
+              e('div', { className: 'p-3 bg-slate-50/80 rounded-xl border border-slate-100 text-xs text-slate-700 leading-relaxed max-h-36 overflow-y-auto break-words break-all [overflow-wrap:anywhere]' },
+                e(LinkifiedText, { text: ann.content })
+              )
+            ),
+
+            // Card Bottom Controls
+            e('div', { className: 'flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t text-[11px] text-slate-400' },
+              e('div', null,
+                `Oleh: ${ann.authorName || 'Management'} • ${ann.createdAt ? new Date(ann.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}`
+              ),
+              e('div', { className: 'flex items-center gap-1.5' },
+                e('label', { className: 'font-bold text-slate-600' }, 'Setting Pop-up:'),
+                e('select', {
+                  value: ann.popupMode || '3min',
+                  onChange: (ev) => handleUpdateMode(ann.id, ev.target.value),
+                  className: 'px-2 py-1 rounded-lg border text-xs bg-white font-semibold text-purple-700 cursor-pointer'
+                },
+                  e('option', { value: '3min' }, isEn ? '3 Mins after Login' : '3 Menit setelah Login'),
+                  e('option', { value: 'instant' }, isEn ? 'Instant Pop-up' : 'Seketika (Instant)'),
+                  e('option', { value: 'notif_only' }, isEn ? 'Notification Only' : 'Hanya Notifikasi'),
+                  e('option', { value: 'off' }, isEn ? 'Turn Off / Disabled' : 'Mati / Non-aktif')
+                )
+              )
+            )
+          );
+        })
+      ),
+
+      // Tab Content: Create
+      activeTab === 'create' && e('form', { onSubmit: handleSend, className: 'space-y-3.5 text-xs flex-1 overflow-y-auto pr-1' },
         e('div', null,
           e('label', { className: 'font-semibold block mb-1 text-slate-700' }, isEn ? 'Announcement Title' : 'Judul Pengumuman'),
           e('input', {
@@ -4731,14 +5005,15 @@ function BroadcastAnnouncementModal({ currentUser, users, companyInfo, onClose, 
             },
               e('option', { value: '3min' }, isEn ? '3 Mins after Login' : '3 Menit setelah Login'),
               e('option', { value: 'instant' }, isEn ? 'Instant Pop-up' : 'Seketika (Instant)'),
-              e('option', { value: 'notif_only' }, isEn ? 'Notification Only' : 'Hanya Notifikasi')
+              e('option', { value: 'notif_only' }, isEn ? 'Notification Only' : 'Hanya Notifikasi'),
+              e('option', { value: 'off' }, isEn ? 'Turn Off / Disabled' : 'Mati / Non-aktif')
             )
           )
         ),
         e('div', { className: 'flex justify-end gap-2 pt-2 border-t' },
-          e('button', { onClick: onClose, className: 'font-semibold px-4 py-2 cursor-pointer text-slate-500 hover:text-slate-700' }, isEn ? 'Cancel' : 'Batal'),
+          e('button', { type: 'button', onClick: () => setActiveTab('list'), className: 'font-semibold px-4 py-2 cursor-pointer text-slate-500 hover:text-slate-700' }, isEn ? 'Cancel' : 'Batal'),
           e('button', {
-            onClick: handleSend,
+            type: 'submit',
             className: 'px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold shadow-md cursor-pointer transition flex items-center gap-1.5'
           }, isEn ? '📢 Publish Broadcast' : '📢 Siarkan Pengumuman')
         )
